@@ -23,6 +23,74 @@
       --danger:         #c94a4a;
     }
 
+    /* ─── Thème : SteamPunk ──────────────────────────── */
+    [data-theme="steampunk"] {
+      --bg-deep:        #100b06;
+      --bg-card:        #1c1308;
+      --bg-panel:       #261b0e;
+      --accent-gold:    #c87828;
+      --accent-dim:     #8a5018;
+      --text-primary:   #eed8b0;
+      --text-secondary: #9a7850;
+      --text-muted:     #5a4030;
+      --border:         #3a2810;
+      --dot-on:         #c87828;
+      --dot-off:        #3a2810;
+      --success:        #5a8a38;
+      --danger:         #c84028;
+    }
+
+    /* ─── Thème : Futuriste / Digital ────────────────── */
+    [data-theme="futuriste"] {
+      --bg-deep:        #020d12;
+      --bg-card:        #071820;
+      --bg-panel:       #0c2230;
+      --accent-gold:    #00d4ff;
+      --accent-dim:     #0088aa;
+      --text-primary:   #b8eeff;
+      --text-secondary: #5090a8;
+      --text-muted:     #204050;
+      --border:         #083040;
+      --dot-on:         #00d4ff;
+      --dot-off:        #083040;
+      --success:        #00e888;
+      --danger:         #ff2860;
+    }
+
+    /* ─── Thème : Spatial ────────────────────────────── */
+    [data-theme="spatial"] {
+      --bg-deep:        #03020c;
+      --bg-card:        #08071c;
+      --bg-panel:       #0e0c28;
+      --accent-gold:    #a880ff;
+      --accent-dim:     #6040b0;
+      --text-primary:   #d0c8f8;
+      --text-secondary: #6858a0;
+      --text-muted:     #302848;
+      --border:         #180e40;
+      --dot-on:         #a880ff;
+      --dot-off:        #180e40;
+      --success:        #38c0a8;
+      --danger:         #e04888;
+    }
+
+    /* ─── Thème : Mystérieux ─────────────────────────── */
+    [data-theme="mysterieux"] {
+      --bg-deep:        #080304;
+      --bg-card:        #140608;
+      --bg-panel:       #1e0a0c;
+      --accent-gold:    #c02828;
+      --accent-dim:     #801818;
+      --text-primary:   #e0c8c0;
+      --text-secondary: #906058;
+      --text-muted:     #503030;
+      --border:         #300808;
+      --dot-on:         #c02828;
+      --dot-off:        #300808;
+      --success:        #408858;
+      --danger:         #ff3838;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -629,6 +697,46 @@
     /* ─── Misc ────────────────────────────────────────── */
     .empty-state { color: var(--text-muted); font-size: 0.8rem; }
 
+    /* ─── Theme cards ────────────────────────────────── */
+    .theme-card {
+      border-radius: 10px;
+      padding: 0.9rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .theme-card:hover { transform: translateY(-2px); }
+    .theme-card.active { border-color: var(--accent-gold) !important; }
+
+    .theme-card-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .theme-card-desc {
+      font-size: 0.65rem;
+      opacity: 0.7;
+      line-height: 1.4;
+    }
+    .theme-swatches {
+      display: flex;
+      gap: 4px;
+      margin-top: 0.55rem;
+    }
+    .swatch {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .theme-card .active-check {
+      position: absolute;
+      top: 0.5rem; right: 0.5rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .theme-card.active .active-check { display: block; }
+
     /* ─── Recent sessions ────────────────────────────── */
     .recent-sessions {
       width: 100%;
@@ -724,6 +832,7 @@
     <span class="header-logo">Chroniques</span>
     <div class="header-actions">
       <span id="hdr-code-chars" class="room-badge">——</span>
+      <button id="btn-theme" class="icon-btn" onclick="showModal('modal-theme')" style="display:none;">🎨 Thème</button>
       <button id="btn-gm-view" class="icon-btn" onclick="showGMView()" style="display:none;">Vue MJ</button>
     </div>
   </div>
@@ -861,6 +970,22 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-cons')">Annuler</button>
       <button class="btn btn-primary" onclick="addConsumable()">Ajouter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Thème de campagne (MJ uniquement)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-theme" class="overlay hidden">
+  <div class="modal" style="max-width:480px;">
+    <h3>Thème de campagne</h3>
+    <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.55;">
+      Le thème s'applique à tous les joueurs de la session en temps réel.
+    </p>
+    <div id="theme-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-theme')">Fermer</button>
     </div>
   </div>
 </div>
@@ -1089,10 +1214,97 @@ function enterRoom(code, name) {
     document.getElementById(id).textContent = code;
   });
   document.getElementById('campaign-title').textContent = name || 'Campagne';
-  // Afficher le bouton Vue MJ uniquement si on est le créateur
-  document.getElementById('btn-gm-view').style.display = lsIsGM(code) ? '' : 'none';
+  // Boutons réservés au MJ
+  const isGM = lsIsGM(code);
+  document.getElementById('btn-gm-view').style.display = isGM ? '' : 'none';
+  document.getElementById('btn-theme').style.display   = isGM ? '' : 'none';
   showScreen('screen-characters');
+  listenTheme();
   loadCharacters();
+}
+
+/* ────────────────────────────────────────────────────────
+   THEMES
+──────────────────────────────────────────────────────── */
+const THEMES = [
+  {
+    id: 'medfan',
+    name: 'Médiéval Fantastique',
+    desc: 'Royaumes anciens, magie et épopées',
+    bg: '#0d0d1a', card: '#161625', accent: '#c9a84c',
+    swatches: ['#0d0d1a','#161625','#c9a84c','#8b1a1a','#4a9a6a']
+  },
+  {
+    id: 'steampunk',
+    name: 'SteamPunk',
+    desc: 'Vapeur, engrenages et cuivre brûlant',
+    bg: '#100b06', card: '#1c1308', accent: '#c87828',
+    swatches: ['#100b06','#1c1308','#c87828','#5a8a38','#c84028']
+  },
+  {
+    id: 'futuriste',
+    name: 'Futuriste / Digital',
+    desc: 'Néons, code et intelligence artificielle',
+    bg: '#020d12', card: '#071820', accent: '#00d4ff',
+    swatches: ['#020d12','#071820','#00d4ff','#00e888','#ff2860']
+  },
+  {
+    id: 'spatial',
+    name: 'Spatial',
+    desc: 'Cosmos infini, nébuleuses et étoiles',
+    bg: '#03020c', card: '#08071c', accent: '#a880ff',
+    swatches: ['#03020c','#08071c','#a880ff','#38c0a8','#e04888']
+  },
+  {
+    id: 'mysterieux',
+    name: 'Mystérieux',
+    desc: 'Ombres, secrets et horreur douce',
+    bg: '#080304', card: '#140608', accent: '#c02828',
+    swatches: ['#080304','#140608','#c02828','#408858','#ff3838']
+  }
+];
+
+let currentTheme = 'medfan';
+
+function applyTheme(themeId) {
+  currentTheme = themeId || 'medfan';
+  document.documentElement.setAttribute('data-theme', currentTheme === 'medfan' ? '' : currentTheme);
+}
+
+async function setTheme(themeId) {
+  applyTheme(themeId);
+  await dbUpdate(`rooms/${currentRoom}`, { theme: themeId });
+  renderThemeGrid();
+  showToast('Thème appliqué à tous les joueurs !');
+}
+
+function renderThemeGrid() {
+  const grid = document.getElementById('theme-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  THEMES.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'theme-card' + (currentTheme === t.id ? ' active' : '');
+    card.style.cssText = `background:${t.bg};border-color:${currentTheme === t.id ? t.accent : t.bg + '80'};`;
+    const swatchHtml = t.swatches.map(c =>
+      `<div class="swatch" style="background:${c};border:1px solid rgba(255,255,255,0.1);"></div>`
+    ).join('');
+    card.innerHTML = `
+      <span class="active-check">✓</span>
+      <div class="theme-card-name" style="color:${t.accent};">${t.name}</div>
+      <div class="theme-card-desc" style="color:${t.accent}88;">${t.desc}</div>
+      <div class="theme-swatches">${swatchHtml}</div>`;
+    card.onclick = () => setTheme(t.id);
+    grid.appendChild(card);
+  });
+}
+
+function listenTheme() {
+  const detach = dbListen(`rooms/${currentRoom}/theme`, themeId => {
+    applyTheme(themeId || 'medfan');
+    renderThemeGrid();
+  });
+  liveListeners.push(detach);
 }
 
 /* ────────────────────────────────────────────────────────
