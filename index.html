@@ -737,6 +737,200 @@
     }
     .theme-card.active .active-check { display: block; }
 
+    /* ─── Guilder ────────────────────────────────────── */
+    .guilder-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .guilder-colors {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .guilder-orb {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .guilder-orb:hover { transform: scale(1.12); }
+    .guilder-orb.selected {
+      border-color: #fff;
+      box-shadow: 0 0 10px currentColor;
+    }
+    .guilder-orb .orb-label {
+      position: absolute;
+      bottom: -1.3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.55rem;
+      white-space: nowrap;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .guilder-charges-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem;
+      padding: 0.6rem 0.8rem;
+      background: var(--bg-panel);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .guilder-charge-label { font-size: 0.72rem; color: var(--text-secondary); }
+
+    .guilder-charge-ctrl { display: flex; align-items: center; gap: 0.6rem; }
+
+    .charge-num {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      min-width: 2rem;
+      text-align: center;
+    }
+
+    .charge-btn {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-deep);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .charge-btn:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+
+    .guilder-actions { display: flex; gap: 0.5rem; }
+
+    .loom-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: transparent;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      color: var(--text-secondary);
+    }
+    .loom-btn:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+    .loom-btn.primary { border-color: var(--accent-dim); color: var(--accent-gold); }
+    .loom-btn.primary:hover { background: var(--accent-gold); color: #130f00; }
+
+    /* ─── Spell cards ─────────────────────────────────── */
+    .spell-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto; }
+
+    .spell-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+    }
+    .spell-card.unavailable { opacity: 0.4; }
+
+    .spell-school-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .spell-info { flex: 1; min-width: 0; }
+    .spell-name { font-size: 0.85rem; font-weight: 600; }
+    .spell-desc { font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem; line-height: 1.4; }
+    .spell-cost { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+    .spell-cast-btn {
+      padding: 0.35rem 0.7rem;
+      border-radius: 5px;
+      border: 1px solid var(--accent-dim);
+      background: transparent;
+      color: var(--accent-gold);
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.18s;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .spell-cast-btn:hover:not(:disabled) { background: var(--accent-gold); color: #130f00; }
+    .spell-cast-btn:disabled { border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+    .spell-del-btn {
+      padding: 0.35rem 0.5rem;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .spell-del-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Modal tabs */
+    .modal-tabs { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .modal-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.18s;
+      font-family: inherit;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .modal-tab.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); }
+
+    /* GM spell library */
+    .gm-spell-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+      margin-top: 1.5rem;
+    }
+
+    .gm-spell-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
     /* ─── Recent sessions ────────────────────────────── */
     .recent-sessions {
       width: 100%;
@@ -883,13 +1077,22 @@
           </div>
         </div>
 
-        <!-- Char info / back to edit stats hint -->
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;">
-          <div class="section-label">Édition des statistiques</div>
-          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.55;">
-            Cliquez sur les cercles dans les blocs de statistiques pour modifier les valeurs (1–5).
-            Les changements sont synchronisés en temps réel.
-          </p>
+        <!-- Guilder -->
+        <div class="guilder-block">
+          <div class="section-label">Guildeur</div>
+          <div class="guilder-colors" id="guilder-colors"></div>
+          <div class="guilder-charges-row">
+            <span class="guilder-charge-label">Charges de Loom</span>
+            <div class="guilder-charge-ctrl">
+              <button class="charge-btn" onclick="adjustCharges(-1)">−</button>
+              <span class="charge-num" id="guilder-charge-num">0</span>
+              <button class="charge-btn" onclick="adjustCharges(1)">+</button>
+            </div>
+          </div>
+          <div class="guilder-actions">
+            <button class="loom-btn primary" onclick="openSpellsModal('castable')">⚡ Sorts disponibles</button>
+            <button class="loom-btn" onclick="openSpellsModal('all')">📜 Tous mes sorts</button>
+          </div>
         </div>
       </div>
 
@@ -919,6 +1122,15 @@
   <div class="container">
     <div id="gm-grid" class="gm-grid">
       <div class="loading"><div class="spinner"></div><br>Chargement…</div>
+    </div>
+
+    <!-- Bibliothèque de sorts (MJ) -->
+    <div class="gm-spell-section">
+      <div class="gm-spell-header">
+        <div class="section-label" style="margin:0;border:none;padding:0;">Bibliothèque de sorts</div>
+        <button class="loom-btn primary" style="flex:none;padding:0.4rem 0.9rem;" onclick="showModal('modal-spell-create')">+ Nouveau sort</button>
+      </div>
+      <div id="gm-spell-list" class="spell-list"></div>
     </div>
   </div>
 </div>
@@ -970,6 +1182,69 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-cons')">Annuler</button>
       <button class="btn btn-primary" onclick="addConsumable()">Ajouter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Sorts (joueur)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-spells" class="overlay hidden">
+  <div class="modal" style="max-width:460px;">
+    <h3 id="modal-spells-title">Sorts</h3>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-castable" onclick="switchSpellTab('castable')">⚡ Disponibles</button>
+      <button class="modal-tab" id="tab-all" onclick="switchSpellTab('all')">📜 Tous mes sorts</button>
+    </div>
+    <div id="modal-spell-list" class="spell-list"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-spells')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Créer un sort (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-spell-create" class="overlay hidden">
+  <div class="modal">
+    <h3 id="spell-create-title">Nouveau sort</h3>
+    <input type="hidden" id="m-spell-id">
+    <div class="field-label">Nom du sort</div>
+    <input type="text" id="m-spell-name" placeholder="Vision Onirique">
+    <div class="field-label">École (couleur du Loom)</div>
+    <select id="m-spell-school">
+      <option value="vert">🟢 Vert — Ulmèques (Onirique)</option>
+      <option value="noir">⚫ Noir — Ashragors (Nécromance)</option>
+      <option value="rouge">🔴 Rouge — Ghemdals (Art guerrier)</option>
+      <option value="jaune">🟡 Jaune — Venn'dys (Sorcellerie)</option>
+      <option value="violet">🟣 Violet — Kheyzas (Sémantique)</option>
+    </select>
+    <div class="field-label">Coût en charges</div>
+    <input type="number" id="m-spell-cost" min="1" max="99" value="2">
+    <div class="field-label">Description</div>
+    <textarea id="m-spell-desc" rows="3" placeholder="Permet au lanceur de…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-spell-create')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveSpell()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Assigner un sort à un personnage (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-spell-assign" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3>Assigner un sort</h3>
+    <div class="field-label">Sort</div>
+    <select id="m-assign-spell"></select>
+    <div class="field-label">Personnage</div>
+    <select id="m-assign-char"></select>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-spell-assign')">Annuler</button>
+      <button class="btn btn-primary" onclick="assignSpell()">Assigner →</button>
     </div>
   </div>
 </div>
@@ -1370,6 +1645,229 @@ async function createCharacter() {
 }
 
 /* ────────────────────────────────────────────────────────
+   SCHOOLS / LOOM CONSTANTS
+──────────────────────────────────────────────────────── */
+const SCHOOLS = {
+  vert:   { label: 'Ulmèques',  art: 'Onirique',    color: '#2ecc71', emoji: '🟢' },
+  noir:   { label: 'Ashragors', art: 'Nécromance',  color: '#778899', emoji: '⚫' },
+  rouge:  { label: 'Ghemdals',  art: 'Art Guerrier',color: '#e74c3c', emoji: '🔴' },
+  jaune:  { label: "Venn'dys",  art: 'Sorcellerie', color: '#f1c40f', emoji: '🟡' },
+  violet: { label: 'Kheyzas',   art: 'Sémantique',  color: '#9b59b6', emoji: '🟣' }
+};
+
+/* ────────────────────────────────────────────────────────
+   GUILDER
+──────────────────────────────────────────────────────── */
+function renderGuilder(guilder) {
+  const g = guilder || { color: null, charges: 0 };
+  // Color orbs
+  const container = document.getElementById('guilder-colors');
+  if (!container) return;
+  container.innerHTML = '';
+  Object.entries(SCHOOLS).forEach(([key, school]) => {
+    const orb = document.createElement('div');
+    orb.className = 'guilder-orb' + (g.color === key ? ' selected' : '');
+    orb.style.cssText = `background:${school.color};color:${school.color};`;
+    orb.title = `${school.label} — ${school.art}`;
+    orb.innerHTML = `<span class="orb-label">${school.label}</span>`;
+    orb.onclick = () => setGuilderColor(key);
+    container.appendChild(orb);
+  });
+  // Charges
+  document.getElementById('guilder-charge-num').textContent = g.charges ?? 0;
+}
+
+async function setGuilderColor(color) {
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/guilder`, { color });
+  if (localMode) { currentCharData.guilder = { ...currentCharData.guilder, color }; renderGuilder(currentCharData.guilder); }
+}
+
+async function adjustCharges(delta) {
+  const current = currentCharData?.guilder?.charges ?? 0;
+  const newVal = Math.max(0, current + delta);
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/guilder`, { charges: newVal });
+  if (localMode) { currentCharData.guilder = { ...currentCharData.guilder, charges: newVal }; renderGuilder(currentCharData.guilder); }
+}
+
+/* ────────────────────────────────────────────────────────
+   SPELLS — PLAYER VIEW
+──────────────────────────────────────────────────────── */
+let spellsModalTab = 'castable';
+let campaignSpells = {};
+
+function openSpellsModal(tab) {
+  spellsModalTab = tab;
+  renderSpellsModal();
+  showModal('modal-spells');
+}
+
+function switchSpellTab(tab) {
+  spellsModalTab = tab;
+  document.getElementById('tab-castable').classList.toggle('active', tab === 'castable');
+  document.getElementById('tab-all').classList.toggle('active', tab === 'all');
+  renderSpellsModal();
+}
+
+function renderSpellsModal() {
+  const list = document.getElementById('modal-spell-list');
+  if (!list) return;
+  const guilder   = currentCharData?.guilder || {};
+  const charges   = guilder.charges ?? 0;
+  const charColor = guilder.color;
+  const known     = currentCharData?.knownSpells || [];
+
+  const title = document.getElementById('modal-spells-title');
+  if (charColor && SCHOOLS[charColor]) {
+    title.textContent = `Sorts — ${SCHOOLS[charColor].label}`;
+    title.style.color = SCHOOLS[charColor].color;
+  }
+
+  let spells = Object.entries(campaignSpells)
+    .filter(([id]) => known.includes(id))
+    .map(([id, s]) => ({ id, ...s }));
+
+  if (spellsModalTab === 'castable') {
+    if (charColor) spells = spells.filter(s => s.school === charColor);
+  }
+
+  list.innerHTML = '';
+  if (!spells.length) {
+    list.innerHTML = `<div class="empty-state" style="padding:1rem 0;">
+      ${spellsModalTab === 'castable' ? 'Aucun sort disponible avec les charges actuelles.' : 'Aucun sort connu pour ce personnage.'}
+    </div>`;
+    return;
+  }
+
+  spells.forEach(spell => {
+    const school = SCHOOLS[spell.school] || {};
+    const canCast = charges >= spell.cost && spell.school === charColor;
+    const card = document.createElement('div');
+    card.className = 'spell-card' + (spellsModalTab === 'castable' && !canCast ? ' unavailable' : '');
+    card.innerHTML = `
+      <div class="spell-school-dot" style="background:${school.color || '#888'};"></div>
+      <div class="spell-info">
+        <div class="spell-name">${spell.name}</div>
+        <div class="spell-desc">${spell.description || ''}</div>
+        <div class="spell-cost">${school.emoji || ''} ${school.label || spell.school} — ${spell.cost} charge${spell.cost > 1 ? 's' : ''}</div>
+      </div>
+      <button class="spell-cast-btn" ${!canCast ? 'disabled' : ''} onclick="castSpell('${spell.id}',${spell.cost})">
+        Lancer
+      </button>`;
+    list.appendChild(card);
+  });
+}
+
+async function castSpell(spellId, cost) {
+  const charges = currentCharData?.guilder?.charges ?? 0;
+  if (charges < cost) { showToast('Charges insuffisantes.'); return; }
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/guilder`, { charges: charges - cost });
+  if (localMode) { currentCharData.guilder.charges = charges - cost; }
+  const spell = campaignSpells[spellId];
+  showToast(`✨ ${spell?.name || 'Sort'} lancé ! (−${cost} charge${cost > 1 ? 's' : ''})`);
+  renderSpellsModal();
+}
+
+/* ────────────────────────────────────────────────────────
+   SPELLS — GM LIBRARY
+──────────────────────────────────────────────────────── */
+function renderGMSpellList(spells) {
+  const list = document.getElementById('gm-spell-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const entries = Object.entries(spells || {});
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun sort créé. Cliquez sur "+ Nouveau sort" pour commencer.</div>';
+    return;
+  }
+  entries.forEach(([id, spell]) => {
+    const school = SCHOOLS[spell.school] || {};
+    const card = document.createElement('div');
+    card.className = 'spell-card';
+    card.innerHTML = `
+      <div class="spell-school-dot" style="background:${school.color || '#888'};"></div>
+      <div class="spell-info">
+        <div class="spell-name">${spell.name}</div>
+        <div class="spell-desc">${spell.description || ''}</div>
+        <div class="spell-cost">${school.emoji || ''} ${school.label || spell.school} — ${spell.cost} charge${spell.cost > 1 ? 's' : ''}</div>
+      </div>
+      <button class="spell-cast-btn" onclick="openAssignSpell('${id}')" title="Assigner à un personnage">Assigner</button>
+      <button class="spell-del-btn" onclick="editSpell('${id}')" title="Modifier">✏</button>
+      <button class="spell-del-btn" onclick="deleteSpell('${id}')" title="Supprimer">✕</button>`;
+    list.appendChild(card);
+  });
+}
+
+async function saveSpell() {
+  const id   = document.getElementById('m-spell-id').value || 'spell_' + Date.now();
+  const name = document.getElementById('m-spell-name').value.trim();
+  const school = document.getElementById('m-spell-school').value;
+  const cost = parseInt(document.getElementById('m-spell-cost').value) || 1;
+  const desc = document.getElementById('m-spell-desc').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  await dbSet(`rooms/${currentRoom}/spells/${id}`, { name, school, cost, description: desc });
+  hideModal('modal-spell-create');
+  showToast('Sort enregistré !');
+  ['m-spell-id','m-spell-name','m-spell-desc'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('m-spell-cost').value = '2';
+  document.getElementById('spell-create-title').textContent = 'Nouveau sort';
+}
+
+function editSpell(id) {
+  const s = campaignSpells[id];
+  if (!s) return;
+  document.getElementById('m-spell-id').value   = id;
+  document.getElementById('m-spell-name').value = s.name;
+  document.getElementById('m-spell-school').value = s.school;
+  document.getElementById('m-spell-cost').value  = s.cost;
+  document.getElementById('m-spell-desc').value  = s.description || '';
+  document.getElementById('spell-create-title').textContent = 'Modifier le sort';
+  showModal('modal-spell-create');
+}
+
+async function deleteSpell(id) {
+  if (!confirm('Supprimer ce sort ?')) return;
+  if (!localMode && db) await db.ref(`rooms/${currentRoom}/spells/${id}`).remove();
+  else delete (localGet(`rooms/${currentRoom}/spells`) || {})[id];
+  showToast('Sort supprimé.');
+}
+
+function openAssignSpell(preselectedSpellId) {
+  const spellSel = document.getElementById('m-assign-spell');
+  const charSel  = document.getElementById('m-assign-char');
+  spellSel.innerHTML = Object.entries(campaignSpells).map(([id, s]) =>
+    `<option value="${id}" ${id === preselectedSpellId ? 'selected' : ''}>${SCHOOLS[s.school]?.emoji || ''} ${s.name}</option>`
+  ).join('');
+  dbGet(`rooms/${currentRoom}/characters`).then(chars => {
+    charSel.innerHTML = Object.entries(chars || {}).map(([id, c]) =>
+      `<option value="${id}">${c.icon || '🎭'} ${c.name}</option>`
+    ).join('');
+  });
+  showModal('modal-spell-assign');
+}
+
+async function assignSpell() {
+  const spellId = document.getElementById('m-assign-spell').value;
+  const charId  = document.getElementById('m-assign-char').value;
+  if (!spellId || !charId) return;
+  const existing = (await dbGet(`rooms/${currentRoom}/characters/${charId}/knownSpells`)) || [];
+  if (existing.includes(spellId)) { showToast('Ce personnage connaît déjà ce sort.'); return; }
+  await dbSet(`rooms/${currentRoom}/characters/${charId}/knownSpells`, [...existing, spellId]);
+  hideModal('modal-spell-assign');
+  showToast('Sort assigné !');
+}
+
+function listenSpells() {
+  const detach = dbListen(`rooms/${currentRoom}/spells`, spells => {
+    campaignSpells = spells || {};
+    renderGMSpellList(campaignSpells);
+    if (document.getElementById('modal-spells') && !document.getElementById('modal-spells').classList.contains('hidden')) {
+      renderSpellsModal();
+    }
+  });
+  liveListeners.push(detach);
+}
+
+/* ────────────────────────────────────────────────────────
    CHARACTER SHEET
 ──────────────────────────────────────────────────────── */
 function openSheet(charId) {
@@ -1383,8 +1881,10 @@ function openSheet(charId) {
     renderStats(data.stats);
     renderHP(data.hp);
     renderConsumables(data.consumables || []);
+    renderGuilder(data.guilder);
   });
   liveListeners.push(detach);
+  listenSpells();
 }
 
 /* ── Stats ── */
@@ -1561,6 +2061,7 @@ function showGMView() {
     renderGMView(chars || {});
   });
   liveListeners.push(detach);
+  listenSpells();
 }
 
 function renderGMView(chars) {
@@ -1620,10 +2121,9 @@ function renderGMView(chars) {
 function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-['modal-char','modal-cons'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target.id === id) hideModal(id);
-  });
+['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', e => { if (e.target.id === id) hideModal(id); });
 });
 
 /* ────────────────────────────────────────────────────────
