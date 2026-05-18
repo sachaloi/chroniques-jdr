@@ -931,6 +931,134 @@
       margin-bottom: 0.85rem;
     }
 
+    /* ─── Gold ───────────────────────────────────────── */
+    .gold-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .gold-row { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.5rem; }
+    .gold-num {
+      flex: 1; font-size: 1.25rem; font-weight: 700;
+      color: #d4aa30; text-align: center;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.3rem 0.5rem;
+      font-family: inherit; outline: none; min-width: 0;
+    }
+    .gold-num:focus { border-color: var(--accent-dim); }
+    .gold-btn {
+      width: 30px; height: 30px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-deep);
+      color: var(--text-secondary); cursor: pointer; font-size: 0.85rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s; font-family: inherit; flex-shrink: 0;
+    }
+    .gold-btn:hover { border-color: #d4aa30; color: #d4aa30; }
+
+    /* ─── Inventory ───────────────────────────────────── */
+    .inv-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      grid-column: 1 / -1;
+    }
+    .inv-top {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 0.85rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .slot-badge {
+      font-size: 0.65rem; color: var(--text-secondary);
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 5px; padding: 0.2rem 0.55rem;
+    }
+    .slot-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 580px) { .slot-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .item-slot {
+      aspect-ratio: 1; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-panel);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s; padding: 0.35rem;
+      position: relative; overflow: hidden; user-select: none;
+    }
+    .item-slot.empty { border-style: dashed; cursor: default; opacity: 0.4; }
+    .item-slot:not(.empty):hover { border-color: var(--accent-dim); transform: translateY(-1px); }
+    .item-slot.equipped { border-color: var(--accent-gold); background: color-mix(in srgb, var(--accent-gold) 8%, var(--bg-panel)); }
+
+    .slot-icon { font-size: 1.3rem; line-height: 1; }
+    .slot-name {
+      font-size: 0.52rem; text-align: center; color: var(--text-secondary);
+      line-height: 1.2; margin-top: 0.2rem; word-break: break-word;
+      overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical; max-width: 100%;
+    }
+    .equipped-pip {
+      position: absolute; top: 3px; right: 3px;
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent-gold);
+    }
+    .magic-pip {
+      position: absolute; top: 3px; left: 3px;
+      font-size: 0.55rem; color: #a880ff; line-height: 1;
+    }
+
+    /* Stat bonus */
+    .stat-bonus { font-size: 0.62rem; font-weight: 700; color: #a880ff; margin-left: 5px; }
+
+    /* ─── Item detail modal ───────────────────────────── */
+    .item-det-icon { font-size: 2.75rem; text-align: center; margin-bottom: 0.5rem; }
+    .item-det-meta { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.7rem; }
+    .item-det-desc { font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); }
+    .item-det-bonuses {
+      margin-top: 0.75rem; background: var(--bg-panel);
+      border: 1px solid var(--border); border-radius: 7px; padding: 0.6rem 0.8rem;
+    }
+    .bonus-row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.25rem; }
+    .bonus-row:last-child { margin-bottom: 0; }
+    .bonus-val { color: #a880ff; font-weight: 700; }
+
+    /* ─── Trade modal ─────────────────────────────────── */
+    .trade-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.85rem; }
+    .trade-col {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.65rem; min-height: 140px;
+    }
+    .trade-col-lbl {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); margin-bottom: 0.5rem;
+    }
+    .trade-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.35rem 0.45rem; border-radius: 5px; cursor: pointer;
+      font-size: 0.75rem; transition: background 0.15s; margin-bottom: 0.25rem;
+    }
+    .trade-item:hover { background: var(--bg-deep); }
+    .trade-empty { font-size: 0.7rem; color: var(--text-muted); text-align: center; padding: 0.5rem; }
+
+    /* ─── GM item library ─────────────────────────────── */
+    .gm-items-section {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.1rem; margin-top: 1rem;
+    }
+    .gm-items-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .item-lib-card {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.65rem 0.85rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem;
+    }
+    .item-lib-icon { font-size: 1.15rem; flex-shrink: 0; }
+    .item-lib-info { flex: 1; min-width: 0; }
+    .item-lib-name { font-size: 0.83rem; font-weight: 600; }
+    .item-lib-meta { font-size: 0.62rem; color: var(--text-muted); }
+
     /* ─── Recent sessions ────────────────────────────── */
     .recent-sessions {
       width: 100%;
@@ -1077,6 +1205,19 @@
           </div>
         </div>
 
+        <!-- Gold -->
+        <div class="gold-block">
+          <div class="section-label">💰 Or</div>
+          <div class="gold-row">
+            <button class="gold-btn" onclick="adjustGold(-10)">−10</button>
+            <button class="gold-btn" onclick="adjustGold(-1)">−1</button>
+            <input type="number" class="gold-num" id="gold-num" value="0"
+                   onchange="setGold(this.value)" min="0">
+            <button class="gold-btn" onclick="adjustGold(1)">+1</button>
+            <button class="gold-btn" onclick="adjustGold(10)">+10</button>
+          </div>
+        </div>
+
         <!-- Guilder -->
         <div class="guilder-block">
           <div class="section-label">Guildeur</div>
@@ -1094,6 +1235,18 @@
             <button class="loom-btn" onclick="openSpellsModal('all')">📜 Tous mes sorts</button>
           </div>
         </div>
+      </div>
+
+      <!-- Inventory — full width -->
+      <div class="inv-block">
+        <div class="inv-top">
+          <div class="section-label" style="margin:0;border:none;padding:0;">🎒 Inventaire</div>
+          <div style="display:flex;gap:0.45rem;align-items:center;">
+            <span id="slot-badge" class="slot-badge">0 / 10</span>
+            <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()">🤝 Donner</button>
+          </div>
+        </div>
+        <div id="slot-grid" class="slot-grid"></div>
       </div>
 
       <!-- Consumables — full width -->
@@ -1122,6 +1275,18 @@
   <div class="container">
     <div id="gm-grid" class="gm-grid">
       <div class="loading"><div class="spinner"></div><br>Chargement…</div>
+    </div>
+
+    <!-- Bibliothèque d'items (MJ) -->
+    <div class="gm-items-section">
+      <div class="gm-items-header">
+        <div class="section-label" style="margin:0;border:none;padding:0;">Bibliothèque d'objets</div>
+        <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
+          <button class="loom-btn" style="flex:none;padding:0.38rem 0.75rem;" onclick="showModal('modal-theme-import')">📦 Importer le thème</button>
+          <button class="loom-btn primary" style="flex:none;padding:0.38rem 0.75rem;" onclick="openItemCreate()">+ Nouvel objet</button>
+        </div>
+      </div>
+      <div id="gm-item-list"></div>
     </div>
 
     <!-- Bibliothèque de sorts (MJ) -->
@@ -1182,6 +1347,135 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-cons')">Annuler</button>
       <button class="btn btn-primary" onclick="addConsumable()">Ajouter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Détail item (joueur)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-item-detail" class="overlay hidden">
+  <div class="modal">
+    <div id="item-det-icon" class="item-det-icon"></div>
+    <h3 id="item-det-name" style="text-align:center;"></h3>
+    <div id="item-det-meta" class="item-det-meta"></div>
+    <div id="item-det-desc" class="item-det-desc"></div>
+    <div id="item-det-bonuses" class="item-det-bonuses" style="display:none;"></div>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button id="item-det-equip" class="btn btn-primary" style="margin:0;" onclick="toggleEquip()"></button>
+      <button class="btn btn-secondary" style="margin:0;" onclick="openTradeFromDetail()">🤝 Donner</button>
+      <button class="btn btn-danger" style="margin:0;" onclick="dropCurrentItem()">Jeter</button>
+      <button class="btn btn-secondary" style="margin:0;" onclick="hideModal('modal-item-detail')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Échange d'objets
+═════════════════════════════════════════════════════════ -->
+<div id="modal-trade" class="overlay hidden">
+  <div class="modal" style="max-width:500px;">
+    <h3>Donner des objets</h3>
+    <div class="trade-cols">
+      <div class="trade-col">
+        <div class="trade-col-lbl">Mon inventaire</div>
+        <div id="trade-src"></div>
+      </div>
+      <div class="trade-col">
+        <div class="trade-col-lbl">À envoyer →</div>
+        <div id="trade-dst"></div>
+      </div>
+    </div>
+    <div class="field-label">Destinataire</div>
+    <select id="trade-target"></select>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-trade')">Annuler</button>
+      <button class="btn btn-primary" onclick="sendTrade()">Envoyer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Créer / éditer un objet (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-item-create" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="item-create-title">Nouvel objet</h3>
+    <input type="hidden" id="m-item-id">
+    <div class="field-label">Nom</div>
+    <input type="text" id="m-item-name" placeholder="Épée de fer">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+      <div>
+        <div class="field-label">Catégorie</div>
+        <select id="m-item-cat">
+          <option>Arme</option><option>Armure</option><option>Consommable</option>
+          <option>Équipement</option><option>Outil</option><option>Composant</option><option>Divers</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">Icône (emoji)</div>
+        <input type="text" id="m-item-icon" placeholder="⚔️" maxlength="2"
+               style="font-size:1.5rem;text-align:center;">
+      </div>
+    </div>
+    <div class="field-label">Description</div>
+    <textarea id="m-item-desc" rows="2" placeholder="Description de l'objet…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem;">
+      <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.8rem;">
+        <input type="checkbox" id="m-item-magic" onchange="toggleMagicFields()">
+        Objet magique
+      </label>
+    </div>
+    <div id="magic-fields" style="display:none;margin-top:0.75rem;">
+      <div class="field-label">Bonus de statistiques (ex: Force +1, Dextérité -1)</div>
+      <div id="bonus-rows"></div>
+      <button class="loom-btn" style="width:100%;margin-top:0.4rem;" onclick="addBonusRow()">+ Ajouter un bonus</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-item-create')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveItem()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Assigner un objet (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-item-assign" class="overlay hidden">
+  <div class="modal">
+    <h3>Donner un objet à un personnage</h3>
+    <div class="field-label">Objet</div>
+    <select id="m-asgn-item"></select>
+    <div class="field-label">Personnage</div>
+    <select id="m-asgn-char"></select>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-item-assign')">Annuler</button>
+      <button class="btn btn-primary" onclick="assignItem()">Donner →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Importer items du thème (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-theme-import" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3>Importer les objets du thème</h3>
+    <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.55;">
+      Choisissez un thème pour importer ses objets pré-définis dans la bibliothèque de la campagne.
+      Les objets déjà présents ne seront pas dupliqués.
+    </p>
+    <select id="import-theme-sel">
+      <option value="medfan">Médiéval Fantastique</option>
+      <option value="steampunk">SteamPunk</option>
+      <option value="futuriste">Futuriste / Digital</option>
+      <option value="spatial">Spatial</option>
+      <option value="mysterieux">Mystérieux</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-theme-import')">Annuler</button>
+      <button class="btn btn-primary" onclick="importThemeItems()">Importer →</button>
     </div>
   </div>
 </div>
@@ -1645,6 +1939,462 @@ async function createCharacter() {
 }
 
 /* ────────────────────────────────────────────────────────
+   INVENTORY & GOLD CONSTANTS
+──────────────────────────────────────────────────────── */
+const BASE_SLOTS = 10;
+const BAG_SLOTS  = 30;
+
+const THEME_ITEMS = {
+  medfan: [
+    { name:'Épée de fer',      category:'Arme',       icon:'⚔️',  description:"Solide lame de fer ordinaire. Fiable, sans éclat.", isMagic:false },
+    { name:'Bouclier de bois', category:'Armure',     icon:'🛡️',  description:"Bouclier taillé dans du chêne épais.", isMagic:false },
+    { name:'Potion de soins',  category:'Consommable',icon:'🧪',  description:"Décoction de plantes médicinales. Restaure quelques PV.", isMagic:false },
+    { name:'Arc court',        category:'Arme',       icon:'🏹',  description:"Maniable, idéal pour les escarmouches à distance.", isMagic:false },
+    { name:'Sac à dos',        category:'Équipement', icon:'🎒',  description:"Sac robuste. Augmente la capacité à 30 emplacements.", isMagic:false, isBag:true },
+    { name:'Torche',           category:'Divers',     icon:'🕯️',  description:"Éclaire les donjons sombres pendant quelques heures.", isMagic:false },
+    { name:'Corde de 10m',     category:'Divers',     icon:'🪢',  description:"Solide et légère. Indispensable en exploration.", isMagic:false },
+    { name:'Dague',            category:'Arme',       icon:'🗡️',  description:"Courte lame aisément dissimulable.", isMagic:false },
+    { name:'Herbes médicinales',category:'Consommable',icon:'🌿', description:"Feuilles cicatrisantes. À consommer avec modération.", isMagic:false },
+    { name:'Parchemin vierge', category:'Divers',     icon:'📜',  description:"Support pour notes, cartes ou sorts.", isMagic:false },
+  ],
+  steampunk: [
+    { name:'Pistolet à vapeur', category:'Arme',      icon:'🔫',  description:"Propulse des projectiles par pression de vapeur. Bruyant.", isMagic:false },
+    { name:'Lunettes de protection',category:'Armure',icon:'🥽',  description:"Protège les yeux des étincelles et fumées.", isMagic:false },
+    { name:'Clé à molette',    category:'Outil',      icon:'🔧',  description:"Outil polyvalent pour réparer des mécanismes.", isMagic:false },
+    { name:"Fiole d'éther",    category:'Consommable',icon:'🧪',  description:"Carburant concentré pour moteurs à vapeur.", isMagic:false },
+    { name:'Grenade à vapeur', category:'Arme',       icon:'💣',  description:"Libère une explosion de vapeur brûlante à l'impact.", isMagic:false },
+    { name:'Sacoche de technicien',category:'Équipement',icon:'🎒',description:"Nombreuses poches. Augmente la capacité à 30 emplacements.", isMagic:false, isBag:true },
+    { name:"Lampe à éther",    category:'Divers',     icon:'💡',  description:"Éclairage puissant alimenté par une fiole d'éther.", isMagic:false },
+    { name:'Chronomètre mécanique',category:'Divers', icon:'⌚',  description:"Précision au centième de seconde.", isMagic:false },
+    { name:'Kit de réparation',category:'Outil',      icon:'🧰',  description:"Nécessaire pour réparer armes et armures mécaniques.", isMagic:false },
+    { name:'Pièces mécaniques',category:'Composant',  icon:'⚙️',  description:"Engrenages et rouages de rechange.", isMagic:false },
+  ],
+  futuriste: [
+    { name:'Pistolet laser',   category:'Arme',       icon:'🔫',  description:"Tire des faisceaux d'énergie concentrée. Silencieux et précis.", isMagic:false },
+    { name:'Stimpack',         category:'Consommable',icon:'💉',  description:"Injection de nanobots. Stabilise immédiatement les blessures.", isMagic:false },
+    { name:'Visière HUD',      category:'Armure',     icon:'🥽',  description:"Affiche des données en temps réel sur l'environnement.", isMagic:false },
+    { name:'Tablette holographique',category:'Divers',icon:'🖥️', description:"Terminal portable pour réseaux et stockage de données.", isMagic:false },
+    { name:"Cellule d'énergie",category:'Composant',  icon:'🔋',  description:"Source d'énergie standardisée. Compatible avec la plupart des équipements.", isMagic:false },
+    { name:'Sac de transport', category:'Équipement', icon:'🎒',  description:"Sac isotherme résistant. Augmente la capacité à 30 emplacements.", isMagic:false, isBag:true },
+    { name:'Kit de piratage',  category:'Outil',      icon:'💻',  description:"Outils pour accéder à des systèmes sécurisés.", isMagic:false },
+    { name:'Drone de reconnaissance',category:'Divers',icon:'🚁', description:"Petit drone autonome pour explorer des zones dangereuses.", isMagic:false },
+    { name:'Armure légère renforcée',category:'Armure',icon:'🛡️',description:"Exosquelette léger offrant protection sans gêner les mouvements.", isMagic:false },
+    { name:"Émetteur de signal",category:'Outil',     icon:'📡',  description:"Communique ou envoie des balises sur de grandes distances.", isMagic:false },
+  ],
+  spatial: [
+    { name:'Blaster plasma',   category:'Arme',       icon:'🔫',  description:"Tire des projectiles de plasma condensé.", isMagic:false },
+    { name:'Combinaison spatiale',category:'Armure',  icon:'👨‍🚀', description:"Protège du vide spatial et des environnements hostiles.", isMagic:false },
+    { name:'Module de soins',  category:'Consommable',icon:'💊',  description:"Kit médical autonome. Diagnostique et traite automatiquement.", isMagic:false },
+    { name:'Scanner orbital',  category:'Outil',      icon:'🔭',  description:"Analyse l'environnement et détecte les signatures énergétiques.", isMagic:false },
+    { name:'Sac pressurisé',   category:'Équipement', icon:'🎒',  description:"Sac hermétique spatial. Augmente la capacité à 30 emplacements.", isMagic:false, isBag:true },
+    { name:'Générateur portatif',category:'Outil',    icon:'⚡',  description:"Fournit de l'énergie à l'équipement en cas de panne.", isMagic:false },
+    { name:"Balise de détresse",category:'Divers',    icon:'🛸',  description:"Envoie un signal de détresse sur toutes les fréquences.", isMagic:false },
+    { name:'Ration alimentaire',category:'Consommable',icon:'🍱', description:"Ration compressée haute densité pour longues missions.", isMagic:false },
+    { name:'Outil multifonction',category:'Outil',    icon:'🔧',  description:"Combine plusieurs outils essentiels en un seul appareil.", isMagic:false },
+    { name:'Bouclier énergétique',category:'Armure',  icon:'🛡️',  description:"Projette un champ de force absorbant les impacts.", isMagic:false },
+  ],
+  mysterieux: [
+    { name:'Lame maudite',     category:'Arme',       icon:'🗡️',  description:"La lame semble absorber la lumière. Son origine est inconnue.", isMagic:false },
+    { name:'Grimoire ancien',  category:'Divers',     icon:'📖',  description:"Textes cryptiques en langue oubliée. Certaines pages changent.", isMagic:false },
+    { name:'Amulette protectrice',category:'Armure',  icon:'🪬',  description:"Pierre gravée de symboles étranges. Repousse certaines entités.", isMagic:false },
+    { name:'Poison discret',   category:'Consommable',icon:'🧪',  description:"Liquide inodore et sans goût. À utiliser avec précaution.", isMagic:false },
+    { name:'Sac de voyage',    category:'Équipement', icon:'🎒',  description:"Sac aux coutures renforcées. Augmente la capacité à 30 emplacements.", isMagic:false, isBag:true },
+    { name:'Cristal de vision',category:'Divers',     icon:'🔮',  description:"Révèle parfois des images du passé ou futur. Peu fiable.", isMagic:false },
+    { name:'Bougie noire',     category:'Divers',     icon:'🕯️',  description:"Sa flamme ne vacille jamais. Attirerait les esprits.", isMagic:false },
+    { name:"Cape d'ombre",     category:'Armure',     icon:'🧣',  description:"Tissu qui se fond dans l'obscurité.", isMagic:false },
+    { name:"Clé de l'au-delà",category:'Divers',     icon:'🗝️',  description:"Ouvre des portes qui ne devraient pas exister.", isMagic:false },
+    { name:'Élixir mystérieux',category:'Consommable',icon:'💊',  description:"Effets imprévisibles. Certains ont eu de bonnes surprises.", isMagic:false },
+  ]
+};
+
+/* ────────────────────────────────────────────────────────
+   INVENTORY STATE
+──────────────────────────────────────────────────────── */
+let campaignItems   = {};
+let selectedItemIdx = null;
+let tradeBasket     = [];   // indices in current char inventory being transferred
+
+/* ────────────────────────────────────────────────────────
+   GOLD
+──────────────────────────────────────────────────────── */
+function renderGold(gold) {
+  const el = document.getElementById('gold-num');
+  if (el) el.value = gold ?? 0;
+}
+
+async function adjustGold(delta) {
+  const cur = parseInt(document.getElementById('gold-num')?.value) || 0;
+  await setGold(Math.max(0, cur + delta));
+}
+
+async function setGold(val) {
+  const v = Math.max(0, parseInt(val) || 0);
+  document.getElementById('gold-num').value = v;
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { gold: v });
+  if (localMode && currentCharData) currentCharData.gold = v;
+}
+
+/* ────────────────────────────────────────────────────────
+   EQUIPPED BONUS CALCULATION
+──────────────────────────────────────────────────────── */
+function getEquippedBonuses(inventory) {
+  const bonuses = {};
+  (inventory || []).forEach(item => {
+    if (item.equipped && item.isMagic && item.statBonuses) {
+      Object.entries(item.statBonuses).forEach(([stat, val]) => {
+        bonuses[stat] = (bonuses[stat] || 0) + val;
+      });
+    }
+  });
+  return bonuses;
+}
+
+function hasBag(inventory) {
+  return (inventory || []).some(it => it.isBag);
+}
+
+/* ────────────────────────────────────────────────────────
+   INVENTORY RENDERING
+──────────────────────────────────────────────────────── */
+function renderInventory(inventory) {
+  const inv  = inventory || [];
+  const bag  = hasBag(inv);
+  const max  = bag ? BAG_SLOTS : BASE_SLOTS;
+  const grid = document.getElementById('slot-grid');
+  const badge = document.getElementById('slot-badge');
+  if (!grid) return;
+
+  if (badge) badge.textContent = `${inv.length} / ${max}`;
+  grid.innerHTML = '';
+
+  // Filled slots
+  inv.forEach((item, idx) => {
+    const slot = document.createElement('div');
+    slot.className = 'item-slot' + (item.equipped ? ' equipped' : '');
+    slot.innerHTML = `
+      ${item.isMagic ? '<span class="magic-pip">✦</span>' : ''}
+      ${item.equipped ? '<span class="equipped-pip"></span>' : ''}
+      <span class="slot-icon">${item.icon || '📦'}</span>
+      <span class="slot-name">${item.name}</span>`;
+    slot.onclick = () => openItemDetail(idx);
+    grid.appendChild(slot);
+  });
+
+  // Empty slots
+  for (let i = inv.length; i < max; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'item-slot empty';
+    slot.innerHTML = `<span style="font-size:1.2rem;opacity:0.3;">+</span>`;
+    grid.appendChild(slot);
+  }
+}
+
+/* ────────────────────────────────────────────────────────
+   ITEM DETAIL MODAL
+──────────────────────────────────────────────────────── */
+function openItemDetail(idx) {
+  const inv  = currentCharData?.inventory || [];
+  const item = inv[idx];
+  if (!item) return;
+  selectedItemIdx = idx;
+
+  document.getElementById('item-det-icon').textContent = item.icon || '📦';
+  document.getElementById('item-det-name').textContent = item.name;
+  document.getElementById('item-det-meta').textContent = `${item.category || ''}${item.isMagic ? '  ✦ Objet magique' : ''}`;
+  document.getElementById('item-det-desc').textContent = item.description || '';
+
+  const bonDiv = document.getElementById('item-det-bonuses');
+  if (item.isMagic && item.statBonuses && Object.keys(item.statBonuses).length) {
+    bonDiv.style.display = '';
+    bonDiv.innerHTML = '<div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Bonus</div>' +
+      Object.entries(item.statBonuses).map(([s, v]) =>
+        `<div class="bonus-row"><span>${s}</span><span class="bonus-val">${v > 0 ? '+' : ''}${v}</span></div>`
+      ).join('');
+  } else {
+    bonDiv.style.display = 'none';
+  }
+
+  const equipBtn = document.getElementById('item-det-equip');
+  equipBtn.textContent = item.equipped ? 'Déséquiper' : 'Équiper';
+  equipBtn.className = item.equipped ? 'btn btn-secondary' : 'btn btn-primary';
+
+  showModal('modal-item-detail');
+}
+
+async function toggleEquip() {
+  const inv  = JSON.parse(JSON.stringify(currentCharData?.inventory || []));
+  const item = inv[selectedItemIdx];
+  if (!item) return;
+  item.equipped = !item.equipped;
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { inventory: inv });
+  if (localMode) { currentCharData.inventory = inv; renderInventory(inv); renderStats(currentCharData.stats); }
+  hideModal('modal-item-detail');
+  showToast(item.equipped ? `${item.icon} ${item.name} équipé !` : `${item.name} déséquipé.`);
+}
+
+async function dropCurrentItem() {
+  if (selectedItemIdx === null) return;
+  const inv = JSON.parse(JSON.stringify(currentCharData?.inventory || []));
+  const item = inv[selectedItemIdx];
+  if (!confirm(`Jeter "${item?.name}" ?`)) return;
+  inv.splice(selectedItemIdx, 1);
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { inventory: inv });
+  if (localMode) { currentCharData.inventory = inv; renderInventory(inv); }
+  hideModal('modal-item-detail');
+  showToast('Objet jeté.');
+}
+
+/* ────────────────────────────────────────────────────────
+   TRADE
+──────────────────────────────────────────────────────── */
+function openTrade() {
+  tradeBasket = [];
+  renderTradeCols();
+  populateTradeTargets();
+  showModal('modal-trade');
+}
+
+function openTradeFromDetail() {
+  hideModal('modal-item-detail');
+  tradeBasket = selectedItemIdx !== null ? [selectedItemIdx] : [];
+  renderTradeCols();
+  populateTradeTargets();
+  showModal('modal-trade');
+}
+
+function renderTradeCols() {
+  const inv = currentCharData?.inventory || [];
+  const src = document.getElementById('trade-src');
+  const dst = document.getElementById('trade-dst');
+  if (!src || !dst) return;
+
+  // Source: my items NOT in basket
+  src.innerHTML = '';
+  inv.forEach((item, idx) => {
+    if (tradeBasket.includes(idx)) return;
+    const row = document.createElement('div');
+    row.className = 'trade-item';
+    row.innerHTML = `<span>${item.icon || '📦'}</span><span>${item.name}</span>`;
+    row.onclick = () => { tradeBasket.push(idx); renderTradeCols(); };
+    src.appendChild(row);
+  });
+  if (!src.children.length) src.innerHTML = '<div class="trade-empty">Inventaire vide</div>';
+
+  // Destination: basket items
+  dst.innerHTML = '';
+  tradeBasket.forEach((idx, bi) => {
+    const item = inv[idx];
+    if (!item) return;
+    const row = document.createElement('div');
+    row.className = 'trade-item';
+    row.innerHTML = `<span>${item.icon || '📦'}</span><span>${item.name}</span><span style="margin-left:auto;font-size:0.7rem;color:var(--danger)">✕</span>`;
+    row.onclick = () => { tradeBasket.splice(bi, 1); renderTradeCols(); };
+    dst.appendChild(row);
+  });
+  if (!dst.children.length) dst.innerHTML = '<div class="trade-empty">Cliquez sur un objet →</div>';
+}
+
+async function populateTradeTargets() {
+  const chars = await dbGet(`rooms/${currentRoom}/characters`);
+  const sel = document.getElementById('trade-target');
+  if (!sel) return;
+  sel.innerHTML = Object.entries(chars || {})
+    .filter(([id]) => id !== currentCharId)
+    .map(([id, c]) => `<option value="${id}">${c.icon || '🎭'} ${c.name}</option>`)
+    .join('');
+}
+
+async function sendTrade() {
+  if (!tradeBasket.length) { showToast('Sélectionnez des objets à envoyer.'); return; }
+  const targetId = document.getElementById('trade-target').value;
+  if (!targetId) { showToast('Sélectionnez un destinataire.'); return; }
+
+  const myInv   = JSON.parse(JSON.stringify(currentCharData?.inventory || []));
+  const items   = tradeBasket.map(i => myInv[i]).filter(Boolean);
+  const theirInv = JSON.parse(JSON.stringify((await dbGet(`rooms/${currentRoom}/characters/${targetId}/inventory`)) || []));
+
+  // Check space
+  const theirChars = await dbGet(`rooms/${currentRoom}/characters/${targetId}`);
+  const theirMax   = hasBag(theirInv) ? BAG_SLOTS : BASE_SLOTS;
+  if (theirInv.length + items.length > theirMax) {
+    showToast("L'inventaire du destinataire est plein."); return;
+  }
+
+  // Remove from sender (sorted desc to avoid index shift)
+  [...tradeBasket].sort((a,b) => b-a).forEach(i => myInv.splice(i, 1));
+
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { inventory: myInv });
+  await dbUpdate(`rooms/${currentRoom}/characters/${targetId}`, { inventory: [...theirInv, ...items] });
+  if (localMode) { currentCharData.inventory = myInv; renderInventory(myInv); }
+
+  hideModal('modal-trade');
+  showToast(`✅ ${items.length} objet${items.length > 1 ? 's' : ''} envoyé${items.length > 1 ? 's' : ''} !`);
+}
+
+/* ────────────────────────────────────────────────────────
+   GM ITEM LIBRARY
+──────────────────────────────────────────────────────── */
+function renderGMItemList(items) {
+  const list = document.getElementById('gm-item-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const entries = Object.entries(items || {});
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun objet. Cliquez sur "+ Nouvel objet" ou importez un thème.</div>';
+    return;
+  }
+  entries.forEach(([id, item]) => {
+    const card = document.createElement('div');
+    card.className = 'item-lib-card';
+    const bonusStr = item.isMagic && item.statBonuses
+      ? Object.entries(item.statBonuses).map(([s,v]) => `${s} ${v>0?'+':''}${v}`).join(', ')
+      : '';
+    card.innerHTML = `
+      <span class="item-lib-icon">${item.icon || '📦'}</span>
+      <div class="item-lib-info">
+        <div class="item-lib-name">${item.name}${item.isMagic ? ' <span style="color:#a880ff;font-size:0.65rem;">✦ magique</span>' : ''}</div>
+        <div class="item-lib-meta">${item.category || ''}${bonusStr ? ' · ' + bonusStr : ''}</div>
+      </div>
+      <button class="spell-cast-btn" onclick="openItemAssign('${id}')">Donner</button>
+      <button class="spell-del-btn" onclick="editItem('${id}')">✏</button>
+      <button class="spell-del-btn" onclick="deleteItem('${id}')">✕</button>`;
+    list.appendChild(card);
+  });
+}
+
+function openItemCreate() {
+  document.getElementById('m-item-id').value = '';
+  document.getElementById('m-item-name').value = '';
+  document.getElementById('m-item-icon').value = '';
+  document.getElementById('m-item-desc').value = '';
+  document.getElementById('m-item-magic').checked = false;
+  document.getElementById('magic-fields').style.display = 'none';
+  document.getElementById('bonus-rows').innerHTML = '';
+  document.getElementById('item-create-title').textContent = 'Nouvel objet';
+  showModal('modal-item-create');
+}
+
+function editItem(id) {
+  const item = campaignItems[id];
+  if (!item) return;
+  document.getElementById('m-item-id').value    = id;
+  document.getElementById('m-item-name').value  = item.name;
+  document.getElementById('m-item-icon').value  = item.icon || '';
+  document.getElementById('m-item-desc').value  = item.description || '';
+  document.getElementById('m-item-cat').value   = item.category || 'Divers';
+  document.getElementById('m-item-magic').checked = !!item.isMagic;
+  document.getElementById('magic-fields').style.display = item.isMagic ? '' : 'none';
+  document.getElementById('bonus-rows').innerHTML = '';
+  if (item.statBonuses) {
+    Object.entries(item.statBonuses).forEach(([stat, val]) => addBonusRow(stat, val));
+  }
+  document.getElementById('item-create-title').textContent = "Modifier l'objet";
+  showModal('modal-item-create');
+}
+
+function toggleMagicFields() {
+  const magic = document.getElementById('m-item-magic').checked;
+  document.getElementById('magic-fields').style.display = magic ? '' : 'none';
+}
+
+const ALL_STATS = ['Force','Dextérité','Résistance','Présence','Manipulation','Sang-froid','Intelligence','Astuce','Résolution'];
+
+function addBonusRow(stat, val) {
+  const container = document.getElementById('bonus-rows');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.4rem;';
+  row.innerHTML = `
+    <select style="flex:1;background:var(--bg-deep);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);padding:0.5rem;font-family:inherit;outline:none;">
+      ${ALL_STATS.map(s => `<option ${s === stat ? 'selected' : ''}>${s}</option>`).join('')}
+    </select>
+    <input type="number" value="${val || 1}" min="-5" max="5"
+           style="width:60px;background:var(--bg-deep);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);padding:0.5rem;font-family:inherit;outline:none;text-align:center;">
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1rem;">✕</button>`;
+  container.appendChild(row);
+}
+
+async function saveItem() {
+  const id   = document.getElementById('m-item-id').value || 'item_' + Date.now();
+  const name = document.getElementById('m-item-name').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  const icon    = document.getElementById('m-item-icon').value.trim() || '📦';
+  const cat     = document.getElementById('m-item-cat').value;
+  const desc    = document.getElementById('m-item-desc').value.trim();
+  const isMagic = document.getElementById('m-item-magic').checked;
+  const statBonuses = {};
+  if (isMagic) {
+    document.getElementById('bonus-rows').querySelectorAll('div').forEach(row => {
+      const sel = row.querySelector('select');
+      const inp = row.querySelector('input[type="number"]');
+      if (sel && inp) statBonuses[sel.value] = parseInt(inp.value) || 0;
+    });
+  }
+  await dbSet(`rooms/${currentRoom}/itemLibrary/${id}`, { name, icon, category:cat, description:desc, isMagic, statBonuses });
+  hideModal('modal-item-create');
+  showToast('Objet enregistré !');
+}
+
+async function deleteItem(id) {
+  if (!confirm('Supprimer cet objet de la bibliothèque ?')) return;
+  if (!localMode && db) await db.ref(`rooms/${currentRoom}/itemLibrary/${id}`).remove();
+  showToast('Objet supprimé.');
+}
+
+async function openItemAssign(preId) {
+  const itemSel = document.getElementById('m-asgn-item');
+  const charSel = document.getElementById('m-asgn-char');
+  itemSel.innerHTML = Object.entries(campaignItems).map(([id, it]) =>
+    `<option value="${id}" ${id === preId ? 'selected' : ''}>${it.icon || '📦'} ${it.name}</option>`
+  ).join('');
+  const chars = await dbGet(`rooms/${currentRoom}/characters`);
+  charSel.innerHTML = Object.entries(chars || {}).map(([id, c]) =>
+    `<option value="${id}">${c.icon || '🎭'} ${c.name}</option>`
+  ).join('');
+  showModal('modal-item-assign');
+}
+
+async function assignItem() {
+  const itemId = document.getElementById('m-asgn-item').value;
+  const charId = document.getElementById('m-asgn-char').value;
+  const item   = campaignItems[itemId];
+  if (!item || !charId) return;
+
+  const inv = JSON.parse(JSON.stringify((await dbGet(`rooms/${currentRoom}/characters/${charId}/inventory`)) || []));
+  const charData = await dbGet(`rooms/${currentRoom}/characters/${charId}`);
+  const max  = hasBag(inv) ? BAG_SLOTS : BASE_SLOTS;
+  if (inv.length >= max) { showToast("Inventaire du personnage plein."); return; }
+
+  inv.push({ ...item, equipped: false, instanceId: 'inv_' + Date.now() });
+  await dbUpdate(`rooms/${currentRoom}/characters/${charId}`, { inventory: inv });
+  hideModal('modal-item-assign');
+  showToast(`"${item.name}" ajouté à ${charData?.name || 'ce personnage'} !`);
+}
+
+async function importThemeItems() {
+  const theme = document.getElementById('import-theme-sel').value;
+  const preset = THEME_ITEMS[theme] || [];
+  const existing = Object.values(campaignItems).map(i => i.name);
+  let added = 0;
+  for (const item of preset) {
+    if (existing.includes(item.name)) continue;
+    const id = 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+    await dbSet(`rooms/${currentRoom}/itemLibrary/${id}`, { ...item, statBonuses: item.statBonuses || {} });
+    added++;
+    await new Promise(r => setTimeout(r, 30)); // avoid id collisions
+  }
+  hideModal('modal-theme-import');
+  showToast(`${added} objet${added > 1 ? 's' : ''} importé${added > 1 ? 's' : ''} !`);
+}
+
+function listenItems() {
+  const detach = dbListen(`rooms/${currentRoom}/itemLibrary`, items => {
+    campaignItems = items || {};
+    renderGMItemList(campaignItems);
+  });
+  liveListeners.push(detach);
+}
+
+/* ────────────────────────────────────────────────────────
    SCHOOLS / LOOM CONSTANTS
 ──────────────────────────────────────────────────────── */
 const SCHOOLS = {
@@ -1878,21 +2628,25 @@ function openSheet(charId) {
     if (!data) return;
     currentCharData = JSON.parse(JSON.stringify(data));
     document.getElementById('hdr-char-name').textContent = data.name || '?';
-    renderStats(data.stats);
+    renderStats(data.stats, getEquippedBonuses(data.inventory));
     renderHP(data.hp);
     renderConsumables(data.consumables || []);
     renderGuilder(data.guilder);
+    renderInventory(data.inventory);
+    renderGold(data.gold);
   });
   liveListeners.push(detach);
   listenSpells();
+  listenItems();
 }
 
 /* ── Stats ── */
 const CATS = ['Physique', 'Social', 'Mental'];
 const MAX_DOTS = 5;
 
-function renderStats(stats) {
+function renderStats(stats, bonuses) {
   if (!stats) return;
+  bonuses = bonuses || {};
   const container = document.getElementById('stats-container');
   container.innerHTML = '';
 
@@ -1903,14 +2657,27 @@ function renderStats(stats) {
     block.style.marginBottom = '0.85rem';
 
     let html = `<div class="cat-label">${cat}</div>`;
-    Object.entries(stats[cat]).forEach(([sName, val]) => {
+    Object.entries(stats[cat]).forEach(([sName, base]) => {
+      const bonus = bonuses[sName] || 0;
+      const total = Math.min(7, base + bonus);
+      // Gold dots for base (up to 5), purple dots for bonus (5-7)
       const dots = Array.from({ length: MAX_DOTS }, (_, i) =>
-        `<div class="dot ${i < val ? 'on' : ''}"
+        `<div class="dot ${i < base ? 'on' : ''}"
               onclick="setStat('${escAttr(cat)}','${escAttr(sName)}',${i + 1})"></div>`
       ).join('');
+      // Extra bonus dots (shown beyond the 5, up to 2 more)
+      const extraDots = bonus > 0
+        ? Array.from({ length: Math.min(bonus, 2) }, (_, i) =>
+            `<div class="dot" style="background:#a880ff;border-color:#a880ff;cursor:default;"
+                  title="Bonus équipement"></div>`
+          ).join('')
+        : '';
+      const bonusBadge = bonus !== 0
+        ? `<span class="stat-bonus">${bonus > 0 ? '+' : ''}${bonus}</span>`
+        : '';
       html += `<div class="stat-row">
-        <div class="stat-name">${sName}</div>
-        <div class="dots">${dots}</div>
+        <div class="stat-name">${sName}${bonusBadge}</div>
+        <div class="dots">${dots}${extraDots}</div>
       </div>`;
     });
 
@@ -2062,6 +2829,7 @@ function showGMView() {
   });
   liveListeners.push(detach);
   listenSpells();
+  listenItems();
 }
 
 function renderGMView(chars) {
@@ -2121,7 +2889,8 @@ function renderGMView(chars) {
 function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme'].forEach(id => {
+['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
+ 'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', e => { if (e.target.id === id) hideModal(id); });
 });
