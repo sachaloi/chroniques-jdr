@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chroniques — Suivi JDR</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --bg-deep:        #0d0d1a;
+      --bg-card:        #161625;
+      --bg-panel:       #1e1e32;
+      --accent-gold:    #c9a84c;
+      --accent-dim:     #8a6d2a;
+      --text-primary:   #e8e0cc;
+      --text-secondary: #9a9080;
+      --text-muted:     #4a4858;
+      --border:         #252540;
+      --dot-on:         #c9a84c;
+      --dot-off:        #252540;
+      --success:        #4a9a6a;
+      --danger:         #c94a4a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ─── Screens ────────────────────────────────────── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+    #screen-welcome.active { display: flex; }
+
+    /* ─── Welcome ────────────────────────────────────── */
+    #screen-welcome {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 0;
+    }
+
+    .logo {
+      font-size: 2.75rem;
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+    }
+
+    .logo-sub {
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold);
+      margin-bottom: 1.25rem;
+    }
+
+    .field-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      margin-top: 0.9rem;
+    }
+
+    .field-label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      padding: 0.7rem 1rem;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-dim);
+    }
+
+    select option { background: var(--bg-panel); }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-top: 0.85rem;
+      font-family: inherit;
+    }
+
+    .btn-primary { background: var(--accent-gold); color: #130f00; }
+    .btn-primary:hover { background: #d4b05a; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+
+    .btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+    .error-msg { color: var(--danger); font-size: 0.78rem; margin-top: 0.4rem; min-height: 1.1em; }
+
+    .warn-banner {
+      background: #1f1500;
+      border: 1px solid #6b4800;
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-size: 0.78rem;
+      color: #c4922a;
+      margin-bottom: 1rem;
+      line-height: 1.55;
+      max-width: 420px;
+    }
+
+    /* ─── App header ─────────────────────────────────── */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-logo {
+      color: var(--accent-gold);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+    .room-badge {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      font-family: monospace;
+      letter-spacing: 0.25em;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      padding: 0.3rem 0.7rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .icon-btn:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      padding: 0;
+      transition: color 0.18s;
+    }
+    .back-btn:hover { color: var(--accent-gold); }
+
+    /* ─── Container ──────────────────────────────────── */
+    .container { max-width: 920px; margin: 0 auto; padding: 1.5rem 1.25rem; }
+
+    /* ─── Characters screen ──────────────────────────── */
+    .chars-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .page-title { font-size: 1.2rem; font-weight: 400; color: var(--text-primary); }
+    .page-sub { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.2rem; }
+
+    .chars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .char-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .char-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+
+    .char-avatar {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 0.65rem;
+    }
+
+    .char-name { font-size: 0.95rem; font-weight: 600; }
+    .char-player { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.2rem; }
+
+    .char-card-add { border-style: dashed; color: var(--text-muted); }
+    .char-card-add:hover { color: var(--accent-gold); border-color: var(--accent-dim); }
+
+    /* ─── Character sheet ────────────────────────────── */
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 580px) {
+      .sheet-grid { grid-template-columns: 1fr; }
+    }
+
+    .section-label {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent-gold);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.85rem;
+    }
+
+    /* Stats */
+    .stats-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .cat-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-secondary);
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.65rem;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.55rem;
+    }
+    .stat-row:last-child { margin-bottom: 0; }
+
+    .stat-name { font-size: 0.82rem; flex: 1; }
+
+    .dots { display: flex; gap: 5px; }
+
+    .dot {
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: var(--dot-off);
+      border: 1px solid var(--text-muted);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+      flex-shrink: 0;
+    }
+    .dot.on { background: var(--dot-on); border-color: var(--accent-gold); }
+    .dot:hover { border-color: var(--accent-gold); }
+
+    /* HP block */
+    .hp-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .hp-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hp-track {
+      flex: 1;
+      height: 10px;
+      background: var(--bg-deep);
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hp-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .hp-label { font-size: 0.8rem; white-space: nowrap; min-width: 52px; text-align: right; }
+
+    .hp-btns { display: flex; gap: 0.45rem; margin-top: 0.6rem; }
+
+    .hp-btn {
+      flex: 1;
+      padding: 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-deep);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .hp-btn:hover { border-color: var(--success); color: var(--success); }
+    .hp-btn.hp-minus:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Consumables */
+    .cons-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      grid-column: 1 / -1;
+    }
+
+    .cons-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .cons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .cons-item {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .cons-item.depleted { opacity: 0.55; }
+
+    .cons-top { display: flex; align-items: center; gap: 0.55rem; }
+    .cons-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    .cons-info { flex: 1; min-width: 0; }
+    .cons-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cons-cat { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+
+    .cons-uses { display: flex; align-items: center; gap: 0.55rem; }
+
+    .use-dots { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+
+    .use-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 1px solid var(--text-muted);
+      flex-shrink: 0;
+      transition: background 0.12s;
+    }
+    .use-dot.avail { background: var(--accent-gold); border-color: var(--accent-gold); }
+    .use-dot.spent { background: transparent; }
+
+    .uses-num { font-size: 0.72rem; color: var(--text-secondary); white-space: nowrap; }
+
+    .cons-actions { display: flex; gap: 0.4rem; }
+
+    .use-btn {
+      flex: 1;
+      padding: 0.38rem;
+      border: 1px solid var(--accent-dim);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--accent-gold);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .use-btn:hover:not(:disabled) { background: var(--accent-gold); color: #130f00; }
+    .use-btn:disabled { border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+    .mini-btn {
+      padding: 0.38rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      line-height: 1;
+    }
+    .mini-btn:hover { border-color: var(--success); color: var(--success); }
+    .mini-btn.del:hover { border-color: var(--danger); color: var(--danger); }
+
+    .cons-add {
+      background: var(--bg-panel);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.82rem;
+    }
+    .cons-add:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+
+    /* Session btn */
+    .session-btn {
+      padding: 0.38rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+    }
+    .session-btn:hover { border-color: var(--success); color: var(--success); }
+
+    /* ─── GM View ─────────────────────────────────────── */
+    .gm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .gm-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+    }
+
+    .gm-card-head {
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .gm-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .gm-name { font-size: 0.95rem; font-weight: 600; }
+    .gm-player { font-size: 0.72rem; color: var(--text-secondary); }
+
+    .gm-micro-label {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .gm-cons-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .gm-cons-val {
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* ─── Modals ──────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem;
+    }
+    .overlay.hidden { display: none; }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      width: 100%; max-width: 390px;
+    }
+
+    .modal h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+    .modal-actions .btn { margin: 0; }
+
+    /* ─── Toast ───────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 1.2rem;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      transition: transform 0.28s ease;
+      z-index: 200;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ─── Loading ─────────────────────────────────────── */
+    .loading {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 3rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin-bottom: 0.6rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Misc ────────────────────────────────────────── */
+    .empty-state { color: var(--text-muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     WELCOME
+═════════════════════════════════════════════════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="logo">Chroniques</div>
+  <div class="logo-sub">Suivi de Campagne JDR</div>
+
+  <div id="warn-local" class="warn-banner" style="display:none;">
+    ⚠️ <strong>Mode local uniquement</strong> — Firebase non configuré. Les données ne sont pas
+    partagées entre joueurs. Consultez <code>SETUP.md</code> pour activer la synchronisation.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rejoindre une session</div>
+    <div class="field-label">Code de salon (6 caractères)</div>
+    <input type="text" id="inp-join-code" maxlength="6" placeholder="ABC123"
+           style="text-transform:uppercase;letter-spacing:0.3em;font-size:1.15rem;text-align:center;">
+    <div class="error-msg" id="err-join"></div>
+    <button class="btn btn-primary" onclick="joinRoom()">Rejoindre →</button>
+
+    <div class="divider"></div>
+
+    <div class="card-title">Créer une nouvelle session</div>
+    <div class="field-label">Nom de la campagne</div>
+    <input type="text" id="inp-create-name" placeholder="La Malédiction des Ombres">
+    <div class="error-msg" id="err-create"></div>
+    <button class="btn btn-secondary" onclick="createRoom()">Créer la session</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     CHARACTERS
+═════════════════════════════════════════════════════════ -->
+<div id="screen-characters" class="screen">
+  <div class="app-header">
+    <span class="header-logo">Chroniques</span>
+    <div class="header-actions">
+      <span id="hdr-code-chars" class="room-badge">——</span>
+      <button class="icon-btn" onclick="showGMView()">Vue MJ</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="chars-header">
+      <div>
+        <div id="campaign-title" class="page-title">Campagne</div>
+        <div class="page-sub">Sélectionnez votre personnage</div>
+      </div>
+    </div>
+    <div id="chars-grid" class="chars-grid">
+      <div class="loading"><div class="spinner"></div><br>Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     CHARACTER SHEET
+═════════════════════════════════════════════════════════ -->
+<div id="screen-sheet" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="goBack('screen-characters')">← Personnages</button>
+    <span id="hdr-char-name" style="color:var(--accent-gold);font-size:0.88rem;font-weight:600;"></span>
+    <span id="hdr-code-sheet" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div class="sheet-grid">
+
+      <!-- Stats container (3 blocks generated JS-side) -->
+      <div id="stats-container"></div>
+
+      <!-- Right column -->
+      <div style="display:flex;flex-direction:column;gap:0.85rem;">
+        <!-- HP -->
+        <div class="hp-block">
+          <div class="section-label">Points de vie</div>
+          <div class="hp-row">
+            <div class="hp-track">
+              <div id="hp-fill" class="hp-fill" style="width:100%;background:var(--success);"></div>
+            </div>
+            <div id="hp-label" class="hp-label">— / —</div>
+          </div>
+          <div class="hp-btns">
+            <button class="hp-btn hp-minus" onclick="adjustHP(-5)">−5</button>
+            <button class="hp-btn hp-minus" onclick="adjustHP(-1)">−1</button>
+            <button class="hp-btn" onclick="adjustHP(1)">+1</button>
+            <button class="hp-btn" onclick="adjustHP(5)">+5</button>
+          </div>
+        </div>
+
+        <!-- Char info / back to edit stats hint -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;">
+          <div class="section-label">Édition des statistiques</div>
+          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.55;">
+            Cliquez sur les cercles dans les blocs de statistiques pour modifier les valeurs (1–5).
+            Les changements sont synchronisés en temps réel.
+          </p>
+        </div>
+      </div>
+
+      <!-- Consumables — full width -->
+      <div class="cons-block">
+        <div class="cons-header">
+          <div class="section-label" style="margin:0;border:none;padding:0;">Capacités &amp; Consommables</div>
+          <button class="session-btn" onclick="resetSession()" title="Restaure tous les usages pour une nouvelle session">
+            ↺ Nouvelle session
+          </button>
+        </div>
+        <div id="cons-grid" class="cons-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM VIEW
+═════════════════════════════════════════════════════════ -->
+<div id="screen-gm" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="goBack('screen-characters')">← Salon</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">Vue Maître de Jeu</span>
+    <span id="hdr-code-gm" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div id="gm-grid" class="gm-grid">
+      <div class="loading"><div class="spinner"></div><br>Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Nouveau personnage
+═════════════════════════════════════════════════════════ -->
+<div id="modal-char" class="overlay hidden">
+  <div class="modal">
+    <h3>Nouveau personnage</h3>
+    <div class="field-label">Nom du personnage</div>
+    <input type="text" id="m-char-name" placeholder="Élodie Vance">
+    <div class="field-label">Joueur</div>
+    <input type="text" id="m-char-player" placeholder="Alice">
+    <div class="field-label">Icône (emoji)</div>
+    <input type="text" id="m-char-icon" placeholder="🧙" maxlength="2"
+           style="font-size:1.5rem;text-align:center;">
+    <div class="field-label">PV maximum</div>
+    <input type="number" id="m-char-hp" min="1" max="999" value="20">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-char')">Annuler</button>
+      <button class="btn btn-primary" onclick="createCharacter()">Créer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Ajouter consommable
+═════════════════════════════════════════════════════════ -->
+<div id="modal-cons" class="overlay hidden">
+  <div class="modal">
+    <h3>Ajouter un consommable</h3>
+    <div class="field-label">Nom</div>
+    <input type="text" id="m-cons-name" placeholder="Potion de soins">
+    <div class="field-label">Catégorie</div>
+    <select id="m-cons-cat">
+      <option value="Objet">Objet</option>
+      <option value="Pouvoir">Pouvoir</option>
+      <option value="Sort">Sort</option>
+      <option value="Capacité">Capacité</option>
+      <option value="Ressource">Ressource</option>
+      <option value="Autre">Autre</option>
+    </select>
+    <div class="field-label">Icône (emoji)</div>
+    <input type="text" id="m-cons-icon" placeholder="🧪" maxlength="2"
+           style="font-size:1.5rem;text-align:center;">
+    <div class="field-label">Utilisations par session</div>
+    <input type="number" id="m-cons-max" min="1" max="50" value="3">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-cons')">Annuler</button>
+      <button class="btn btn-primary" onclick="addConsumable()">Ajouter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCRIPT
+═════════════════════════════════════════════════════════ -->
+<script>
+/* ────────────────────────────────────────────────────────
+   FIREBASE CONFIGURATION
+   Remplacez les valeurs ci-dessous par celles de votre
+   projet Firebase. Consultez SETUP.md pour le guide.
+──────────────────────────────────────────────────────── */
+const firebaseConfig = {
+  apiKey: "AIzaSyCr7B7A80DlLCPCPD4nxM6izMwuVd4k-h0",
+  authDomain: "chroniques-jdr.firebaseapp.com",
+  databaseURL: "https://chroniques-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "chroniques-jdr",
+  storageBucket: "chroniques-jdr.firebasestorage.app",
+  messagingSenderId: "255375859586",
+  appId: "1:255375859586:web:7ed1c691b7f624f705399b"
+};
+
+/* ────────────────────────────────────────────────────────
+   ÉTAT GLOBAL
+──────────────────────────────────────────────────────── */
+let db          = null;
+let localMode   = false;
+let localStore  = {};
+let currentRoom = null;
+let currentCharId   = null;
+let currentCharData = null;
+let liveListeners   = [];   // { ref, handler } pairs to detach on screen change
+
+/* ────────────────────────────────────────────────────────
+   FIREBASE INIT
+──────────────────────────────────────────────────────── */
+(function initFirebase() {
+  try {
+    if (FIREBASE_CONFIG.apiKey === "VOTRE_API_KEY") {
+      localMode = true;
+      document.getElementById('warn-local').style.display = 'block';
+      return;
+    }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+  } catch (e) {
+    console.error("Firebase init failed:", e);
+    localMode = true;
+    document.getElementById('warn-local').style.display = 'block';
+  }
+})();
+
+/* ────────────────────────────────────────────────────────
+   DB ABSTRACTION (Firebase ↔ in-memory fallback)
+──────────────────────────────────────────────────────── */
+function localGet(path) {
+  return path.split('/').filter(Boolean)
+    .reduce((o, k) => (o != null && o[k] !== undefined ? o[k] : null), localStore);
+}
+function localSet(path, value) {
+  const keys = path.split('/').filter(Boolean);
+  let cur = localStore;
+  keys.slice(0, -1).forEach(k => { if (!cur[k]) cur[k] = {}; cur = cur[k]; });
+  cur[keys[keys.length - 1]] = value;
+}
+function localMerge(path, data) {
+  const keys = path.split('/').filter(Boolean);
+  let cur = localStore;
+  keys.slice(0, -1).forEach(k => { if (!cur[k]) cur[k] = {}; cur = cur[k]; });
+  const leaf = keys[keys.length - 1];
+  cur[leaf] = Object.assign({}, cur[leaf] || {}, data);
+}
+
+async function dbGet(path) {
+  if (!localMode && db) {
+    const snap = await db.ref(path).get();
+    return snap.val();
+  }
+  return localGet(path);
+}
+async function dbSet(path, data) {
+  if (!localMode && db) await db.ref(path).set(data);
+  else localSet(path, data);
+}
+async function dbUpdate(path, data) {
+  if (!localMode && db) await db.ref(path).update(data);
+  else localMerge(path, data);
+}
+
+// Returns a detach function
+function dbListen(path, cb) {
+  if (!localMode && db) {
+    const ref = db.ref(path);
+    ref.on('value', snap => cb(snap.val()));
+    return () => ref.off('value');
+  }
+  // Local fallback: single call
+  cb(localGet(path));
+  return () => {};
+}
+
+/* ────────────────────────────────────────────────────────
+   SCREEN MANAGEMENT
+──────────────────────────────────────────────────────── */
+function showScreen(id) {
+  // Detach all live listeners before switching
+  liveListeners.forEach(detach => detach());
+  liveListeners = [];
+
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  if (id === 'screen-welcome') el.style.display = 'flex';
+}
+
+function goBack(target) { showScreen(target); if (target === 'screen-characters') loadCharacters(); }
+
+/* ────────────────────────────────────────────────────────
+   ROOM
+──────────────────────────────────────────────────────── */
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
+async function createRoom() {
+  const name = document.getElementById('inp-create-name').value.trim() || 'Nouvelle Campagne';
+  const errEl = document.getElementById('err-create');
+  errEl.textContent = '';
+  const code = genCode();
+  try {
+    await dbSet(`rooms/${code}`, { name, code, created: Date.now(), characters: {} });
+    enterRoom(code, name);
+  } catch (e) { errEl.textContent = 'Erreur : ' + e.message; }
+}
+
+async function joinRoom() {
+  const code = document.getElementById('inp-join-code').value.trim().toUpperCase();
+  const errEl = document.getElementById('err-join');
+  errEl.textContent = '';
+  if (code.length !== 6) { errEl.textContent = 'Le code doit comporter 6 caractères.'; return; }
+  try {
+    const data = await dbGet(`rooms/${code}`);
+    if (!data) { errEl.textContent = 'Salon introuvable. Vérifiez le code.'; return; }
+    enterRoom(code, data.name);
+  } catch (e) { errEl.textContent = 'Erreur : ' + e.message; }
+}
+
+function enterRoom(code, name) {
+  currentRoom = code;
+  // Update all room code badges
+  ['hdr-code-chars', 'hdr-code-sheet', 'hdr-code-gm'].forEach(id => {
+    document.getElementById(id).textContent = code;
+  });
+  document.getElementById('campaign-title').textContent = name || 'Campagne';
+  showScreen('screen-characters');
+  loadCharacters();
+}
+
+/* ────────────────────────────────────────────────────────
+   CHARACTER LIST
+──────────────────────────────────────────────────────── */
+function loadCharacters() {
+  const detach = dbListen(`rooms/${currentRoom}/characters`, chars => {
+    renderCharList(chars || {});
+  });
+  liveListeners.push(detach);
+}
+
+function renderCharList(chars) {
+  const grid = document.getElementById('chars-grid');
+  grid.innerHTML = '';
+
+  Object.entries(chars).forEach(([id, char]) => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.innerHTML = `
+      <div class="char-avatar">${char.icon || '🎭'}</div>
+      <div class="char-name">${char.name || '?'}</div>
+      <div class="char-player">${char.player || ''}</div>`;
+    card.onclick = () => openSheet(id);
+    grid.appendChild(card);
+  });
+
+  // Add card
+  const add = document.createElement('div');
+  add.className = 'char-card char-card-add';
+  add.innerHTML = `
+    <div class="char-avatar" style="font-size:1.8rem;border-style:dashed;">+</div>
+    <div class="char-name">Nouveau</div>
+    <div class="char-player">personnage</div>`;
+  add.onclick = () => showModal('modal-char');
+  grid.appendChild(add);
+}
+
+async function createCharacter() {
+  const name   = document.getElementById('m-char-name').value.trim();
+  const player = document.getElementById('m-char-player').value.trim();
+  const icon   = document.getElementById('m-char-icon').value.trim() || '🎭';
+  const hp     = parseInt(document.getElementById('m-char-hp').value) || 20;
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+
+  const id = 'char_' + Date.now();
+  await dbSet(`rooms/${currentRoom}/characters/${id}`, {
+    name, player, icon,
+    hp: { current: hp, max: hp },
+    stats: {
+      Physique: { Force: 2, Dextérité: 2, Résistance: 2 },
+      Social:   { Présence: 2, Manipulation: 2, 'Sang-froid': 2 },
+      Mental:   { Intelligence: 2, Astuce: 2, Résolution: 2 }
+    },
+    consumables: []
+  });
+  hideModal('modal-char');
+  // Reset fields
+  ['m-char-name','m-char-player','m-char-icon'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-char-hp').value = '20';
+  showToast('Personnage créé !');
+  openSheet(id);
+}
+
+/* ────────────────────────────────────────────────────────
+   CHARACTER SHEET
+──────────────────────────────────────────────────────── */
+function openSheet(charId) {
+  currentCharId = charId;
+  showScreen('screen-sheet');
+
+  const detach = dbListen(`rooms/${currentRoom}/characters/${charId}`, data => {
+    if (!data) return;
+    currentCharData = JSON.parse(JSON.stringify(data));
+    document.getElementById('hdr-char-name').textContent = data.name || '?';
+    renderStats(data.stats);
+    renderHP(data.hp);
+    renderConsumables(data.consumables || []);
+  });
+  liveListeners.push(detach);
+}
+
+/* ── Stats ── */
+const CATS = ['Physique', 'Social', 'Mental'];
+const MAX_DOTS = 5;
+
+function renderStats(stats) {
+  if (!stats) return;
+  const container = document.getElementById('stats-container');
+  container.innerHTML = '';
+
+  CATS.forEach(cat => {
+    if (!stats[cat]) return;
+    const block = document.createElement('div');
+    block.className = 'stats-block';
+    block.style.marginBottom = '0.85rem';
+
+    let html = `<div class="cat-label">${cat}</div>`;
+    Object.entries(stats[cat]).forEach(([sName, val]) => {
+      const dots = Array.from({ length: MAX_DOTS }, (_, i) =>
+        `<div class="dot ${i < val ? 'on' : ''}"
+              onclick="setStat('${escAttr(cat)}','${escAttr(sName)}',${i + 1})"></div>`
+      ).join('');
+      html += `<div class="stat-row">
+        <div class="stat-name">${sName}</div>
+        <div class="dots">${dots}</div>
+      </div>`;
+    });
+
+    block.innerHTML = html;
+    container.appendChild(block);
+  });
+}
+
+function escAttr(s) { return s.replace(/'/g, "\\'"); }
+
+async function setStat(cat, stat, value) {
+  const current = currentCharData?.stats?.[cat]?.[stat] ?? 0;
+  const newVal = (current === value) ? value - 1 : value;
+  if (!localMode && db) {
+    await db.ref(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`).update({ [stat]: newVal });
+  } else {
+    localMerge(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`, { [stat]: newVal });
+    renderStats(localGet(`rooms/${currentRoom}/characters/${currentCharId}/stats`));
+    currentCharData.stats[cat][stat] = newVal;
+  }
+}
+
+/* ── HP ── */
+function renderHP(hp) {
+  if (!hp) return;
+  const pct = hp.max > 0 ? Math.max(0, Math.min(100, (hp.current / hp.max) * 100)) : 0;
+  const fill = document.getElementById('hp-fill');
+  fill.style.width = pct + '%';
+  // Color: green above 50%, yellow 25-50%, red below 25%
+  fill.style.background = pct > 50 ? 'var(--success)' : pct > 25 ? '#c9a84c' : 'var(--danger)';
+  document.getElementById('hp-label').textContent = `${hp.current} / ${hp.max}`;
+}
+
+async function adjustHP(delta) {
+  const hp = currentCharData?.hp;
+  if (!hp) return;
+  const newCur = Math.max(0, Math.min(hp.max, hp.current + delta));
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/hp`, { current: newCur });
+  if (localMode) {
+    currentCharData.hp.current = newCur;
+    renderHP(currentCharData.hp);
+  }
+}
+
+/* ── Consumables ── */
+function renderConsumables(cons) {
+  const grid = document.getElementById('cons-grid');
+  grid.innerHTML = '';
+
+  (cons || []).forEach((item, idx) => {
+    const avail = item.currentUses ?? item.maxUses;
+    const depleted = avail <= 0;
+    const dotsHtml = Array.from({ length: Math.min(item.maxUses, 12) }, (_, i) =>
+      `<div class="use-dot ${i < avail ? 'avail' : 'spent'}"></div>`
+    ).join('');
+
+    const div = document.createElement('div');
+    div.className = 'cons-item' + (depleted ? ' depleted' : '');
+    div.innerHTML = `
+      <div class="cons-top">
+        <div class="cons-icon">${item.icon || '✦'}</div>
+        <div class="cons-info">
+          <div class="cons-name">${item.name}</div>
+          <div class="cons-cat">${item.category || ''}</div>
+        </div>
+      </div>
+      <div class="cons-uses">
+        <div class="use-dots">${dotsHtml}</div>
+        <div class="uses-num">${avail}/${item.maxUses}</div>
+      </div>
+      <div class="cons-actions">
+        <button class="use-btn" ${depleted ? 'disabled' : ''} onclick="useConsumable(${idx})">
+          Utiliser
+        </button>
+        <button class="mini-btn" title="Restaurer 1 usage" onclick="restoreConsumable(${idx})">↺</button>
+        <button class="mini-btn del" title="Supprimer" onclick="removeConsumable(${idx})">✕</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+
+  // Add button
+  const add = document.createElement('div');
+  add.className = 'cons-add';
+  add.innerHTML = '<span style="font-size:1rem;">+</span> Ajouter';
+  add.onclick = () => showModal('modal-cons');
+  grid.appendChild(add);
+}
+
+function getConsumablesCopy() {
+  return JSON.parse(JSON.stringify(currentCharData?.consumables || []));
+}
+
+async function saveConsumables(cons) {
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { consumables: cons });
+  if (localMode) { currentCharData.consumables = cons; renderConsumables(cons); }
+}
+
+async function useConsumable(idx) {
+  const cons = getConsumablesCopy();
+  if (!cons[idx] || (cons[idx].currentUses ?? cons[idx].maxUses) <= 0) return;
+  const avail = cons[idx].currentUses ?? cons[idx].maxUses;
+  cons[idx].currentUses = avail - 1;
+  await saveConsumables(cons);
+}
+
+async function restoreConsumable(idx) {
+  const cons = getConsumablesCopy();
+  if (!cons[idx]) return;
+  const avail = cons[idx].currentUses ?? cons[idx].maxUses;
+  cons[idx].currentUses = Math.min(cons[idx].maxUses, avail + 1);
+  await saveConsumables(cons);
+}
+
+async function removeConsumable(idx) {
+  const cons = getConsumablesCopy();
+  cons.splice(idx, 1);
+  await saveConsumables(cons);
+}
+
+async function addConsumable() {
+  const name   = document.getElementById('m-cons-name').value.trim();
+  const cat    = document.getElementById('m-cons-cat').value;
+  const icon   = document.getElementById('m-cons-icon').value.trim() || '✦';
+  const max    = parseInt(document.getElementById('m-cons-max').value) || 1;
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+
+  const cons = getConsumablesCopy();
+  cons.push({ name, category: cat, icon, maxUses: max, currentUses: max });
+  await saveConsumables(cons);
+  hideModal('modal-cons');
+  ['m-cons-name','m-cons-icon'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-cons-max').value = '3';
+  showToast('Consommable ajouté !');
+}
+
+async function resetSession() {
+  const cons = getConsumablesCopy().map(c => ({ ...c, currentUses: c.maxUses }));
+  await saveConsumables(cons);
+  showToast('↺ Session réinitialisée — consommables restaurés.');
+}
+
+/* ────────────────────────────────────────────────────────
+   GM VIEW
+──────────────────────────────────────────────────────── */
+function showGMView() {
+  showScreen('screen-gm');
+  const detach = dbListen(`rooms/${currentRoom}/characters`, chars => {
+    renderGMView(chars || {});
+  });
+  liveListeners.push(detach);
+}
+
+function renderGMView(chars) {
+  const grid = document.getElementById('gm-grid');
+  grid.innerHTML = '';
+  const entries = Object.entries(chars);
+  if (!entries.length) {
+    grid.innerHTML = '<div class="loading">Aucun personnage dans ce salon.</div>';
+    return;
+  }
+
+  entries.forEach(([, char]) => {
+    const hp  = char.hp || { current: 0, max: 1 };
+    const pct = Math.max(0, Math.min(100, (hp.current / hp.max) * 100));
+    const hpColor = pct > 50 ? 'var(--success)' : pct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
+    const cons = char.consumables || [];
+
+    const card = document.createElement('div');
+    card.className = 'gm-card';
+
+    const consRows = cons.length
+      ? cons.map(c => {
+          const avail = c.currentUses ?? c.maxUses;
+          const color = avail > 0 ? 'var(--accent-gold)' : 'var(--danger)';
+          return `<div class="gm-cons-row">
+            <span>${c.icon || '✦'} ${c.name}</span>
+            <span class="gm-cons-val" style="color:${color};">${avail}/${c.maxUses}</span>
+          </div>`;
+        }).join('')
+      : '<div class="empty-state">Aucun consommable</div>';
+
+    card.innerHTML = `
+      <div class="gm-card-head">
+        <div class="gm-avatar">${char.icon || '🎭'}</div>
+        <div>
+          <div class="gm-name">${char.name || '?'}</div>
+          <div class="gm-player">${char.player || ''}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:0.85rem;">
+        <div class="gm-micro-label">PV — ${hp.current} / ${hp.max}</div>
+        <div class="hp-track" style="height:8px;">
+          <div class="hp-fill" style="width:${pct}%;background:${hpColor};"></div>
+        </div>
+      </div>
+      <div>
+        <div class="gm-micro-label" style="margin-bottom:0.45rem;">Consommables</div>
+        ${consRows}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ────────────────────────────────────────────────────────
+   MODALS
+──────────────────────────────────────────────────────── */
+function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+['modal-char','modal-cons'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) hideModal(id);
+  });
+});
+
+/* ────────────────────────────────────────────────────────
+   TOAST
+──────────────────────────────────────────────────────── */
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ────────────────────────────────────────────────────────
+   KEYBOARD SHORTCUTS
+──────────────────────────────────────────────────────── */
+document.getElementById('inp-join-code').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinRoom();
+});
+document.getElementById('inp-create-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createRoom();
+});
+</script>
+</body>
+</html>
