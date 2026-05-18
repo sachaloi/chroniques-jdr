@@ -628,6 +628,55 @@
 
     /* ─── Misc ────────────────────────────────────────── */
     .empty-state { color: var(--text-muted); font-size: 0.8rem; }
+
+    /* ─── Recent sessions ────────────────────────────── */
+    .recent-sessions {
+      width: 100%;
+      max-width: 420px;
+      margin-top: 1rem;
+    }
+
+    .recent-label {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .recent-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 0.45rem;
+    }
+    .recent-item:hover { border-color: var(--accent-dim); }
+
+    .recent-item-left { display: flex; align-items: center; gap: 0.65rem; }
+
+    .recent-role-badge {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .recent-role-badge.gm  { background: #2a1e00; color: var(--accent-gold); border: 1px solid var(--accent-dim); }
+    .recent-role-badge.joueur { background: #0a1a2a; color: #5a9acc; border: 1px solid #2a4a6a; }
+
+    .recent-name { font-size: 0.85rem; font-weight: 600; }
+    .recent-code { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; letter-spacing: 0.15em; }
+
+    .recent-date { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -660,6 +709,11 @@
     <div class="error-msg" id="err-create"></div>
     <button class="btn btn-secondary" onclick="createRoom()">Créer la session</button>
   </div>
+
+  <div id="recent-sessions-wrap" class="recent-sessions" style="display:none;">
+    <div class="recent-label">Sessions récentes</div>
+    <div id="recent-sessions-list"></div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -670,7 +724,7 @@
     <span class="header-logo">Chroniques</span>
     <div class="header-actions">
       <span id="hdr-code-chars" class="room-badge">——</span>
-      <button class="icon-btn" onclick="showGMView()">Vue MJ</button>
+      <button id="btn-gm-view" class="icon-btn" onclick="showGMView()" style="display:none;">Vue MJ</button>
     </div>
   </div>
   <div class="container">
@@ -932,6 +986,67 @@ function showScreen(id) {
 function goBack(target) { showScreen(target); if (target === 'screen-characters') loadCharacters(); }
 
 /* ────────────────────────────────────────────────────────
+   LOCALSTORAGE — Sessions & GM tokens
+──────────────────────────────────────────────────────── */
+const LS_SESSIONS = 'chroniques_sessions';
+const LS_GM_PREFIX = 'chroniques_gm_';
+
+function lsGetSessions() {
+  try { return JSON.parse(localStorage.getItem(LS_SESSIONS) || '[]'); }
+  catch { return []; }
+}
+
+function lsSaveSession(code, name, role) {
+  const sessions = lsGetSessions().filter(s => s.code !== code);
+  sessions.unshift({ code, name, role, lastVisited: Date.now() });
+  localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions.slice(0, 10)));
+}
+
+function lsSaveGMToken(code, token) {
+  localStorage.setItem(LS_GM_PREFIX + code, token);
+}
+
+function lsIsGM(code) {
+  return !!localStorage.getItem(LS_GM_PREFIX + code);
+}
+
+function renderRecentSessions() {
+  const sessions = lsGetSessions();
+  const wrap = document.getElementById('recent-sessions-wrap');
+  const list = document.getElementById('recent-sessions-list');
+  if (!sessions.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = '';
+  sessions.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'recent-item';
+    const date = new Date(s.lastVisited);
+    const dateStr = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    item.innerHTML = `
+      <div class="recent-item-left">
+        <span class="recent-role-badge ${s.role === 'gm' ? 'gm' : 'joueur'}">${s.role === 'gm' ? 'MJ' : 'Joueur'}</span>
+        <div>
+          <div class="recent-name">${s.name || 'Campagne'}</div>
+          <div class="recent-code">${s.code}</div>
+        </div>
+      </div>
+      <div class="recent-date">${dateStr}</div>`;
+    item.onclick = () => quickJoin(s.code);
+    list.appendChild(item);
+  });
+}
+
+async function quickJoin(code) {
+  const errEl = document.getElementById('err-join');
+  errEl.textContent = '';
+  try {
+    const data = await dbGet(`rooms/${code}`);
+    if (!data) { errEl.textContent = 'Session introuvable (peut-être supprimée).'; return; }
+    enterRoom(code, data.name);
+  } catch (e) { errEl.textContent = 'Erreur : ' + e.message; }
+}
+
+/* ────────────────────────────────────────────────────────
    ROOM
 ──────────────────────────────────────────────────────── */
 function genCode() {
@@ -944,8 +1059,11 @@ async function createRoom() {
   const errEl = document.getElementById('err-create');
   errEl.textContent = '';
   const code = genCode();
+  const gmToken = genCode() + genCode(); // 12-char token
   try {
-    await dbSet(`rooms/${code}`, { name, code, created: Date.now(), characters: {} });
+    await dbSet(`rooms/${code}`, { name, code, created: Date.now(), gmToken, characters: {} });
+    lsSaveGMToken(code, gmToken);
+    lsSaveSession(code, name, 'gm');
     enterRoom(code, name);
   } catch (e) { errEl.textContent = 'Erreur : ' + e.message; }
 }
@@ -958,17 +1076,21 @@ async function joinRoom() {
   try {
     const data = await dbGet(`rooms/${code}`);
     if (!data) { errEl.textContent = 'Salon introuvable. Vérifiez le code.'; return; }
+    // Si on a le token GM pour cette session, on reste MJ
+    const role = lsIsGM(code) ? 'gm' : 'joueur';
+    lsSaveSession(code, data.name, role);
     enterRoom(code, data.name);
   } catch (e) { errEl.textContent = 'Erreur : ' + e.message; }
 }
 
 function enterRoom(code, name) {
   currentRoom = code;
-  // Update all room code badges
   ['hdr-code-chars', 'hdr-code-sheet', 'hdr-code-gm'].forEach(id => {
     document.getElementById(id).textContent = code;
   });
   document.getElementById('campaign-title').textContent = name || 'Campagne';
+  // Afficher le bouton Vue MJ uniquement si on est le créateur
+  document.getElementById('btn-gm-view').style.display = lsIsGM(code) ? '' : 'none';
   showScreen('screen-characters');
   loadCharacters();
 }
@@ -1313,6 +1435,9 @@ document.getElementById('inp-join-code').addEventListener('keydown', e => {
 document.getElementById('inp-create-name').addEventListener('keydown', e => {
   if (e.key === 'Enter') createRoom();
 });
+
+// Afficher les sessions récentes au chargement
+renderRecentSessions();
 </script>
 </body>
 </html>
