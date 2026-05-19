@@ -1779,16 +1779,10 @@
             <div style="display:flex;gap:0.45rem;align-items:center;">
               <span id="slot-badge" class="slot-badge">0 / 10</span>
               <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()">🤝 Donner</button>
+              <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="resetConsumableUses()" title="Réinitialise les utilisations">↺ Session</button>
             </div>
           </div>
           <div id="slot-grid" class="slot-grid"></div>
-        </div>
-        <div class="cons-block" style="grid-column:1/-1;">
-          <div class="cons-header">
-            <div class="section-label" style="margin:0;border:none;padding:0;">Capacités &amp; Ressources</div>
-            <button class="session-btn" onclick="resetSession()">↺ Nouvelle session</button>
-          </div>
-          <div id="cons-grid" class="cons-grid"></div>
         </div>
       </div>
     </div>
@@ -1816,6 +1810,7 @@
       <span class="combat-title">⚔ Combat</span>
       <span id="combat-round" class="combat-round">Round 1</span>
       <span id="combat-current-name" style="color:var(--accent-gold);font-size:0.88rem;font-weight:600;"></span>
+      <button onclick="document.getElementById('combat-overlay').classList.add('hidden')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;margin-left:auto;padding:0.2rem 0.5rem;" title="Réduire">✕</button>
     </div>
     <div id="turn-track" class="turn-track"></div>
     <div id="combatant-list" class="combatant-list"></div>
@@ -2014,31 +2009,6 @@
 <!-- ══════════════════════════════════════════════════════
      MODAL — Ajouter consommable
 ═════════════════════════════════════════════════════════ -->
-<div id="modal-cons" class="overlay hidden">
-  <div class="modal">
-    <h3>Ajouter un consommable</h3>
-    <div class="field-label">Nom</div>
-    <input type="text" id="m-cons-name" placeholder="Potion de soins">
-    <div class="field-label">Catégorie</div>
-    <select id="m-cons-cat">
-      <option value="Objet">Objet</option>
-      <option value="Pouvoir">Pouvoir</option>
-      <option value="Sort">Sort</option>
-      <option value="Capacité">Capacité</option>
-      <option value="Ressource">Ressource</option>
-      <option value="Autre">Autre</option>
-    </select>
-    <div class="field-label">Icône (emoji)</div>
-    <input type="text" id="m-cons-icon" placeholder="🧪" maxlength="2"
-           style="font-size:1.5rem;text-align:center;">
-    <div class="field-label">Utilisations par session</div>
-    <input type="number" id="m-cons-max" min="1" max="50" value="3">
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="hideModal('modal-cons')">Annuler</button>
-      <button class="btn btn-primary" onclick="addConsumable()">Ajouter →</button>
-    </div>
-  </div>
-</div>
 
 <!-- ══════════════════════════════════════════════════════
      MODAL — Détail item (joueur)
@@ -2049,8 +2019,10 @@
     <h3 id="item-det-name" style="text-align:center;"></h3>
     <div id="item-det-meta" class="item-det-meta"></div>
     <div id="item-det-desc" class="item-det-desc"></div>
+    <div id="item-det-uses" style="display:none;text-align:center;margin:0.5rem 0;font-size:0.82rem;color:var(--text-secondary);"></div>
     <div id="item-det-bonuses" class="item-det-bonuses" style="display:none;"></div>
     <div class="modal-actions" style="flex-wrap:wrap;">
+      <button id="item-det-use" class="btn btn-primary" style="display:none;margin:0;" onclick="useItemFromInventory(selectedItemIdx)">Utiliser</button>
       <button id="item-det-equip" class="btn btn-primary" style="margin:0;" onclick="toggleEquip()"></button>
       <button class="btn btn-secondary" style="margin:0;" onclick="openTradeFromDetail()">🤝 Donner</button>
       <button class="btn btn-danger" style="margin:0;" onclick="dropCurrentItem()">Jeter</button>
@@ -2096,7 +2068,7 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
       <div>
         <div class="field-label">Catégorie</div>
-        <select id="m-item-cat">
+        <select id="m-item-cat" onchange="toggleUsesFields()">
           <option>Arme</option><option>Armure</option><option>Consommable</option>
           <option>Équipement</option><option>Outil</option><option>Composant</option><option>Divers</option>
         </select>
@@ -2113,6 +2085,10 @@
     <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem;">
       <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.8rem;">
         <input type="checkbox" id="m-item-magic" onchange="toggleMagicFields()">
+    <div id="uses-fields" style="display:none;margin-top:0.75rem;">
+      <div class="field-label">Utilisations par session <span style="color:var(--text-muted);font-weight:400;">(0 = illimité)</span></div>
+      <input type="number" id="m-item-uses" min="0" max="99" value="1">
+    </div>
         Objet magique
       </label>
     </div>
@@ -2981,11 +2957,14 @@ function renderInventory(inventory) {
   inv.forEach((item, idx) => {
     const slot = document.createElement('div');
     slot.className = 'item-slot' + (item.equipped ? ' equipped' : '');
+    const _isC = item.category === 'Consommable' && item.maxUses > 0;
+    const _ul  = item.currentUses != null ? item.currentUses : item.maxUses;
     slot.innerHTML = `
       ${item.isMagic ? '<span class="magic-pip">✦</span>' : ''}
       ${item.equipped ? '<span class="equipped-pip"></span>' : ''}
       <span class="slot-icon">${item.icon || '📦'}</span>
-      <span class="slot-name">${item.name}</span>`;
+      <span class="slot-name">${item.name}</span>
+      ${_isC ? '<span style="position:absolute;bottom:2px;right:4px;font-size:0.55rem;color:' + (_ul > 0 ? 'var(--accent-gold)' : 'var(--danger)') + ';">' + _ul + '/' + item.maxUses + '</span>' : ''}`;
     slot.onclick = () => openItemDetail(idx);
     grid.appendChild(slot);
   });
@@ -3024,9 +3003,24 @@ function openItemDetail(idx) {
     bonDiv.style.display = 'none';
   }
 
-  const equipBtn = document.getElementById('item-det-equip');
-  equipBtn.textContent = item.equipped ? 'Déséquiper' : 'Équiper';
-  equipBtn.className = item.equipped ? 'btn btn-secondary' : 'btn btn-primary';
+  const _usesDiv  = document.getElementById('item-det-uses');
+  const _useBtn   = document.getElementById('item-det-use');
+  const equipBtn  = document.getElementById('item-det-equip');
+  if (item.category === 'Consommable' && item.maxUses > 0) {
+    const left = item.currentUses != null ? item.currentUses : item.maxUses;
+    _usesDiv.style.display = '';
+    _usesDiv.textContent = 'Utilisations restantes : ' + left + ' / ' + item.maxUses;
+    _useBtn.style.display = '';
+    _useBtn.textContent = left > 0 ? 'Utiliser (' + left + ' restant' + (left > 1 ? 's' : '') + ')' : 'Épuisé';
+    _useBtn.disabled = left <= 0;
+    equipBtn.style.display = 'none';
+  } else {
+    _usesDiv.style.display = 'none';
+    _useBtn.style.display = 'none';
+    equipBtn.style.display = '';
+    equipBtn.textContent = item.equipped ? 'Déséquiper' : 'Équiper';
+    equipBtn.className = item.equipped ? 'btn btn-secondary' : 'btn btn-primary';
+  }
 
   showModal('modal-item-detail');
 }
@@ -3184,6 +3178,8 @@ function openItemCreate() {
   document.getElementById('m-item-desc').value = '';
   document.getElementById('m-item-magic').checked = false;
   document.getElementById('magic-fields').style.display = 'none';
+  const _uf1 = document.getElementById('uses-fields'); if (_uf1) _uf1.style.display = 'none';
+  const _um1 = document.getElementById('m-item-uses'); if (_um1) _um1.value = '1';
   document.getElementById('bonus-rows').innerHTML = '';
   document.getElementById('item-create-title').textContent = 'Nouvel objet';
   showModal('modal-item-create');
@@ -3199,6 +3195,8 @@ function editItem(id) {
   document.getElementById('m-item-cat').value   = item.category || 'Divers';
   document.getElementById('m-item-magic').checked = !!item.isMagic;
   document.getElementById('magic-fields').style.display = item.isMagic ? '' : 'none';
+  const _uf2 = document.getElementById('uses-fields'); if (_uf2) _uf2.style.display = item.category === 'Consommable' ? '' : 'none';
+  const _um2 = document.getElementById('m-item-uses'); if (_um2) _um2.value = item.maxUses || 1;
   document.getElementById('bonus-rows').innerHTML = '';
   if (item.statBonuses) {
     Object.entries(item.statBonuses).forEach(([stat, val]) => addBonusRow(stat, val));
@@ -3210,6 +3208,12 @@ function editItem(id) {
 function toggleMagicFields() {
   const magic = document.getElementById('m-item-magic').checked;
   document.getElementById('magic-fields').style.display = magic ? '' : 'none';
+}
+
+function toggleUsesFields() {
+  const cat = document.getElementById('m-item-cat').value;
+  const el  = document.getElementById('uses-fields');
+  if (el) el.style.display = cat === 'Consommable' ? '' : 'none';
 }
 
 const ALL_STATS = ['Force','Dextérité','Résistance','Présence','Manipulation','Sang-froid','Intelligence','Astuce','Résolution'];
@@ -3244,7 +3248,8 @@ async function saveItem() {
       if (sel && inp) statBonuses[sel.value] = parseInt(inp.value) || 0;
     });
   }
-  const itemData = { name, icon, category: cat, description: desc, isMagic, statBonuses };
+  const maxUses = cat === 'Consommable' ? (parseInt(document.getElementById('m-item-uses')?.value) || 0) : 0;
+  const itemData = { name, icon, category: cat, description: desc, isMagic, statBonuses, maxUses };
   await dbSet(`rooms/${currentRoom}/itemLibrary/${id}`, itemData);
   // Mise à jour locale immédiate (sans attendre le callback Firebase)
   campaignItems[id] = itemData;
@@ -3283,7 +3288,10 @@ async function assignItem() {
   const max  = hasBag(inv) ? BAG_SLOTS : BASE_SLOTS;
   if (inv.length >= max) { showToast("Inventaire du personnage plein."); return; }
 
-  inv.push({ ...item, equipped: false, instanceId: 'inv_' + Date.now() });
+  const _initU = (item.category === 'Consommable' && item.maxUses > 0) ? item.maxUses : undefined;
+  const _invItem = { ...item, equipped: false, instanceId: 'inv_' + Date.now() };
+  if (_initU !== undefined) _invItem.currentUses = _initU;
+  inv.push(_invItem);
   await dbUpdate(`rooms/${currentRoom}/characters/${charId}`, { inventory: inv });
   hideModal('modal-item-assign');
   showToast(`"${item.name}" ajouté à ${charData?.name || 'ce personnage'} !`);
@@ -3840,7 +3848,6 @@ function openSheet(charId) {
     document.getElementById('hdr-char-name').textContent = data.name || '?';
     renderAxes(data.axes);
     renderConditions(data.conditions);
-    renderConsumables(data.consumables || []);
     renderGuilder(data.guilder);
     renderInventory(data.inventory);
     renderGold(data.gold);
@@ -3927,96 +3934,45 @@ async function adjustHP(delta) {
   }
 }
 
-/* ── Consumables ── */
+/* ── Consumables (now in inventory) ── */
 function getConsumablesCopy() {
-  return JSON.parse(JSON.stringify(currentCharData && currentCharData.consumables ? currentCharData.consumables : []));
+  return [];  // legacy stub
 }
 
-async function saveConsumables(cons) {
-  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { consumables: cons });
-  if (localMode) { currentCharData.consumables = cons; renderConsumables(cons); }
-}
+async function useItemFromInventory(idx) {
+  const inv = JSON.parse(JSON.stringify(currentCharData?.inventory || []));
+  const item = inv[idx];
+  if (!item) return;
+  const avail = item.currentUses != null ? item.currentUses : (item.maxUses || 1);
+  if (avail <= 0) { showToast('Cet objet est épuisé.'); return; }
 
-async function useConsumable(idx) {
-  const cons = getConsumablesCopy();
-  if (!cons[idx] || (cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses) <= 0) return;
-  const avail = cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses;
-  cons[idx].currentUses = avail - 1;
-  await saveConsumables(cons);
-  const c = cons[idx];
-  const name = currentCharData && currentCharData.name ? currentCharData.name : '?';
-  logEvent(c.icon || '✶', name, 'utilise ' + c.name + ' (' + (avail - 1) + '/' + c.maxUses + ' restants)');
-}
+  const newUses = avail - 1;
+  const charName = currentCharData?.name || '?';
+  logEvent(item.icon || '✶', charName, 'utilise ' + item.name + (item.maxUses > 0 ? ' (' + newUses + '/' + item.maxUses + ' restants)' : ''));
 
-async function restoreConsumable(idx) {
-  const cons = getConsumablesCopy();
-  if (!cons[idx]) return;
-  const avail = cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses;
-  cons[idx].currentUses = Math.min(cons[idx].maxUses, avail + 1);
-  await saveConsumables(cons);
-}
-
-async function removeConsumable(idx) {
-  const cons = getConsumablesCopy();
-  cons.splice(idx, 1);
-  await saveConsumables(cons);
-}
-
-async function addConsumable() {
-  const name   = document.getElementById('m-cons-name').value.trim();
-  const cat    = document.getElementById('m-cons-cat').value;
-  const icon   = document.getElementById('m-cons-icon').value.trim() || '✶';
-  const max    = parseInt(document.getElementById('m-cons-max').value) || 1;
-  if (!name) { showToast('Le nom est obligatoire.'); return; }
-  const cons = getConsumablesCopy();
-  cons.push({ name, category: cat, icon, maxUses: max, currentUses: max });
-  await saveConsumables(cons);
-  hideModal('modal-cons');
-  ['m-cons-name','m-cons-icon'].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('m-cons-max').value = '3';
-  showToast('Consommable ajouté !');
-}
-
-async function resetSession() {
-  const cons = getConsumablesCopy().map(c => Object.assign({}, c, { currentUses: c.maxUses }));
-  await saveConsumables(cons);
-  showToast('↺ Session réinitialisée — consommables restaurés.');
-}
-
-function renderConsumables(cons) {
-  const grid = document.getElementById('cons-grid');
-  if (!grid) return;
-  if (!cons || !cons.length) {
-    grid.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun consommable. Cliquez sur + pour en ajouter.</div>';
-    return;
+  if (newUses <= 0 && item.maxUses > 0) {
+    inv.splice(idx, 1);
+    showToast((item.icon || '') + ' ' + item.name + ' épuisé et retiré.');
+  } else {
+    inv[idx].currentUses = newUses;
   }
-  grid.innerHTML = cons.map((c, idx) => {
-    const avail    = c.currentUses != null ? c.currentUses : c.maxUses;
-    const depleted = avail <= 0;
-    const pct      = c.maxUses > 0 ? (avail / c.maxUses) * 100 : 0;
-    const barColor = pct > 50 ? 'var(--success)' : pct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
-    return '<div class="cons-card">' +
-      '<div class="cons-top">' +
-        '<span class="cons-icon">' + (c.icon || '✶') + '</span>' +
-        '<div class="cons-info">' +
-          '<div class="cons-name">' + c.name + '</div>' +
-          '<div class="cons-cat">' + (c.category || '') + '</div>' +
-        '</div>' +
-        '<div class="cons-count" style="color:' + (depleted ? 'var(--danger)' : 'var(--text-primary)') + '">' + avail + '<span style="color:var(--text-muted);font-size:0.7em;">/' + c.maxUses + '</span></div>' +
-      '</div>' +
-      '<div class="hp-track" style="height:4px;margin:0.45rem 0;">' +
-        '<div class="hp-fill" style="width:' + pct + '%;background:' + barColor + ';transition:width 0.3s;"></div>' +
-      '</div>' +
-      '<div class="cons-actions">' +
-        '<button class="use-btn" ' + (depleted ? 'disabled' : '') + ' onclick="useConsumable(' + idx + ')">Utiliser</button>' +
-        '<button class="restore-btn" onclick="restoreConsumable(' + idx + ')">↺</button>' +
-        '<button class="remove-btn" onclick="removeConsumable(' + idx + ')">×</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  // Add button
-  grid.innerHTML += '<div class="cons-card cons-card-add" onclick="showModal(\'modal-cons\')" style="display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:60px;"><span style="font-size:1.4rem;color:var(--text-muted);">+</span></div>';
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { inventory: inv });
+  if (localMode) { currentCharData.inventory = inv; renderInventory(inv); }
+  hideModal('modal-item-detail');
+  currentCharData.inventory = inv;
+  updateCombatHUD(window._lastCombatState);
 }
+
+async function resetConsumableUses() {
+  const inv = JSON.parse(JSON.stringify(currentCharData?.inventory || []));
+  inv.forEach(item => {
+    if (item.category === 'Consommable' && item.maxUses > 0) item.currentUses = item.maxUses;
+  });
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { inventory: inv });
+  if (localMode) { currentCharData.inventory = inv; renderInventory(inv); }
+  showToast('↺ Consommables restaurés pour la nouvelle session.');
+}
+
 
 
 /* ────────────────────────────────────────────────────────
@@ -4042,6 +3998,7 @@ function updateCombatHUD(state) {
     return;
   }
   if (btn) btn.style.display = '';
+  window._lastCombatState = state;
   // N'ouvrir le HUD automatiquement que si le combat vient de démarrer
   if (hud.classList.contains('hud-hidden') && (!window._lastCombatActive)) {
     hud.classList.remove('hud-hidden');
@@ -4064,15 +4021,16 @@ function updateCombatHUD(state) {
       return '<div class="hud-cond-group"><span style="font-size:0.75rem;">' + cat.label + '</span>' + dots + '</div>';
     }).join('');
   }
-  // Consumables
-  const cons    = currentCharData && currentCharData.consumables ? currentCharData.consumables : [];
+  // Consumables from inventory
+  const _inv2   = currentCharData && currentCharData.inventory ? currentCharData.inventory : [];
+  const cons    = _inv2.map((item, idx) => ({ ...item, invIdx: idx })).filter(i => i.category === 'Consommable' && i.maxUses > 0);
   const hudCons = document.getElementById('hud-consumables');
   if (hudCons) {
-    hudCons.innerHTML = cons.map((c, idx) => {
+    hudCons.innerHTML = cons.map(c => {
       const avail    = c.currentUses != null ? c.currentUses : c.maxUses;
       const depleted = avail <= 0;
       return '<button class="hud-cons-btn"' + (depleted ? ' disabled' : '') +
-        ' onclick="useConsumable(' + idx + ')" title="' + c.name + '">' +
+        ' onclick="useItemFromInventory(' + c.invIdx + ')" title="' + c.name + '">' +
         (c.icon || '✶') + ' <span style="color:' + (depleted ? 'var(--danger)' : 'var(--accent-gold)') + '">(' + avail + ')</span></button>';
     }).join('');
   }
@@ -4956,7 +4914,7 @@ async function clearPresentedSource() {
 function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
+['modal-char','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
  'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import','modal-bg',
  'modal-monster','modal-npc','modal-condition','modal-loom-source','modal-loom-present'].forEach(id => {
   const el = document.getElementById(id);
