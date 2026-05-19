@@ -758,20 +758,21 @@
 
     .guilder-colors {
       display: flex;
-      gap: 0.45rem;
+      justify-content: space-around;
+      align-items: center;
       margin-bottom: 0.85rem;
     }
 
     .guilder-orb {
-      flex: 1;
-      height: 28px;
-      border-radius: 6px;
+      width: 38px; height: 38px;
+      border-radius: 50%;
       cursor: pointer;
       border: 3px solid transparent;
       transition: all 0.2s;
       position: relative;
+      flex-shrink: 0;
     }
-    .guilder-orb:hover { filter: brightness(1.2); transform: scaleY(1.08); }
+    .guilder-orb:hover { transform: scale(1.15); filter: brightness(1.15); }
     .guilder-orb.selected {
       border-color: #fff;
       box-shadow: 0 0 10px currentColor;
