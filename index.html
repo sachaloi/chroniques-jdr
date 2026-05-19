@@ -1270,7 +1270,13 @@
   <div class="app-header">
     <button class="back-btn" onclick="goBack('screen-characters')">← Salon</button>
     <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">Vue Maître de Jeu</span>
-    <span id="hdr-code-gm" class="room-badge">——</span>
+    <div style="display:flex;gap:0.4rem;align-items:center;">
+      <span id="hdr-code-gm" class="room-badge">——</span>
+      <button class="icon-btn" onclick="exportSession()" title="Exporter la session en JSON">💾 Export</button>
+      <button class="icon-btn" onclick="triggerImport()" title="Importer une sauvegarde JSON">📥 Import</button>
+    </div>
+    <input type="file" id="import-file-input" accept=".json" style="display:none;"
+           onchange="importSession(this.files[0]); this.value=''">
   </div>
   <div class="container">
     <div id="gm-grid" class="gm-grid">
@@ -2881,6 +2887,69 @@ function renderGMView(chars) {
       </div>`;
     grid.appendChild(card);
   });
+}
+
+/* ────────────────────────────────────────────────────────
+   EXPORT / IMPORT SESSION
+──────────────────────────────────────────────────────── */
+async function exportSession() {
+  try {
+    let data;
+    if (localMode) {
+      data = localStore[currentRoom] || null;
+    } else {
+      const snap = await db.ref(`rooms/${currentRoom}`).once('value');
+      data = snap.val();
+    }
+    if (!data) { showToast('Aucune donnée à exporter.'); return; }
+
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    const date = new Date().toISOString().slice(0, 10);
+    a.download = `chroniques-${currentRoom}-${date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✅ Session exportée !');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Erreur lors de l\'export.');
+  }
+}
+
+function triggerImport() {
+  document.getElementById('import-file-input').click();
+}
+
+async function importSession(file) {
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (!data || typeof data !== 'object' || !data.name) {
+      showToast('❌ Fichier invalide ou corrompu.'); return;
+    }
+    const ok = confirm(
+      `Importer "${file.name}" ?\n\n` +
+      `Campagne : ${data.name}\n` +
+      `⚠️ Toutes les données actuelles du salon ${currentRoom} seront remplacées.`
+    );
+    if (!ok) return;
+
+    if (localMode) {
+      localStore[currentRoom] = data;
+    } else {
+      await db.ref(`rooms/${currentRoom}`).set(data);
+    }
+    showToast('✅ Session importée !');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Fichier invalide ou erreur lors de l\'import.');
+  }
 }
 
 /* ────────────────────────────────────────────────────────
