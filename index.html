@@ -1107,6 +1107,255 @@
     .recent-code { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; letter-spacing: 0.15em; }
 
     .recent-date { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
+
+    /* ─── Game View (Split Layout) ───────────────────── */
+    #screen-sheet.active { display: flex !important; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    .game-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .game-left {
+      flex: 0 0 420px;
+      overflow-y: auto;
+      padding: 1.1rem 1.1rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .game-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .scene-bg {
+      flex: 1;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--bg-deep);
+      position: relative;
+      min-height: 0;
+    }
+
+    .scene-bg-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-align: center;
+      padding: 1rem;
+      line-height: 1.8;
+    }
+
+    .game-log {
+      height: 200px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 0.55rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      scrollbar-width: thin;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.77rem;
+    }
+    .log-entry:last-child { border-bottom: none; }
+
+    .log-icon { flex-shrink: 0; font-size: 0.95rem; line-height: 1.4; }
+    .log-time { flex-shrink: 0; color: var(--text-muted); font-size: 0.63rem; margin-top: 0.15rem; white-space: nowrap; }
+    .log-text { color: var(--text-primary); line-height: 1.4; flex: 1; }
+    .log-text strong { color: var(--accent-gold); }
+
+    /* ─── Combat Overlay ─────────────────────────────── */
+    .combat-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding: 1rem 0.5rem;
+    }
+    .combat-overlay.hidden { display: none; }
+
+    .combat-panel {
+      width: 100%;
+      max-width: 750px;
+      padding: 0.5rem 0.75rem 1.5rem;
+    }
+
+    .combat-header-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .combat-title {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--danger);
+    }
+
+    .combat-round {
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .turn-track {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.25rem;
+      scrollbar-width: thin;
+    }
+
+    .combatant-token {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      min-width: 72px;
+      max-width: 90px;
+      transition: all 0.22s;
+    }
+    .combatant-token.current-turn {
+      border-color: var(--accent-gold);
+      background: var(--bg-panel);
+      box-shadow: 0 0 20px rgba(201,168,76,0.3);
+      transform: translateY(-4px);
+    }
+
+    .token-icon { font-size: 1.3rem; line-height: 1; }
+    .token-name {
+      font-size: 0.6rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 82px;
+    }
+
+    .combatant-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .combatant-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.9rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.18s;
+    }
+    .combatant-row.current-row {
+      border-color: var(--accent-gold);
+      background: var(--bg-panel);
+    }
+
+    .combatant-row-icon { font-size: 1.1rem; }
+    .combatant-row-name { font-size: 0.88rem; font-weight: 600; flex: 1; }
+    .combatant-row-type { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+
+    /* ─── GM Combat Setup ────────────────────────────── */
+    .gm-combat-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.15rem;
+      margin-top: 1.25rem;
+    }
+
+    .gm-combat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .combat-setup-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .setup-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.38rem 0.6rem;
+      background: var(--bg-panel);
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+    .setup-row-name { flex: 1; }
+    .setup-row-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    .setup-move-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.32rem;
+      font-family: inherit;
+    }
+    .setup-move-btn:hover { color: var(--accent-gold); border-color: var(--accent-dim); }
+    .setup-move-btn:disabled { opacity: 0.3; cursor: default; }
+
+    .setup-del-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      padding: 0.1rem 0.3rem;
+    }
+    .setup-del-btn:hover { color: var(--danger); }
+
+    @media (max-width: 768px) {
+      .game-layout { flex-direction: column; }
+      .game-left { flex: 0 0 auto; max-height: 55vh; border-right: none; border-bottom: 1px solid var(--border); }
+      .game-right { flex: 1; min-height: 220px; }
+      .game-log { height: 160px; }
+    }
   </style>
 </head>
 <body>
@@ -1178,9 +1427,13 @@
   <div class="app-header">
     <button class="back-btn" onclick="goBack('screen-characters')">← Personnages</button>
     <span id="hdr-char-name" style="color:var(--accent-gold);font-size:0.88rem;font-weight:600;"></span>
-    <span id="hdr-code-sheet" class="room-badge">——</span>
+    <div style="display:flex;gap:0.4rem;align-items:center;">
+      <span id="hdr-code-sheet" class="room-badge">——</span>
+      <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;" title="Définir l'image de scène">🎨 Scène</button>
+    </div>
   </div>
-  <div class="container">
+  <div class="game-layout">
+    <div class="game-left">
     <div class="sheet-grid">
 
       <!-- Stats container (3 blocks generated JS-side) -->
@@ -1260,6 +1513,39 @@
         <div id="cons-grid" class="cons-grid"></div>
       </div>
     </div>
+    </div><!-- end .game-left -->
+
+    <!-- Scene + Game Log -->
+    <div class="game-right">
+      <div id="scene-bg" class="scene-bg">
+        <div id="scene-placeholder" class="scene-bg-placeholder">
+          🎭<br><br>Le Maître de Jeu<br>n'a pas encore<br>défini la scène
+        </div>
+      </div>
+      <div id="game-log" class="game-log">
+        <div class="log-entry">
+          <span class="log-time">—</span>
+          <span class="log-text" style="color:var(--text-muted);">En attente d'événements…</span>
+        </div>
+      </div>
+    </div><!-- end .game-right -->
+
+  </div><!-- end .game-layout -->
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     COMBAT OVERLAY
+═════════════════════════════════════════════════════════ -->
+<div id="combat-overlay" class="combat-overlay hidden">
+  <div class="combat-panel">
+    <div class="combat-header-row">
+      <span class="combat-title">⚔ Combat</span>
+      <span id="combat-round" class="combat-round">Round 1</span>
+      <span id="combat-current-name" style="color:var(--accent-gold);font-size:0.88rem;font-weight:600;"></span>
+    </div>
+    <div id="turn-track" class="turn-track"></div>
+    <div id="combatant-list" class="combatant-list"></div>
+    <div id="combat-actions"></div>
   </div>
 </div>
 
@@ -1302,6 +1588,34 @@
         <button class="loom-btn primary" style="flex:none;padding:0.4rem 0.9rem;" onclick="showModal('modal-spell-create')">+ Nouveau sort</button>
       </div>
       <div id="gm-spell-list" class="spell-list"></div>
+    </div>
+
+    <!-- Gestion du combat (MJ) -->
+    <div class="gm-combat-section">
+      <div class="gm-combat-header">
+        <div class="section-label" style="margin:0;border:none;padding:0;">⚔️ Gestion du combat</div>
+        <div style="display:flex;gap:0.45rem;">
+          <button id="btn-start-combat" class="loom-btn primary" style="padding:0.38rem 0.9rem;" onclick="startCombat()">▶ Lancer</button>
+          <button id="btn-end-combat" class="loom-btn" style="padding:0.38rem 0.9rem;border-color:var(--danger);color:var(--danger);display:none;" onclick="endCombat()">✗ Terminer</button>
+        </div>
+      </div>
+
+      <!-- Ajout monstre -->
+      <div style="display:flex;gap:0.45rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="monster-name" placeholder="Nom du monstre"
+               style="flex:1;min-width:110px;padding:0.45rem 0.7rem;font-size:0.82rem;">
+        <input type="color" id="monster-color" value="#e74c3c"
+               style="width:36px;height:34px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;flex-shrink:0;">
+        <input type="number" id="monster-hp" placeholder="PV" min="1"
+               style="width:64px;padding:0.45rem 0.55rem;font-size:0.82rem;">
+        <button class="loom-btn primary" style="padding:0.4rem 0.8rem;flex-shrink:0;" onclick="addMonsterToSetup()">+ Monstre</button>
+      </div>
+
+      <div id="combat-setup-list" class="combat-setup-list">
+        <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:0.3rem 0;">
+          Ajoutez des monstres. Les joueurs sont inclus automatiquement au lancement.
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1482,6 +1796,27 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-theme-import')">Annuler</button>
       <button class="btn btn-primary" onclick="importThemeItems()">Importer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Image de scène (MJ)
+═════════════════════════════════════════════════════════ -->
+<div id="modal-bg" class="overlay hidden">
+  <div class="modal" style="max-width:480px;">
+    <h3>🎨 Image de scène</h3>
+    <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.55;">
+      Cette image sera affichée en fond de l'écran de jeu de tous les joueurs en temps réel.
+    </p>
+    <div class="field-label">URL de l'image</div>
+    <input type="text" id="bg-url-input" placeholder="https://exemple.com/image.jpg">
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.4rem;">
+      Laissez vide pour retirer l'image de scène.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-bg')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveBackground()">Appliquer →</button>
     </div>
   </div>
 </div>
@@ -2235,6 +2570,11 @@ async function sendTrade() {
 
   hideModal('modal-trade');
   showToast(`✅ ${items.length} objet${items.length > 1 ? 's' : ''} envoyé${items.length > 1 ? 's' : ''} !`);
+  const senderName = currentCharData?.name || '?';
+  const itemNames = items.map(it => it.name).join(', ');
+  const targetChar = await dbGet(`rooms/${currentRoom}/characters/${targetId}`);
+  const targetName = targetChar?.name || '?';
+  logEvent('🎒', senderName, `donne ${itemNames} à ${targetName}`);
 }
 
 /* ────────────────────────────────────────────────────────
@@ -2520,6 +2860,9 @@ async function castSpell(spellId, cost) {
   if (localMode) { currentCharData.guilder.charges = charges - cost; }
   const spell = campaignSpells[spellId];
   showToast(`✨ ${spell?.name || 'Sort'} lancé ! (−${cost} charge${cost > 1 ? 's' : ''})`);
+  const charName = currentCharData?.name || '?';
+  const school = spell ? (SCHOOLS[spell.school]?.label || spell.school) : '';
+  logEvent('✨', charName, `lance ${spell?.name || 'un sort'}${school ? ` (${school})` : ''} — −${cost} charge${cost > 1 ? 's' : ''} Loom`);
   renderSpellsModal();
 }
 
@@ -2624,205 +2967,244 @@ function listenSpells() {
 }
 
 /* ────────────────────────────────────────────────────────
-   CHARACTER SHEET
+   GAME LOG
 ──────────────────────────────────────────────────────── */
-function openSheet(charId) {
-  currentCharId = charId;
-  showScreen('screen-sheet');
+function logEvent(icon, actor, message) {
+  if (!currentRoom) return;
+  const entry = { ts: Date.now(), icon, actor, message };
+  if (localMode) { renderGameLog({ [entry.ts]: entry }); return; }
+  db.ref(`rooms/${currentRoom}/gameLog/${entry.ts}`).set(entry);
+}
 
-  const detach = dbListen(`rooms/${currentRoom}/characters/${charId}`, data => {
-    if (!data) return;
-    currentCharData = JSON.parse(JSON.stringify(data));
-    document.getElementById('hdr-char-name').textContent = data.name || '?';
-    renderStats(data.stats, getEquippedBonuses(data.inventory));
-    renderHP(data.hp);
-    renderConsumables(data.consumables || []);
-    renderGuilder(data.guilder);
-    renderInventory(data.inventory);
-    renderGold(data.gold);
+function listenGameLog() {
+  const detach = dbListen(`rooms/${currentRoom}/gameLog`, entries => {
+    renderGameLog(entries || {});
   });
   liveListeners.push(detach);
-  listenSpells();
-  listenItems();
 }
 
-/* ── Stats ── */
-const CATS = ['Physique', 'Social', 'Mental'];
-const MAX_DOTS = 5;
+function renderGameLog(entries) {
+  const el = document.getElementById('game-log');
+  if (!el) return;
+  const sorted = Object.values(entries).sort((a, b) => a.ts - b.ts).slice(-60);
+  if (!sorted.length) {
+    el.innerHTML = '<div class="log-entry"><span class="log-time">—</span><span class="log-text" style="color:var(--text-muted);">En attente d\'événements…</span></div>';
+    return;
+  }
+  el.innerHTML = sorted.map(e => {
+    const time = new Date(e.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return `<div class="log-entry">
+      <span class="log-icon">${e.icon || '✦'}</span>
+      <div style="flex:1;"><span class="log-text"><strong>${e.actor || ''}</strong> ${e.message}</span></div>
+      <span class="log-time">${time}</span>
+    </div>`;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
 
-function renderStats(stats, bonuses) {
-  if (!stats) return;
-  bonuses = bonuses || {};
-  const container = document.getElementById('stats-container');
-  container.innerHTML = '';
-
-  CATS.forEach(cat => {
-    if (!stats[cat]) return;
-    const block = document.createElement('div');
-    block.className = 'stats-block';
-    block.style.marginBottom = '0.85rem';
-
-    let html = `<div class="cat-label">${cat}</div>`;
-    Object.entries(stats[cat]).forEach(([sName, base]) => {
-      const bonus = bonuses[sName] || 0;
-      const total = Math.min(7, base + bonus);
-      // Gold dots for base (up to 5), purple dots for bonus (5-7)
-      const dots = Array.from({ length: MAX_DOTS }, (_, i) =>
-        `<div class="dot ${i < base ? 'on' : ''}"
-              onclick="setStat('${escAttr(cat)}','${escAttr(sName)}',${i + 1})"></div>`
-      ).join('');
-      // Extra bonus dots (shown beyond the 5, up to 2 more)
-      const extraDots = bonus > 0
-        ? Array.from({ length: Math.min(bonus, 2) }, (_, i) =>
-            `<div class="dot" style="background:#a880ff;border-color:#a880ff;cursor:default;"
-                  title="Bonus équipement"></div>`
-          ).join('')
-        : '';
-      const bonusBadge = bonus !== 0
-        ? `<span class="stat-bonus">${bonus > 0 ? '+' : ''}${bonus}</span>`
-        : '';
-      html += `<div class="stat-row">
-        <div class="stat-name">${sName}${bonusBadge}</div>
-        <div class="dots">${dots}${extraDots}</div>
-      </div>`;
-    });
-
-    block.innerHTML = html;
-    container.appendChild(block);
+/* ────────────────────────────────────────────────────────
+   BACKGROUND SCENE
+──────────────────────────────────────────────────────── */
+function listenBackground() {
+  const detach = dbListen(`rooms/${currentRoom}/gameView/backgroundUrl`, url => {
+    applyBackground(url || '');
   });
+  liveListeners.push(detach);
 }
 
-function escAttr(s) { return s.replace(/'/g, "\\'"); }
-
-async function setStat(cat, stat, value) {
-  const current = currentCharData?.stats?.[cat]?.[stat] ?? 0;
-  const newVal = (current === value) ? value - 1 : value;
-  if (!localMode && db) {
-    await db.ref(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`).update({ [stat]: newVal });
+function applyBackground(url) {
+  const bg = document.getElementById('scene-bg');
+  const ph = document.getElementById('scene-placeholder');
+  if (!bg) return;
+  if (url) {
+    bg.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
+    if (ph) ph.style.display = 'none';
   } else {
-    localMerge(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`, { [stat]: newVal });
-    renderStats(localGet(`rooms/${currentRoom}/characters/${currentCharId}/stats`));
-    currentCharData.stats[cat][stat] = newVal;
+    bg.style.backgroundImage = '';
+    if (ph) ph.style.display = '';
   }
 }
 
-/* ── HP ── */
-function renderHP(hp) {
-  if (!hp) return;
-  const pct = hp.max > 0 ? Math.max(0, Math.min(100, (hp.current / hp.max) * 100)) : 0;
-  const fill = document.getElementById('hp-fill');
-  fill.style.width = pct + '%';
-  // Color: green above 50%, yellow 25-50%, red below 25%
-  fill.style.background = pct > 50 ? 'var(--success)' : pct > 25 ? '#c9a84c' : 'var(--danger)';
-  document.getElementById('hp-label').textContent = `${hp.current} / ${hp.max}`;
+async function saveBackground() {
+  const url = document.getElementById('bg-url-input').value.trim();
+  if (!localMode) {
+    await db.ref(`rooms/${currentRoom}/gameView/backgroundUrl`).set(url || null);
+  } else {
+    applyBackground(url);
+  }
+  hideModal('modal-bg');
+  showToast(url ? 'Scene mise a jour !' : 'Scene retiree.');
+  if (url) logEvent('🖼️', 'Le MJ', 'change la scene.');
 }
 
-async function adjustHP(delta) {
-  const hp = currentCharData?.hp;
-  if (!hp) return;
-  const newCur = Math.max(0, Math.min(hp.max, hp.current + delta));
-  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/hp`, { current: newCur });
-  if (localMode) {
-    currentCharData.hp.current = newCur;
-    renderHP(currentCharData.hp);
+/* ────────────────────────────────────────────────────────
+   COMBAT
+──────────────────────────────────────────────────────── */
+let combatSetup = [];
+
+function addMonsterToSetup() {
+  const name  = document.getElementById('monster-name').value.trim();
+  const color = document.getElementById('monster-color').value;
+  const hp    = parseInt(document.getElementById('monster-hp').value) || 10;
+  if (!name) { showToast('Le nom du monstre est obligatoire.'); return; }
+  combatSetup.push({ id: 'monster_' + Date.now(), type: 'monster', name, icon: '👹', color, hp, maxHp: hp });
+  document.getElementById('monster-name').value = '';
+  document.getElementById('monster-hp').value = '';
+  renderCombatSetup();
+}
+
+function renderCombatSetup() {
+  const el = document.getElementById('combat-setup-list');
+  if (!el) return;
+  if (!combatSetup.length) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:0.3rem 0;">Ajoutez des monstres. Les joueurs sont inclus automatiquement au lancement.</div>';
+    return;
+  }
+  el.innerHTML = combatSetup.map((c, i) => `
+    <div class="setup-row">
+      <span class="setup-row-dot" style="background:${c.color}"></span>
+      <span class="setup-row-name">${c.icon} ${c.name} <span style="color:var(--text-muted);font-size:0.7rem;">(PV: ${c.hp})</span></span>
+      <button class="setup-move-btn" onclick="moveCombatant(${i},-1)" ${i===0?'disabled':''}>&#9650;</button>
+      <button class="setup-move-btn" onclick="moveCombatant(${i},1)" ${i===combatSetup.length-1?'disabled':''}>&#9660;</button>
+      <button class="setup-del-btn" onclick="removeCombatant(${i})">&#x2715;</button>
+    </div>`).join('');
+}
+
+function moveCombatant(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= combatSetup.length) return;
+  [combatSetup[i], combatSetup[j]] = [combatSetup[j], combatSetup[i]];
+  renderCombatSetup();
+}
+
+function removeCombatant(i) {
+  combatSetup.splice(i, 1);
+  renderCombatSetup();
+}
+
+async function startCombat() {
+  let chars = {};
+  if (!localMode) {
+    const snap = await db.ref(`rooms/${currentRoom}/characters`).once('value');
+    chars = snap.val() || {};
+  }
+  const players = Object.entries(chars).map(([id, c]) => ({
+    id, type: 'player', name: c.name || '?', icon: c.icon || '🎭',
+    color: '', hp: c.hp && c.hp.current != null ? c.hp.current : 0,
+    maxHp: c.hp && c.hp.max ? c.hp.max : 0
+  }));
+  const monsters = combatSetup.map(m => Object.assign({}, m));
+  const combatants = [...players, ...monsters];
+  if (!combatants.length) { showToast('Aucun combattant !'); return; }
+
+  const state = { active: true, round: 1, currentTurnIdx: 0, combatants };
+  if (!localMode) {
+    await db.ref(`rooms/${currentRoom}/combat`).set(state);
+  } else {
+    renderCombat(state);
+    document.getElementById('combat-overlay').classList.remove('hidden');
+  }
+  const sb = document.getElementById('btn-start-combat');
+  const eb = document.getElementById('btn-end-combat');
+  if (sb) sb.style.display = 'none';
+  if (eb) eb.style.display = '';
+  logEvent('⚔️', 'Le MJ', 'lance le combat !');
+  showToast('⚔️ Combat lance !');
+}
+
+async function endCombat() {
+  if (!confirm('Terminer le combat ?')) return;
+  if (!localMode) {
+    await db.ref(`rooms/${currentRoom}/combat`).set({ active: false });
+  } else {
+    document.getElementById('combat-overlay').classList.add('hidden');
+  }
+  const sb = document.getElementById('btn-start-combat');
+  const eb = document.getElementById('btn-end-combat');
+  if (sb) sb.style.display = '';
+  if (eb) eb.style.display = 'none';
+  combatSetup = [];
+  renderCombatSetup();
+  logEvent('✅', 'Le MJ', 'met fin au combat.');
+  showToast('Combat termine.');
+}
+
+async function endTurn() {
+  if (!currentRoom) return;
+  if (!localMode) {
+    const snap = await db.ref(`rooms/${currentRoom}/combat`).once('value');
+    const state = snap.val();
+    if (!state || !state.active) return;
+    let nextIdx = state.currentTurnIdx + 1;
+    let nextRound = state.round;
+    if (nextIdx >= state.combatants.length) {
+      nextIdx = 0;
+      nextRound++;
+      logEvent('🔄', 'Combat', 'Round ' + nextRound + ' commence !');
+    }
+    await db.ref(`rooms/${currentRoom}/combat`).update({ currentTurnIdx: nextIdx, round: nextRound });
   }
 }
 
-/* ── Consumables ── */
-function renderConsumables(cons) {
-  const grid = document.getElementById('cons-grid');
-  grid.innerHTML = '';
-
-  (cons || []).forEach((item, idx) => {
-    const avail = item.currentUses ?? item.maxUses;
-    const depleted = avail <= 0;
-    const dotsHtml = Array.from({ length: Math.min(item.maxUses, 12) }, (_, i) =>
-      `<div class="use-dot ${i < avail ? 'avail' : 'spent'}"></div>`
-    ).join('');
-
-    const div = document.createElement('div');
-    div.className = 'cons-item' + (depleted ? ' depleted' : '');
-    div.innerHTML = `
-      <div class="cons-top">
-        <div class="cons-icon">${item.icon || '✦'}</div>
-        <div class="cons-info">
-          <div class="cons-name">${item.name}</div>
-          <div class="cons-cat">${item.category || ''}</div>
-        </div>
-      </div>
-      <div class="cons-uses">
-        <div class="use-dots">${dotsHtml}</div>
-        <div class="uses-num">${avail}/${item.maxUses}</div>
-      </div>
-      <div class="cons-actions">
-        <button class="use-btn" ${depleted ? 'disabled' : ''} onclick="useConsumable(${idx})">
-          Utiliser
-        </button>
-        <button class="mini-btn" title="Restaurer 1 usage" onclick="restoreConsumable(${idx})">↺</button>
-        <button class="mini-btn del" title="Supprimer" onclick="removeConsumable(${idx})">✕</button>
-      </div>`;
-    grid.appendChild(div);
+function listenCombat() {
+  const detach = dbListen(`rooms/${currentRoom}/combat`, state => {
+    const overlay = document.getElementById('combat-overlay');
+    if (state && state.active) {
+      overlay.classList.remove('hidden');
+      renderCombat(state);
+    } else {
+      overlay.classList.add('hidden');
+    }
   });
-
-  // Add button
-  const add = document.createElement('div');
-  add.className = 'cons-add';
-  add.innerHTML = '<span style="font-size:1rem;">+</span> Ajouter';
-  add.onclick = () => showModal('modal-cons');
-  grid.appendChild(add);
+  liveListeners.push(detach);
 }
 
-function getConsumablesCopy() {
-  return JSON.parse(JSON.stringify(currentCharData?.consumables || []));
-}
+function renderCombat(state) {
+  if (!state || !state.active) return;
+  const combatants = state.combatants || [];
+  const idx = state.currentTurnIdx || 0;
+  const current = combatants[idx];
 
-async function saveConsumables(cons) {
-  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { consumables: cons });
-  if (localMode) { currentCharData.consumables = cons; renderConsumables(cons); }
-}
+  document.getElementById('combat-round').textContent = 'Round ' + (state.round || 1);
+  document.getElementById('combat-current-name').textContent = current ? '→ ' + current.name : '';
 
-async function useConsumable(idx) {
-  const cons = getConsumablesCopy();
-  if (!cons[idx] || (cons[idx].currentUses ?? cons[idx].maxUses) <= 0) return;
-  const avail = cons[idx].currentUses ?? cons[idx].maxUses;
-  cons[idx].currentUses = avail - 1;
-  await saveConsumables(cons);
-}
+  const track = document.getElementById('turn-track');
+  track.innerHTML = combatants.map((c, i) => {
+    const active = i === idx;
+    const col = c.type === 'monster' ? c.color : 'var(--accent-gold)';
+    return '<div class="combatant-token ' + (active ? 'current-turn' : '') + '">' +
+      '<span class="token-icon">' + (c.icon || (c.type === 'monster' ? '👹' : '🎭')) + '</span>' +
+      '<span class="token-name" style="color:' + col + '">' + c.name + '</span></div>';
+  }).join('');
+  const tokens = track.querySelectorAll('.combatant-token');
+  if (tokens[idx]) tokens[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 
-async function restoreConsumable(idx) {
-  const cons = getConsumablesCopy();
-  if (!cons[idx]) return;
-  const avail = cons[idx].currentUses ?? cons[idx].maxUses;
-  cons[idx].currentUses = Math.min(cons[idx].maxUses, avail + 1);
-  await saveConsumables(cons);
-}
+  const list = document.getElementById('combatant-list');
+  list.innerHTML = combatants.map((c, i) => {
+    const active = i === idx;
+    const col    = c.type === 'monster' ? c.color : 'var(--accent-gold)';
+    const hpInfo = c.type === 'player'
+      ? '<span style="color:var(--text-secondary);font-size:0.75rem;">' + (c.hp != null ? c.hp : '?') + ' / ' + c.maxHp + ' PV</span>'
+      : '';
+    return '<div class="combatant-row ' + (active ? 'current-row' : '') + '">' +
+      '<span class="combatant-row-icon">' + (c.icon || (c.type === 'monster' ? '👹' : '🎭')) + '</span>' +
+      '<span class="combatant-row-name" style="color:' + col + '">' + c.name + '</span>' +
+      hpInfo +
+      '<span class="combatant-row-type">' + (c.type === 'monster' ? 'Monstre' : 'Joueur') + '</span></div>';
+  }).join('');
 
-async function removeConsumable(idx) {
-  const cons = getConsumablesCopy();
-  cons.splice(idx, 1);
-  await saveConsumables(cons);
-}
-
-async function addConsumable() {
-  const name   = document.getElementById('m-cons-name').value.trim();
-  const cat    = document.getElementById('m-cons-cat').value;
-  const icon   = document.getElementById('m-cons-icon').value.trim() || '✦';
-  const max    = parseInt(document.getElementById('m-cons-max').value) || 1;
-  if (!name) { showToast('Le nom est obligatoire.'); return; }
-
-  const cons = getConsumablesCopy();
-  cons.push({ name, category: cat, icon, maxUses: max, currentUses: max });
-  await saveConsumables(cons);
-  hideModal('modal-cons');
-  ['m-cons-name','m-cons-icon'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('m-cons-max').value = '3';
-  showToast('Consommable ajouté !');
-}
-
-async function resetSession() {
-  const cons = getConsumablesCopy().map(c => ({ ...c, currentUses: c.maxUses }));
-  await saveConsumables(cons);
-  showToast('↺ Session réinitialisée — consommables restaurés.');
+  const isMyTurn = current && current.type === 'player' && current.id === currentCharId;
+  const isGMUser = lsIsGM(currentRoom);
+  let btns = '';
+  if (isMyTurn || isGMUser) {
+    btns += '<button class="loom-btn primary" style="flex:none;padding:0.45rem 1.1rem;" onclick="endTurn()">Fin de tour &#9193;</button>';
+  }
+  if (!isMyTurn && !isGMUser && current) {
+    const col = current.type === 'monster' ? current.color : 'var(--accent-gold)';
+    btns += '<span style="color:var(--text-muted);font-size:0.82rem;">Tour de <strong style="color:' + col + '">' + current.name + '</strong>…</span>';
+  }
+  document.getElementById('combat-actions').innerHTML =
+    '<div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">' + btns + '</div>';
 }
 
 /* ────────────────────────────────────────────────────────
@@ -2836,6 +3218,16 @@ function showGMView() {
   liveListeners.push(detach);
   listenSpells();
   listenItems();
+  renderCombatSetup();
+  if (!localMode) {
+    db.ref(`rooms/${currentRoom}/combat/active`).once('value', snap => {
+      const active = snap.val();
+      const sb = document.getElementById('btn-start-combat');
+      const eb = document.getElementById('btn-end-combat');
+      if (sb) sb.style.display = active ? 'none' : '';
+      if (eb) eb.style.display = active ? '' : 'none';
+    });
+  }
 }
 
 function renderGMView(chars) {
@@ -2858,36 +3250,232 @@ function renderGMView(chars) {
 
     const consRows = cons.length
       ? cons.map(c => {
-          const avail = c.currentUses ?? c.maxUses;
+          const avail = c.currentUses != null ? c.currentUses : c.maxUses;
           const color = avail > 0 ? 'var(--accent-gold)' : 'var(--danger)';
-          return `<div class="gm-cons-row">
-            <span>${c.icon || '✦'} ${c.name}</span>
-            <span class="gm-cons-val" style="color:${color};">${avail}/${c.maxUses}</span>
-          </div>`;
+          return '<div class="gm-cons-row"><span>' + (c.icon || '✶') + ' ' + c.name + '</span>' +
+            '<span class="gm-cons-val" style="color:' + color + ';">' + avail + '/' + c.maxUses + '</span></div>';
         }).join('')
       : '<div class="empty-state">Aucun consommable</div>';
 
-    card.innerHTML = `
-      <div class="gm-card-head">
-        <div class="gm-avatar">${char.icon || '🎭'}</div>
-        <div>
-          <div class="gm-name">${char.name || '?'}</div>
-          <div class="gm-player">${char.player || ''}</div>
-        </div>
-      </div>
-      <div style="margin-bottom:0.85rem;">
-        <div class="gm-micro-label">PV — ${hp.current} / ${hp.max}</div>
-        <div class="hp-track" style="height:8px;">
-          <div class="hp-fill" style="width:${pct}%;background:${hpColor};"></div>
-        </div>
-      </div>
-      <div>
-        <div class="gm-micro-label" style="margin-bottom:0.45rem;">Consommables</div>
-        ${consRows}
-      </div>`;
+    card.innerHTML =
+      '<div class="gm-card-head">' +
+        '<div class="gm-avatar">' + (char.icon || '🎭') + '</div>' +
+        '<div><div class="gm-name">' + (char.name || '?') + '</div>' +
+        '<div class="gm-player">' + (char.player || '') + '</div></div>' +
+      '</div>' +
+      '<div style="margin-bottom:0.85rem;">' +
+        '<div class="gm-micro-label">PV — ' + hp.current + ' / ' + hp.max + '</div>' +
+        '<div class="hp-track" style="height:8px;"><div class="hp-fill" style="width:' + pct + '%;background:' + hpColor + ';"></div></div>' +
+      '</div>' +
+      '<div><div class="gm-micro-label" style="margin-bottom:0.45rem;">Consommables</div>' + consRows + '</div>';
     grid.appendChild(card);
   });
 }
+
+/* ────────────────────────────────────────────────────────
+   CHARACTER SHEET
+──────────────────────────────────────────────────────── */
+function openSheet(charId) {
+  currentCharId = charId;
+  showScreen('screen-sheet');
+
+  const btnScene = document.getElementById('btn-scene');
+  if (btnScene) btnScene.style.display = lsIsGM(currentRoom) ? '' : 'none';
+
+  const detach = dbListen(`rooms/${currentRoom}/characters/${charId}`, data => {
+    if (!data) return;
+    currentCharData = JSON.parse(JSON.stringify(data));
+    document.getElementById('hdr-char-name').textContent = data.name || '?';
+    renderStats(data.stats, getEquippedBonuses(data.inventory));
+    renderHP(data.hp);
+    renderConsumables(data.consumables || []);
+    renderGuilder(data.guilder);
+    renderInventory(data.inventory);
+    renderGold(data.gold);
+  });
+  liveListeners.push(detach);
+  listenSpells();
+  listenItems();
+  listenGameLog();
+  listenBackground();
+  listenCombat();
+}
+
+/* ── Stats ── */
+const CATS = ['Physique', 'Social', 'Mental'];
+const MAX_DOTS = 5;
+
+function renderStats(stats, bonuses) {
+  if (!stats) return;
+  bonuses = bonuses || {};
+  const container = document.getElementById('stats-container');
+  container.innerHTML = '';
+
+  CATS.forEach(cat => {
+    if (!stats[cat]) return;
+    const block = document.createElement('div');
+    block.className = 'stats-block';
+    block.style.marginBottom = '0.85rem';
+
+    let html = '<div class="cat-label">' + cat + '</div>';
+    Object.entries(stats[cat]).forEach(([sName, base]) => {
+      const bonus = bonuses[sName] || 0;
+      const dots = Array.from({ length: MAX_DOTS }, (_, i) =>
+        '<div class="dot ' + (i < base ? 'on' : '') + '" onclick="setStat(\'' + escAttr(cat) + '\',\'' + escAttr(sName) + '\',' + (i + 1) + ')"></div>'
+      ).join('');
+      const extraDots = bonus > 0
+        ? Array.from({ length: Math.min(bonus, 2) }, () =>
+            '<div class="dot" style="background:#a880ff;border-color:#a880ff;cursor:default;" title="Bonus équipement"></div>'
+          ).join('')
+        : '';
+      const badge = bonus > 0 ? '<span style="font-size:0.6rem;color:#a880ff;margin-left:4px;">+' + bonus + '</span>' : '';
+      html += '<div class="stat-row"><span class="stat-name">' + sName + '</span><div class="dots">' + dots + extraDots + '</div>' + badge + '</div>';
+    });
+    block.innerHTML = html;
+    container.appendChild(block);
+  });
+}
+
+function escAttr(s) { return s.replace(/'/g, "\\'"); }
+
+async function setStat(cat, stat, value) {
+  const current = currentCharData && currentCharData.stats && currentCharData.stats[cat] ? currentCharData.stats[cat][stat] : 0;
+  const newVal = (current === value) ? Math.max(0, value - 1) : value;
+  if (!localMode && db) {
+    await db.ref(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`).update({ [stat]: newVal });
+  } else {
+    localMerge(`rooms/${currentRoom}/characters/${currentCharId}/stats/${cat}`, { [stat]: newVal });
+    renderStats(localGet(`rooms/${currentRoom}/characters/${currentCharId}/stats`));
+    currentCharData.stats[cat][stat] = newVal;
+  }
+}
+
+/* ── HP ── */
+function renderHP(hp) {
+  if (!hp) return;
+  const pct = hp.max > 0 ? Math.max(0, Math.min(100, (hp.current / hp.max) * 100)) : 0;
+  const fill = document.getElementById('hp-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = pct > 50 ? 'var(--success)' : pct > 25 ? '#c9a84c' : 'var(--danger)';
+  document.getElementById('hp-label').textContent = hp.current + ' / ' + hp.max;
+}
+
+async function adjustHP(delta) {
+  const hp = currentCharData && currentCharData.hp ? currentCharData.hp : null;
+  if (!hp) return;
+  const charName = currentCharData.name || '?';
+  const newCur = Math.max(0, Math.min(hp.max, hp.current + delta));
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/hp`, { current: newCur });
+  if (localMode) { currentCharData.hp.current = newCur; renderHP(currentCharData.hp); }
+  if (delta !== 0) {
+    const sign = delta > 0 ? '+' + delta : '' + delta;
+    const icon = delta > 0 ? '💚' : '🩸';
+    logEvent(icon, charName, (delta > 0 ? 'gagne' : 'perd') + ' ' + Math.abs(delta) + ' PV (' + sign + ')');
+  }
+}
+
+/* ── Consumables ── */
+function getConsumablesCopy() {
+  return JSON.parse(JSON.stringify(currentCharData && currentCharData.consumables ? currentCharData.consumables : []));
+}
+
+async function saveConsumables(cons) {
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { consumables: cons });
+  if (localMode) { currentCharData.consumables = cons; renderConsumables(cons); }
+}
+
+async function useConsumable(idx) {
+  const cons = getConsumablesCopy();
+  if (!cons[idx] || (cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses) <= 0) return;
+  const avail = cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses;
+  cons[idx].currentUses = avail - 1;
+  await saveConsumables(cons);
+  const c = cons[idx];
+  const name = currentCharData && currentCharData.name ? currentCharData.name : '?';
+  logEvent(c.icon || '✶', name, 'utilise ' + c.name + ' (' + (avail - 1) + '/' + c.maxUses + ' restants)');
+}
+
+async function restoreConsumable(idx) {
+  const cons = getConsumablesCopy();
+  if (!cons[idx]) return;
+  const avail = cons[idx].currentUses != null ? cons[idx].currentUses : cons[idx].maxUses;
+  cons[idx].currentUses = Math.min(cons[idx].maxUses, avail + 1);
+  await saveConsumables(cons);
+}
+
+async function removeConsumable(idx) {
+  const cons = getConsumablesCopy();
+  cons.splice(idx, 1);
+  await saveConsumables(cons);
+}
+
+async function addConsumable() {
+  const name   = document.getElementById('m-cons-name').value.trim();
+  const cat    = document.getElementById('m-cons-cat').value;
+  const icon   = document.getElementById('m-cons-icon').value.trim() || '✶';
+  const max    = parseInt(document.getElementById('m-cons-max').value) || 1;
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  const cons = getConsumablesCopy();
+  cons.push({ name, category: cat, icon, maxUses: max, currentUses: max });
+  await saveConsumables(cons);
+  hideModal('modal-cons');
+  ['m-cons-name','m-cons-icon'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('m-cons-max').value = '3';
+  showToast('Consommable ajouté !');
+}
+
+async function resetSession() {
+  const cons = getConsumablesCopy().map(c => Object.assign({}, c, { currentUses: c.maxUses }));
+  await saveConsumables(cons);
+  showToast('↺ Session réinitialisée — consommables restaurés.');
+}
+
+function renderConsumables(cons) {
+  const grid = document.getElementById('cons-grid');
+  if (!grid) return;
+  if (!cons || !cons.length) {
+    grid.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun consommable. Cliquez sur + pour en ajouter.</div>';
+    return;
+  }
+  grid.innerHTML = cons.map((c, idx) => {
+    const avail    = c.currentUses != null ? c.currentUses : c.maxUses;
+    const depleted = avail <= 0;
+    const pct      = c.maxUses > 0 ? (avail / c.maxUses) * 100 : 0;
+    const barColor = pct > 50 ? 'var(--success)' : pct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
+    return '<div class="cons-card">' +
+      '<div class="cons-top">' +
+        '<span class="cons-icon">' + (c.icon || '✶') + '</span>' +
+        '<div class="cons-info">' +
+          '<div class="cons-name">' + c.name + '</div>' +
+          '<div class="cons-cat">' + (c.category || '') + '</div>' +
+        '</div>' +
+        '<div class="cons-count" style="color:' + (depleted ? 'var(--danger)' : 'var(--text-primary)') + '">' + avail + '<span style="color:var(--text-muted);font-size:0.7em;">/' + c.maxUses + '</span></div>' +
+      '</div>' +
+      '<div class="hp-track" style="height:4px;margin:0.45rem 0;">' +
+        '<div class="hp-fill" style="width:' + pct + '%;background:' + barColor + ';transition:width 0.3s;"></div>' +
+      '</div>' +
+      '<div class="cons-actions">' +
+        '<button class="use-btn" ' + (depleted ? 'disabled' : '') + ' onclick="useConsumable(' + idx + ')">Utiliser</button>' +
+        '<button class="restore-btn" onclick="restoreConsumable(' + idx + ')">↺</button>' +
+        '<button class="remove-btn" onclick="removeConsumable(' + idx + ')">×</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  // Add button
+  grid.innerHTML += '<div class="cons-card cons-card-add" onclick="showModal(\'modal-cons\')" style="display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:60px;"><span style="font-size:1.4rem;color:var(--text-muted);">+</span></div>';
+}
+
+/* ────────────────────────────────────────────────────────
+   MODALS
+──────────────────────────────────────────────────────── */
+function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
+ 'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import','modal-bg'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', e => { if (e.target.id === id) hideModal(id); });
+});
 
 /* ────────────────────────────────────────────────────────
    EXPORT / IMPORT SESSION
@@ -2902,14 +3490,13 @@ async function exportSession() {
       data = snap.val();
     }
     if (!data) { showToast('Aucune donnée à exporter.'); return; }
-
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
     const date = new Date().toISOString().slice(0, 10);
-    a.download = `chroniques-${currentRoom}-${date}.json`;
+    a.download = 'chroniques-' + currentRoom + '-' + date + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2933,13 +3520,8 @@ async function importSession(file) {
     if (!data || typeof data !== 'object' || !data.name) {
       showToast('❌ Fichier invalide ou corrompu.'); return;
     }
-    const ok = confirm(
-      `Importer "${file.name}" ?\n\n` +
-      `Campagne : ${data.name}\n` +
-      `⚠️ Toutes les données actuelles du salon ${currentRoom} seront remplacées.`
-    );
+    const ok = confirm('Importer "' + file.name + '" ?\n\nCampagne : ' + data.name + '\n⚠️ Toutes les données actuelles du salon ' + currentRoom + ' seront remplacées.');
     if (!ok) return;
-
     if (localMode) {
       localStore[currentRoom] = data;
     } else {
@@ -2951,18 +3533,6 @@ async function importSession(file) {
     showToast('❌ Fichier invalide ou erreur lors de l\'import.');
   }
 }
-
-/* ────────────────────────────────────────────────────────
-   MODALS
-──────────────────────────────────────────────────────── */
-function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
-function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
- 'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('click', e => { if (e.target.id === id) hideModal(id); });
-});
 
 /* ────────────────────────────────────────────────────────
    TOAST
