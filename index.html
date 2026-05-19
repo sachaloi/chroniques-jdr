@@ -1109,7 +1109,7 @@
     .recent-date { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
 
     /* ─── Game View (Split Layout) ───────────────────── */
-    #screen-sheet.active { display: flex !important; flex-direction: column; height: 100vh; overflow: hidden; }
+    #screen-sheet.active { display: block !important; height: 100vh; overflow: hidden; position: relative; }
 
     .game-layout {
       display: flex;
@@ -1356,6 +1356,284 @@
       .game-right { flex: 1; min-height: 220px; }
       .game-log { height: 160px; }
     }
+
+    /* ─── Full-screen Game View ─────────────────────── */
+    .scene-bg-full {
+      position: absolute; inset: 0; z-index: 0;
+      background-size: cover; background-position: center;
+      background-color: var(--bg-deep);
+    }
+    .game-log-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      max-height: 200px; overflow-y: auto;
+      background: rgba(13,13,26,0.88);
+      border-top: 1px solid var(--border);
+      padding: 0.55rem 0.8rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+      scrollbar-width: thin; z-index: 10;
+      backdrop-filter: blur(4px);
+    }
+    .game-topbar {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      padding: 0.48rem 0.8rem;
+      background: rgba(13,13,26,0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      backdrop-filter: blur(6px);
+    }
+    .game-back-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-secondary); border-radius: 7px;
+      padding: 0.27rem 0.65rem; font-size: 0.74rem;
+      cursor: pointer; font-family: inherit; transition: all 0.18s; flex-shrink: 0;
+    }
+    .game-back-btn:hover { color: var(--text-primary); border-color: var(--accent-dim); }
+    .game-char-name {
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--text-primary); flex: 1; text-align: center;
+    }
+    /* Sheet Drawer */
+    .sheet-drawer {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: min(440px, 100vw);
+      background: var(--bg-card); border-left: 1px solid var(--border);
+      z-index: 30; overflow-y: auto;
+      transform: translateX(0); transition: transform 0.28s ease;
+      scrollbar-width: thin;
+    }
+    .sheet-drawer.sheet-hidden { transform: translateX(100%); }
+    .sheet-drawer-inner { padding: 1rem 1.1rem; }
+    .sheet-drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.85rem; padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-gold);
+    }
+    .sheet-close-btn {
+      background: none; border: none; color: var(--text-secondary);
+      cursor: pointer; font-size: 1rem; font-family: inherit;
+    }
+    .sheet-close-btn:hover { color: var(--text-primary); }
+    .sheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+    @media (max-width: 600px) {
+      .sheet-grid { grid-template-columns: 1fr; }
+      .sheet-drawer { width: 100vw; }
+    }
+    /* Player Combat HUD */
+    .player-combat-hud {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 15;
+      padding: 0.6rem 0.9rem;
+      background: rgba(13,13,26,0.93); border-top: 2px solid var(--danger);
+      backdrop-filter: blur(6px);
+    }
+    .player-combat-hud.hud-hidden { display: none; }
+    .hud-hp-row { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.5rem; }
+    .hud-hp-track { flex: 1; height: 10px; border-radius: 5px; background: var(--bg-panel); overflow: hidden; }
+    .hud-hp-label { font-size: 0.78rem; font-weight: 700; color: var(--text-primary); flex-shrink: 0; }
+    .hud-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .hud-consumables { display: flex; gap: 0.35rem; flex-wrap: wrap; flex: 1; }
+    .hud-cons-btn {
+      padding: 0.25rem 0.55rem; font-size: 0.68rem;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-secondary);
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .hud-cons-btn:hover:not(:disabled) { border-color: var(--accent-dim); color: var(--text-primary); }
+    .hud-cons-btn:disabled { opacity: 0.35; cursor: default; }
+    .hud-loom { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-secondary); }
+    .hud-charges { font-weight: 700; color: var(--accent-gold); font-size: 0.9rem; }
+    /* GM Library Nav */
+    .gm-lib-nav { display: flex; gap: 0.4rem; margin-bottom: 1.1rem; flex-wrap: wrap; }
+    .gm-lib-btn {
+      padding: 0.4rem 0.9rem; font-size: 0.76rem; font-weight: 600;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text-secondary);
+      cursor: pointer; font-family: inherit; transition: all 0.18s;
+    }
+    .gm-lib-btn:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+    .gm-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.15rem; }
+    .gm-section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.85rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    /* GM Combat Cards */
+    .gm-combat-cards {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.6rem;
+    }
+    .gm-combat-card {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 0.85rem;
+    }
+    .gm-combat-card.is-player { border-left: 3px solid var(--accent-gold); cursor: pointer; transition: all 0.18s; }
+    .gm-combat-card.is-player:hover { transform: translateY(-1px); background: var(--bg-deep); }
+    .gm-combat-card.current-combatant { box-shadow: 0 0 14px rgba(201,168,76,0.28); }
+    .gm-combat-card-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .gm-combat-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .gm-combat-name { font-size: 0.83rem; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gm-combat-type { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .gm-hp-edit-row { display: flex; align-items: center; gap: 0.32rem; margin-top: 0.45rem; }
+    .gm-hp-edit-row button {
+      width: 22px; height: 22px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--bg-deep);
+      color: var(--text-secondary); cursor: pointer; font-size: 0.75rem;
+      font-family: inherit; flex-shrink: 0; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gm-hp-edit-row button:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
+    .gm-hp-label { font-size: 0.7rem; color: var(--text-secondary); flex-shrink: 0; min-width: 42px; text-align: right; }
+    /* GM Character Full-sheet Modal */
+    .gm-char-modal {
+      position: fixed; inset: 0; z-index: 300; display: flex; background: rgba(0,0,0,0.72);
+    }
+    .gm-char-modal.hidden { display: none; }
+    .gm-char-modal-inner {
+      width: min(490px, 96vw); max-height: 100vh; overflow-y: auto;
+      background: var(--bg-card); border-right: 1px solid var(--border);
+      padding: 1.2rem 1.15rem; scrollbar-width: thin;
+    }
+    /* Monster & NPC library cards */
+    .monster-lib-card, .npc-lib-card {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 0.9rem; margin-bottom: 0.5rem;
+    }
+    .monster-lib-card-head, .npc-lib-card-head {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;
+    }
+    .monster-lib-icon, .npc-lib-icon { font-size: 1.25rem; flex-shrink: 0; }
+    .monster-lib-name, .npc-lib-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
+    .monster-lib-meta, .npc-lib-meta { font-size: 0.62rem; color: var(--text-muted); }
+    .monster-lib-desc, .npc-lib-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; margin: 0.3rem 0; }
+    .monster-lib-actions, .npc-lib-actions { display: flex; gap: 0.35rem; margin-top: 0.45rem; flex-wrap: wrap; }
+    .npc-attitude-badge {
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.14rem 0.42rem; border-radius: 4px; font-weight: 700; flex-shrink: 0;
+    }
+    .npc-attitude-badge.ami     { background: rgba(74,154,106,0.2);  color: var(--success); }
+    .npc-attitude-badge.neutre  { background: rgba(201,168,76,0.15); color: var(--accent-gold); }
+    .npc-attitude-badge.hostile { background: rgba(201,74,74,0.2);   color: var(--danger); }
+
+    /* ─── Axes (remplace les stats classiques) ─────── */
+    .axes-block {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 0.85rem;
+    }
+    .axes-title {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.2em;
+      color: var(--text-muted); margin-bottom: 0.85rem;
+    }
+    .axis-row {
+      display: grid; grid-template-columns: 72px 1fr 72px;
+      align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+    }
+    .axis-row:last-child { margin-bottom: 0; }
+    .axis-label-low  { font-size: 0.63rem; text-align: right; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; transition: color 0.2s; }
+    .axis-label-high { font-size: 0.63rem; text-align: left;  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; transition: color 0.2s; }
+    .axis-label-low.dominant, .axis-label-high.dominant { color: var(--accent-gold); font-weight: 700; }
+    .axis-center { display: flex; flex-direction: column; align-items: center; gap: 0.22rem; }
+    .axis-key-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+    .axis-scale { display: flex; gap: 5px; align-items: center; }
+    .axis-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--border); background: var(--bg-deep);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .axis-dot.on { background: var(--dot-on); border-color: var(--accent-gold); }
+    .axis-dot:hover { border-color: var(--accent-dim); transform: scale(1.12); }
+    .axis-hint {
+      font-size: 0.58rem; color: var(--text-muted); text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    }
+
+    /* ─── Conditions ─────────────────────────────────── */
+    .conditions-outer { margin-bottom: 0.85rem; }
+    .conditions-panels { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; }
+    @media (max-width: 480px) { .conditions-panels { grid-template-columns: 1fr; } }
+    .cond-panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.7rem 0.8rem;
+    }
+    .cond-panel-hdr {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;
+    }
+    .cond-panel-title { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
+    .cond-panel-add {
+      width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--border);
+      background: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem;
+      font-family: inherit; display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    }
+    .cond-panel-add:hover:not(.danger-btn) { border-color: var(--accent-dim); color: var(--accent-gold); }
+    .cond-panel-add.danger-btn { border-color: var(--danger); color: var(--danger); animation: pulse-danger 1s infinite; }
+    .cond-slots { display: flex; flex-direction: column; gap: 0.28rem; }
+    .cond-tag {
+      display: flex; align-items: center; gap: 0.32rem;
+      padding: 0.28rem 0.45rem; background: var(--bg-panel);
+      border-radius: 6px; font-size: 0.73rem; border: 1px solid var(--border);
+    }
+    .cond-tag-icon { font-size: 0.82rem; flex-shrink: 0; }
+    .cond-tag-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cond-tag-remove {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 0.62rem; padding: 0; font-family: inherit; flex-shrink: 0;
+    }
+    .cond-tag-remove:hover { color: var(--danger); }
+    .cond-empty-slot {
+      height: 28px; border: 1px dashed var(--border);
+      border-radius: 6px; opacity: 0.28;
+    }
+    .cond-rupture-warn {
+      font-size: 0.58rem; color: var(--danger); text-align: center;
+      margin-top: 0.28rem; text-transform: uppercase; letter-spacing: 0.1em;
+      font-weight: 700; animation: pulse-danger 1.2s infinite;
+    }
+    @keyframes pulse-danger { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ─── Rupture overlay ────────────────────────────── */
+    .rupture-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: #000; display: flex; align-items: center;
+      justify-content: center; flex-direction: column;
+      text-align: center; padding: 2rem;
+    }
+    .rupture-overlay.hidden { display: none; }
+    .rupture-inner { max-width: 540px; }
+    .rupture-category {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.4em;
+      margin-bottom: 1.2rem; animation: glitch-label 0.18s infinite;
+    }
+    .rupture-title {
+      font-size: clamp(2.5rem, 10vw, 5rem); font-weight: 900; letter-spacing: 0.25em;
+      color: #fff; margin-bottom: 0.5rem;
+      text-shadow: 3px 3px 0 rgba(255,0,0,0.5), -3px -3px 0 rgba(0,0,255,0.4),
+                   0 0 40px rgba(201,74,74,0.7);
+      animation: rupture-shake 0.09s infinite;
+    }
+    .rupture-charname { font-size: 1.15rem; color: var(--accent-gold); margin-bottom: 0.65rem; font-weight: 600; }
+    .rupture-desc { font-size: 0.83rem; color: #888; line-height: 1.7; font-style: italic; }
+    @keyframes rupture-shake { 0%,100%{transform:translateX(0)} 33%{transform:translateX(-3px) skewX(-1.5deg)} 66%{transform:translateX(3px) skewX(1.5deg)} }
+    @keyframes glitch-label  { 0%,100%{text-shadow:none} 50%{text-shadow:1px 0 #f00,-1px 0 #0ff} }
+
+    /* ─── HUD Conditions row ─────────────────────────── */
+    .hud-conditions-row { display: flex; gap: 0.75rem; margin-bottom: 0.45rem; flex-wrap: wrap; }
+    .hud-cond-group { display: flex; align-items: center; gap: 0.28rem; }
+    .hud-cond-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--border); }
+    .hud-cond-dot.filled { border-color: var(--danger); background: var(--danger); }
+
+    /* ─── Loom Source Cards ──────────────────────────── */
+    .loom-source-card {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.5rem;
+    }
+    .loom-source-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+    .loom-source-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
+    .loom-source-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.65; font-style: italic; margin-bottom: 0.45rem; }
+    .loom-source-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    /* ─── Spell card — ambiance ──────────────────────── */
+    .spell-ambiance {
+      font-size: 0.73rem; color: var(--text-muted); font-style: italic;
+      line-height: 1.55; margin-bottom: 0.35rem;
+      border-left: 2px solid var(--accent-dim); padding-left: 0.55rem;
+    }
+
   </style>
 </head>
 <body>
@@ -1423,57 +1701,53 @@
 <!-- ══════════════════════════════════════════════════════
      CHARACTER SHEET
 ═════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════
+     GAME VIEW (joueur)
+════════════════════════════════════════════════════════ -->
 <div id="screen-sheet" class="screen">
-  <div class="app-header">
-    <button class="back-btn" onclick="goBack('screen-characters')">← Personnages</button>
-    <span id="hdr-char-name" style="color:var(--accent-gold);font-size:0.88rem;font-weight:600;"></span>
-    <div style="display:flex;gap:0.4rem;align-items:center;">
-      <span id="hdr-code-sheet" class="room-badge">——</span>
-      <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;" title="Définir l'image de scène">🎨 Scène</button>
+  <!-- Background scene -->
+  <div id="scene-bg" class="scene-bg-full">
+    <div id="scene-placeholder" class="scene-bg-placeholder">
+      🎭<br><br>Le Maître de Jeu<br>n'a pas encore défini la scène
     </div>
   </div>
-  <div class="game-layout">
-    <div class="game-left">
-    <div class="sheet-grid">
-
-      <!-- Stats container (3 blocks generated JS-side) -->
-      <div id="stats-container"></div>
-
-      <!-- Right column -->
-      <div style="display:flex;flex-direction:column;gap:0.85rem;">
-        <!-- HP -->
-        <div class="hp-block">
-          <div class="section-label">Points de vie</div>
-          <div class="hp-row">
-            <div class="hp-track">
-              <div id="hp-fill" class="hp-fill" style="width:100%;background:var(--success);"></div>
-            </div>
-            <div id="hp-label" class="hp-label">— / —</div>
-          </div>
-          <div class="hp-btns">
-            <button class="hp-btn hp-minus" onclick="adjustHP(-5)">−5</button>
-            <button class="hp-btn hp-minus" onclick="adjustHP(-1)">−1</button>
-            <button class="hp-btn" onclick="adjustHP(1)">+1</button>
-            <button class="hp-btn" onclick="adjustHP(5)">+5</button>
-          </div>
-        </div>
-
-        <!-- Gold -->
+  <!-- Game log overlay -->
+  <div id="game-log" class="game-log-overlay"></div>
+  <!-- Top bar -->
+  <div class="game-topbar">
+    <button class="game-back-btn" onclick="goBack('screen-characters')">← Quitter</button>
+    <span id="hdr-char-name" class="game-char-name"></span>
+    <div style="display:flex;gap:0.45rem;align-items:center;">
+      <span id="hdr-code-sheet" class="room-badge"></span>
+      <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;">🎨 Scène</button>
+      <button class="icon-btn game-sheet-btn" onclick="toggleSheet()">📋 Fiche</button>
+    </div>
+  </div>
+  <!-- Character sheet drawer -->
+  <div id="sheet-drawer" class="sheet-drawer sheet-hidden">
+    <div class="sheet-drawer-inner">
+      <div class="sheet-drawer-header">
+        <span>Fiche de personnage</span>
+        <button onclick="toggleSheet()" class="sheet-close-btn">✕</button>
+      </div>
+      <!-- Axes (remplace stats classiques) -->
+      <div id="axes-container"></div>
+      <!-- Conditions -->
+      <div id="conditions-container"></div>
+      <!-- Reste de la fiche -->
+      <div class="sheet-grid">
         <div class="gold-block">
           <div class="section-label">💰 Or</div>
           <div class="gold-row">
             <button class="gold-btn" onclick="adjustGold(-10)">−10</button>
             <button class="gold-btn" onclick="adjustGold(-1)">−1</button>
-            <input type="number" class="gold-num" id="gold-num" value="0"
-                   onchange="setGold(this.value)" min="0">
+            <input type="number" class="gold-num" id="gold-num" value="0" onchange="setGold(this.value)" min="0">
             <button class="gold-btn" onclick="adjustGold(1)">+1</button>
             <button class="gold-btn" onclick="adjustGold(10)">+10</button>
           </div>
         </div>
-
-        <!-- Guilder -->
         <div class="guilder-block">
-          <div class="section-label">Guildeur</div>
+          <div class="section-label">⚡ Loom · Guildeur</div>
           <div class="guilder-colors" id="guilder-colors"></div>
           <div class="guilder-charges-row">
             <span class="guilder-charge-label">Charges de Loom</span>
@@ -1488,49 +1762,38 @@
             <button class="loom-btn" onclick="openSpellsModal('all')">📜 Tous mes sorts</button>
           </div>
         </div>
-      </div>
-
-      <!-- Inventory — full width -->
-      <div class="inv-block">
-        <div class="inv-top">
-          <div class="section-label" style="margin:0;border:none;padding:0;">🎒 Inventaire</div>
-          <div style="display:flex;gap:0.45rem;align-items:center;">
-            <span id="slot-badge" class="slot-badge">0 / 10</span>
-            <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()">🤝 Donner</button>
+        <div class="inv-block" style="grid-column:1/-1;">
+          <div class="inv-top">
+            <div class="section-label" style="margin:0;border:none;padding:0;">🎒 Inventaire</div>
+            <div style="display:flex;gap:0.45rem;align-items:center;">
+              <span id="slot-badge" class="slot-badge">0 / 10</span>
+              <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()">🤝 Donner</button>
+            </div>
           </div>
+          <div id="slot-grid" class="slot-grid"></div>
         </div>
-        <div id="slot-grid" class="slot-grid"></div>
-      </div>
-
-      <!-- Consumables — full width -->
-      <div class="cons-block">
-        <div class="cons-header">
-          <div class="section-label" style="margin:0;border:none;padding:0;">Capacités &amp; Consommables</div>
-          <button class="session-btn" onclick="resetSession()" title="Restaure tous les usages pour une nouvelle session">
-            ↺ Nouvelle session
-          </button>
+        <div class="cons-block" style="grid-column:1/-1;">
+          <div class="cons-header">
+            <div class="section-label" style="margin:0;border:none;padding:0;">Capacités &amp; Ressources</div>
+            <button class="session-btn" onclick="resetSession()">↺ Nouvelle session</button>
+          </div>
+          <div id="cons-grid" class="cons-grid"></div>
         </div>
-        <div id="cons-grid" class="cons-grid"></div>
       </div>
     </div>
-    </div><!-- end .game-left -->
-
-    <!-- Scene + Game Log -->
-    <div class="game-right">
-      <div id="scene-bg" class="scene-bg">
-        <div id="scene-placeholder" class="scene-bg-placeholder">
-          🎭<br><br>Le Maître de Jeu<br>n'a pas encore<br>défini la scène
-        </div>
+  </div>
+  <!-- Player Combat HUD -->
+  <div id="player-combat-hud" class="player-combat-hud hud-hidden">
+    <div class="hud-conditions-row" id="hud-conditions-row"></div>
+    <div class="hud-actions">
+      <div id="hud-consumables" class="hud-consumables"></div>
+      <div class="hud-loom">
+        <span class="hud-loom-label">Loom</span>
+        <span id="hud-charges" class="hud-charges">0</span>
+        <button class="loom-btn" style="padding:0.22rem 0.55rem;font-size:0.7rem;" onclick="openSpellsModal('castable')">⚡ Sort</button>
       </div>
-      <div id="game-log" class="game-log">
-        <div class="log-entry">
-          <span class="log-time">—</span>
-          <span class="log-text" style="color:var(--text-muted);">En attente d'événements…</span>
-        </div>
-      </div>
-    </div><!-- end .game-right -->
-
-  </div><!-- end .game-layout -->
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -1552,72 +1815,151 @@
 <!-- ══════════════════════════════════════════════════════
      GM VIEW
 ═════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════
+     GM HUB
+════════════════════════════════════════════════════════ -->
 <div id="screen-gm" class="screen">
   <div class="app-header">
     <button class="back-btn" onclick="goBack('screen-characters')">← Salon</button>
     <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">Vue Maître de Jeu</span>
     <div style="display:flex;gap:0.4rem;align-items:center;">
       <span id="hdr-code-gm" class="room-badge">——</span>
-      <button class="icon-btn" onclick="exportSession()" title="Exporter la session en JSON">💾 Export</button>
-      <button class="icon-btn" onclick="triggerImport()" title="Importer une sauvegarde JSON">📥 Import</button>
+      <button class="icon-btn" onclick="exportSession()" title="Exporter">💾</button>
+      <button class="icon-btn" onclick="triggerImport()" title="Importer">📥</button>
     </div>
-    <input type="file" id="import-file-input" accept=".json" style="display:none;"
-           onchange="importSession(this.files[0]); this.value=''">
+    <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="importSession(this.files[0]); this.value=''">
   </div>
   <div class="container">
-    <div id="gm-grid" class="gm-grid">
-      <div class="loading"><div class="spinner"></div><br>Chargement…</div>
+    <div class="gm-lib-nav">
+      <button class="gm-lib-btn" onclick="showGMLibrary('items')">📦 Objets</button>
+      <button class="gm-lib-btn" onclick="showGMLibrary('spells')">✨ Sorts</button>
+      <button class="gm-lib-btn" onclick="showGMLibrary('monsters')">👹 Monstres</button>
+      <button class="gm-lib-btn" onclick="showGMLibrary('npcs')">🧑 PNJ</button>
+      <button class="gm-lib-btn" onclick="showGMLibrary('sources')">✨ Anomalies</button>
     </div>
-
-    <!-- Bibliothèque d'items (MJ) -->
-    <div class="gm-items-section">
-      <div class="gm-items-header">
-        <div class="section-label" style="margin:0;border:none;padding:0;">Bibliothèque d'objets</div>
-        <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
-          <button class="loom-btn" style="flex:none;padding:0.38rem 0.75rem;" onclick="showModal('modal-theme-import')">📦 Importer le thème</button>
-          <button class="loom-btn primary" style="flex:none;padding:0.38rem 0.75rem;" onclick="openItemCreate()">+ Nouvel objet</button>
-        </div>
-      </div>
-      <div id="gm-item-list"></div>
-    </div>
-
-    <!-- Bibliothèque de sorts (MJ) -->
-    <div class="gm-spell-section">
-      <div class="gm-spell-header">
-        <div class="section-label" style="margin:0;border:none;padding:0;">Bibliothèque de sorts</div>
-        <button class="loom-btn primary" style="flex:none;padding:0.4rem 0.9rem;" onclick="showModal('modal-spell-create')">+ Nouveau sort</button>
-      </div>
-      <div id="gm-spell-list" class="spell-list"></div>
-    </div>
-
-    <!-- Gestion du combat (MJ) -->
-    <div class="gm-combat-section">
-      <div class="gm-combat-header">
-        <div class="section-label" style="margin:0;border:none;padding:0;">⚔️ Gestion du combat</div>
+    <div class="gm-section">
+      <div class="gm-section-hdr">
+        <div class="section-label" style="margin:0;border:none;padding:0;">⚔️ Gestionnaire de combat</div>
         <div style="display:flex;gap:0.45rem;">
           <button id="btn-start-combat" class="loom-btn primary" style="padding:0.38rem 0.9rem;" onclick="startCombat()">▶ Lancer</button>
           <button id="btn-end-combat" class="loom-btn" style="padding:0.38rem 0.9rem;border-color:var(--danger);color:var(--danger);display:none;" onclick="endCombat()">✗ Terminer</button>
         </div>
       </div>
-
-      <!-- Ajout monstre -->
-      <div style="display:flex;gap:0.45rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:center;">
-        <input type="text" id="monster-name" placeholder="Nom du monstre"
-               style="flex:1;min-width:110px;padding:0.45rem 0.7rem;font-size:0.82rem;">
-        <input type="color" id="monster-color" value="#e74c3c"
-               style="width:36px;height:34px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;flex-shrink:0;">
-        <input type="number" id="monster-hp" placeholder="PV" min="1"
-               style="width:64px;padding:0.45rem 0.55rem;font-size:0.82rem;">
-        <button class="loom-btn primary" style="padding:0.4rem 0.8rem;flex-shrink:0;" onclick="addMonsterToSetup()">+ Monstre</button>
-      </div>
-
-      <div id="combat-setup-list" class="combat-setup-list">
-        <div style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:0.3rem 0;">
-          Ajoutez des monstres. Les joueurs sont inclus automatiquement au lancement.
+      <div id="combat-setup-panel">
+        <div style="display:flex;gap:0.45rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="monster-name" placeholder="Nom du monstre" style="flex:1;min-width:110px;padding:0.45rem 0.7rem;font-size:0.82rem;">
+          <input type="color" id="monster-color" value="#e74c3c" style="width:36px;height:34px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;flex-shrink:0;">
+          <input type="number" id="monster-hp" placeholder="PV" min="1" style="width:64px;padding:0.45rem 0.55rem;font-size:0.82rem;">
+          <button class="loom-btn primary" style="padding:0.4rem 0.8rem;flex-shrink:0;" onclick="addMonsterToSetup()">+ Monstre</button>
         </div>
+        <div id="combat-setup-list" class="combat-setup-list"></div>
+      </div>
+      <div id="active-combat-panel" style="display:none;">
+        <div id="gm-turn-track" class="turn-track" style="margin-bottom:1rem;"></div>
+        <div id="gm-combat-cards" class="gm-combat-cards"></div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM — OBJETS
+════════════════════════════════════════════════════════ -->
+<div id="screen-gm-items" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('screen-gm')">← Vue MJ</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">📦 Objets</span>
+    <span id="hdr-code-gm-items" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <button class="loom-btn" onclick="showModal('modal-theme-import')">📦 Importer thème</button>
+      <button class="loom-btn primary" onclick="openItemCreate()">+ Nouvel objet</button>
+    </div>
+    <div id="lib-item-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM — SORTS
+════════════════════════════════════════════════════════ -->
+<div id="screen-gm-spells" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('screen-gm')">← Vue MJ</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">✨ Sorts</span>
+    <span id="hdr-code-gm-spells" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div style="margin-bottom:1rem;">
+      <button class="loom-btn primary" onclick="showModal('modal-spell-create')">+ Nouveau sort</button>
+    </div>
+    <div id="lib-spell-list" class="spell-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM — MONSTRES
+════════════════════════════════════════════════════════ -->
+<div id="screen-gm-monsters" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('screen-gm')">← Vue MJ</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">👹 Monstres</span>
+    <span id="hdr-code-gm-monsters" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div style="margin-bottom:1rem;">
+      <button class="loom-btn primary" onclick="openMonsterCreate()">+ Nouveau monstre</button>
+    </div>
+    <div id="lib-monster-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM — PNJ
+════════════════════════════════════════════════════════ -->
+<div id="screen-gm-npcs" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('screen-gm')">← Vue MJ</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">🧑 PNJ</span>
+    <span id="hdr-code-gm-npcs" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div style="margin-bottom:1rem;">
+      <button class="loom-btn primary" onclick="openNPCCreate()">+ Nouveau PNJ</button>
+    </div>
+    <div id="lib-npc-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GM — ANOMALIES LOOM
+══════════════════════════════════════════════════════ -->
+<div id="screen-gm-sources" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="showScreen('screen-gm')">← Vue MJ</button>
+    <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">✨ Anomalies Loom</span>
+    <span id="hdr-code-gm-sources" class="room-badge">——</span>
+  </div>
+  <div class="container">
+    <div style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <button class="loom-btn primary" onclick="openLoomSourceCreate()">+ Nouvelle anomalie</button>
+      <button class="loom-btn" onclick="clearPresentedSource()" style="border-color:var(--danger);color:var(--danger);">✗ Retirer présentation</button>
+    </div>
+    <div id="lib-source-list"></div>
+  </div>
+</div>
+
+
+<!-- GM — Fiche PJ (modal overlay) -->
+<div id="gm-char-modal" class="gm-char-modal hidden">
+  <div class="gm-char-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
+      <span style="color:var(--accent-gold);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;">Fiche personnage</span>
+      <button onclick="closeGMCharSheet()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div id="gm-char-modal-content"></div>
+  </div>
+  <div style="flex:1;cursor:pointer;" onclick="closeGMCharSheet()"></div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -1633,8 +1975,24 @@
     <div class="field-label">Icône (emoji)</div>
     <input type="text" id="m-char-icon" placeholder="🧙" maxlength="2"
            style="font-size:1.5rem;text-align:center;">
-    <div class="field-label">PV maximum</div>
-    <input type="number" id="m-char-hp" min="1" max="999" value="20">
+    <div class="field-label" style="margin-top:0.75rem;">Axes (1 = bas · 6 = haut)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:0.5rem;">
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.3rem;">Physique</div>
+        <input type="number" id="m-char-physique" min="1" max="6" value="3" style="width:100%;text-align:center;">
+        <div style="font-size:0.56rem;color:var(--text-muted);text-align:center;margin-top:0.2rem;">Bourrin ←→ Filou</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.3rem;">Social</div>
+        <input type="number" id="m-char-social" min="1" max="6" value="3" style="width:100%;text-align:center;">
+        <div style="font-size:0.56rem;color:var(--text-muted);text-align:center;margin-top:0.2rem;">Star ←→ Fouine</div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.3rem;">Mental</div>
+        <input type="number" id="m-char-mental" min="1" max="6" value="3" style="width:100%;text-align:center;">
+        <div style="font-size:0.56rem;color:var(--text-muted);text-align:center;margin-top:0.2rem;">PlanMaker ←→ Impro</div>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-char')">Annuler</button>
       <button class="btn btn-primary" onclick="createCharacter()">Créer →</button>
@@ -1857,8 +2215,10 @@
     </select>
     <div class="field-label">Coût en charges</div>
     <input type="number" id="m-spell-cost" min="1" max="99" value="2">
-    <div class="field-label">Description</div>
-    <textarea id="m-spell-desc" rows="3" placeholder="Permet au lanceur de…"
+    <div class="field-label">Phrase d'ambiance <span style="color:var(--text-muted);font-weight:400;">(anomalie, concept étrange)</span></div>
+    <input type="text" id="m-spell-ambiance" placeholder="Les choses fragiles voient l'avenir avant de casser.">
+    <div class="field-label">Description / Effet</div>
+    <textarea id="m-spell-desc" rows="2" placeholder="Brisez un objet fragile pour voir une seconde dans le futur."
       style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-spell-create')">Annuler</button>
@@ -1900,6 +2260,179 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Monstre (bibliothèque)
+══════════════════════════════════════════════════════ -->
+<div id="modal-monster" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="monster-modal-title">Nouveau monstre</h3>
+    <input type="hidden" id="m-monster-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+      <div>
+        <div class="field-label">Nom</div>
+        <input type="text" id="m-monster-name" placeholder="Gobelours">
+      </div>
+      <div>
+        <div class="field-label">Icône (emoji)</div>
+        <input type="text" id="m-monster-icon" placeholder="👹" maxlength="2"
+               style="font-size:1.5rem;text-align:center;">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.5rem;">
+      <div>
+        <div class="field-label">PV de base</div>
+        <input type="number" id="m-monster-hp" min="1" value="20">
+      </div>
+      <div>
+        <div class="field-label">Couleur de nom</div>
+        <input type="color" id="m-monster-color" value="#e74c3c"
+               style="width:100%;height:38px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;">
+      </div>
+    </div>
+    <div class="field-label" style="margin-top:0.5rem;">Catégorie</div>
+    <input type="text" id="m-monster-cat" placeholder="Humanoïde, Démon, Créature…">
+    <div class="field-label">Description</div>
+    <textarea id="m-monster-desc" rows="2" placeholder="Description du monstre…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="field-label">Pouvoirs / Capacités spéciales</div>
+    <textarea id="m-monster-powers" rows="3" placeholder="Attaque venimeuse, Invisibilité 1/jour…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-monster')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveMonster()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — PNJ (bibliothèque)
+══════════════════════════════════════════════════════ -->
+<div id="modal-npc" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="npc-modal-title">Nouveau PNJ</h3>
+    <input type="hidden" id="m-npc-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+      <div>
+        <div class="field-label">Nom</div>
+        <input type="text" id="m-npc-name" placeholder="Aldric le Marchand">
+      </div>
+      <div>
+        <div class="field-label">Icône (emoji)</div>
+        <input type="text" id="m-npc-icon" placeholder="🧑" maxlength="2"
+               style="font-size:1.5rem;text-align:center;">
+      </div>
+    </div>
+    <div class="field-label">Rôle / Métier</div>
+    <input type="text" id="m-npc-role" placeholder="Marchand, Garde, Prêtre…">
+    <div class="field-label">Attitude</div>
+    <select id="m-npc-attitude">
+      <option value="ami">Ami / Allié</option>
+      <option value="neutre" selected>Neutre</option>
+      <option value="hostile">Hostile</option>
+    </select>
+    <div class="field-label">Description</div>
+    <textarea id="m-npc-desc" rows="2" placeholder="Apparence, personnalité…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="field-label">Notes MJ (privées)</div>
+    <textarea id="m-npc-notes" rows="2" placeholder="Motivations secrètes, connexions…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-npc')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveNPC()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     OVERLAY — Rupture cinématique
+══════════════════════════════════════════════════════ -->
+<div id="rupture-overlay" class="rupture-overlay hidden">
+  <div class="rupture-inner">
+    <div class="rupture-category" id="rupture-category-label">Rupture Physique</div>
+    <div class="rupture-title">RUPTURE</div>
+    <div class="rupture-charname" id="rupture-char-label"></div>
+    <div class="rupture-desc" id="rupture-desc-label"></div>
+    <button class="btn btn-secondary" onclick="dismissRupture()" style="margin-top:1.5rem;">Continuer →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Ajouter une Condition
+══════════════════════════════════════════════════════ -->
+<div id="modal-condition" class="overlay hidden">
+  <div class="modal" style="max-width:380px;">
+    <h3 id="cond-modal-title">Ajouter une Condition</h3>
+    <input type="hidden" id="m-cond-category">
+    <div class="field-label">Nom de la Condition</div>
+    <input type="text" id="m-cond-name" placeholder="Brûlé, Paniqué, Humilié…">
+    <div class="field-label">Icône (emoji)</div>
+    <input type="text" id="m-cond-icon" placeholder="🔥" maxlength="2"
+           style="font-size:1.5rem;text-align:center;">
+    <div class="field-label">Description (optionnel)</div>
+    <textarea id="m-cond-desc" rows="2" placeholder="Contexte narratif de la condition…"
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-condition')">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmAddCondition()">Ajouter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Anomalie Loom (MJ)
+══════════════════════════════════════════════════════ -->
+<div id="modal-loom-source" class="overlay hidden">
+  <div class="modal" style="max-width:440px;">
+    <h3 id="loom-source-modal-title">Nouvelle Anomalie</h3>
+    <input type="hidden" id="m-ls-id">
+    <div class="field-label">Nom</div>
+    <input type="text" id="m-ls-name" placeholder="Biche de verre bleu, Horloge inversée…">
+    <div class="field-label">Couleur de Loom</div>
+    <select id="m-ls-color">
+      <option value="vert">🟢 Vert — Ulmèques (Onirique)</option>
+      <option value="noir">⚫ Noir — Ashragors (Nécromance)</option>
+      <option value="rouge">🔴 Rouge — Ghemdals (Art guerrier)</option>
+      <option value="jaune">🟡 Jaune — Venn'dys (Sorcellerie)</option>
+      <option value="violet">🟣 Violet — Kheyzas (Sémantique)</option>
+    </select>
+    <div class="field-label">Description étrange</div>
+    <textarea id="m-ls-desc" rows="3" placeholder="Une biche de verre figée dans l'instant de sa mort. Son flanc pulse d'une lumière bleue."
+      style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+      <div>
+        <div class="field-label">Charges (si Récolte)</div>
+        <input type="number" id="m-ls-charges" min="1" max="10" value="2">
+      </div>
+      <div>
+        <div class="field-label">Sort lié (si Lecture)</div>
+        <select id="m-ls-spell" style="font-size:0.8rem;"></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="hideModal('modal-loom-source')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveLoomSource()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL — Présentation anomalie (joueur)
+══════════════════════════════════════════════════════ -->
+<div id="modal-loom-present" class="overlay hidden">
+  <div class="modal" style="max-width:400px;text-align:center;">
+    <div id="ls-present-emoji" style="font-size:2.5rem;margin-bottom:0.5rem;">✦</div>
+    <div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.25em;color:var(--text-muted);margin-bottom:0.35rem;">Anomalie détectée</div>
+    <h3 id="ls-present-name" style="margin-bottom:0.75rem;"></h3>
+    <div id="ls-present-desc" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;font-style:italic;margin-bottom:1.5rem;"></div>
+    <div id="ls-present-spell-hint" style="display:none;font-size:0.72rem;color:var(--accent-gold);margin-bottom:1rem;padding:0.5rem 0.75rem;background:rgba(201,168,76,0.08);border-radius:7px;border:1px solid var(--accent-dim);"></div>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="btn btn-secondary" onclick="harvestLoomSource()">⚗️ Récolter</button>
+      <button id="btn-read-source" class="btn btn-primary" onclick="readLoomSource()">📖 Lire</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:0.5rem;background:none;border-color:var(--text-muted);color:var(--text-muted);" onclick="hideModal('modal-loom-present')">Ignorer</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
@@ -1932,6 +2465,13 @@ let currentRoom = null;
 let currentCharId   = null;
 let currentCharData = null;
 let liveListeners   = [];   // { ref, handler } pairs to detach on screen change
+let campaignMonsters = {};
+let campaignNPCs = {};
+let campaignLoomSources = {};
+let gmCombatChars = {};
+let lastCombatState = null;
+let pendingConditionCategory = null;
+let presentedSourceData = null;
 
 /* ────────────────────────────────────────────────────────
    FIREBASE INIT
@@ -2257,26 +2797,25 @@ async function createCharacter() {
   const name   = document.getElementById('m-char-name').value.trim();
   const player = document.getElementById('m-char-player').value.trim();
   const icon   = document.getElementById('m-char-icon').value.trim() || '🎭';
-  const hp     = parseInt(document.getElementById('m-char-hp').value) || 20;
   if (!name) { showToast('Le nom est obligatoire.'); return; }
+
+  const physique = Math.max(1, Math.min(6, parseInt(document.getElementById('m-char-physique')?.value) || 3));
+  const social   = Math.max(1, Math.min(6, parseInt(document.getElementById('m-char-social')?.value)   || 3));
+  const mental   = Math.max(1, Math.min(6, parseInt(document.getElementById('m-char-mental')?.value)   || 3));
 
   const id = 'char_' + Date.now();
   await dbSet(`rooms/${currentRoom}/characters/${id}`, {
     name, player, icon,
-    hp: { current: hp, max: hp },
-    stats: {
-      Physique: { Force: 2, Dextérité: 2, Résistance: 2 },
-      Social:   { Présence: 2, Manipulation: 2, 'Sang-froid': 2 },
-      Mental:   { Intelligence: 2, Astuce: 2, Résolution: 2 }
-    },
-    consumables: []
+    axes: { physique, social, mental },
+    conditions: { physique: [], social: [], mental: [] },
+    guilder: { color: null, charges: 0 },
+    inventory: [], consumables: [], gold: 0, knownSpells: []
   });
   hideModal('modal-char');
-  // Reset fields
-  ['m-char-name','m-char-player','m-char-icon'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('m-char-hp').value = '20';
+  ['m-char-name','m-char-player','m-char-icon'].forEach(i => document.getElementById(i).value = '');
   showToast('Personnage créé !');
   openSheet(id);
+  logEvent('🎭', name, 'rejoint la guilde.');
 }
 
 /* ────────────────────────────────────────────────────────
@@ -2581,7 +3120,7 @@ async function sendTrade() {
    GM ITEM LIBRARY
 ──────────────────────────────────────────────────────── */
 function renderGMItemList(items) {
-  const list = document.getElementById('gm-item-list');
+  const list = document.getElementById('lib-item-list');
   if (!list) return;
   list.innerHTML = '';
   const entries = Object.entries(items || {});
@@ -2843,6 +3382,7 @@ function renderSpellsModal() {
       <div class="spell-school-dot" style="background:${school.color || '#888'};"></div>
       <div class="spell-info">
         <div class="spell-name">${spell.name}</div>
+        ${spell.ambiance ? '<div class="spell-ambiance">' + spell.ambiance + '</div>' : ''}
         <div class="spell-desc">${spell.description || ''}</div>
         <div class="spell-cost">${school.emoji || ''} ${school.label || spell.school} — ${spell.cost} charge${spell.cost > 1 ? 's' : ''}</div>
       </div>
@@ -2870,7 +3410,7 @@ async function castSpell(spellId, cost) {
    SPELLS — GM LIBRARY
 ──────────────────────────────────────────────────────── */
 function renderGMSpellList(spells) {
-  const list = document.getElementById('gm-spell-list');
+  const list = document.getElementById('lib-spell-list');
   if (!list) return;
   list.innerHTML = '';
   const entries = Object.entries(spells || {});
@@ -2903,10 +3443,11 @@ async function saveSpell() {
   const cost = parseInt(document.getElementById('m-spell-cost').value) || 1;
   const desc = document.getElementById('m-spell-desc').value.trim();
   if (!name) { showToast('Le nom est obligatoire.'); return; }
-  await dbSet(`rooms/${currentRoom}/spells/${id}`, { name, school, cost, description: desc });
+  const ambiance = document.getElementById('m-spell-ambiance')?.value.trim() || '';
+  await dbSet(`rooms/${currentRoom}/spells/${id}`, { name, school, cost, description: desc, ambiance });
   hideModal('modal-spell-create');
   showToast('Sort enregistré !');
-  ['m-spell-id','m-spell-name','m-spell-desc'].forEach(i => document.getElementById(i).value = '');
+  ['m-spell-id','m-spell-name','m-spell-desc','m-spell-ambiance'].forEach(i => { const el = document.getElementById(i); if (el) el.value = ''; });
   document.getElementById('m-spell-cost').value = '2';
   document.getElementById('spell-create-title').textContent = 'Nouveau sort';
 }
@@ -2918,7 +3459,8 @@ function editSpell(id) {
   document.getElementById('m-spell-name').value = s.name;
   document.getElementById('m-spell-school').value = s.school;
   document.getElementById('m-spell-cost').value  = s.cost;
-  document.getElementById('m-spell-desc').value  = s.description || '';
+  document.getElementById('m-spell-desc').value     = s.description || '';
+  const ambiEl = document.getElementById('m-spell-ambiance'); if (ambiEl) ambiEl.value = s.ambiance || '';
   document.getElementById('spell-create-title').textContent = 'Modifier le sort';
   showModal('modal-spell-create');
 }
@@ -3148,6 +3690,7 @@ async function endTurn() {
 
 function listenCombat() {
   const detach = dbListen(`rooms/${currentRoom}/combat`, state => {
+    lastCombatState = state;
     const overlay = document.getElementById('combat-overlay');
     if (state && state.active) {
       overlay.classList.remove('hidden');
@@ -3155,6 +3698,7 @@ function listenCombat() {
     } else {
       overlay.classList.add('hidden');
     }
+    updateCombatHUD(state);
   });
   liveListeners.push(detach);
 }
@@ -3183,9 +3727,7 @@ function renderCombat(state) {
   list.innerHTML = combatants.map((c, i) => {
     const active = i === idx;
     const col    = c.type === 'monster' ? c.color : 'var(--accent-gold)';
-    const hpInfo = c.type === 'player'
-      ? '<span style="color:var(--text-secondary);font-size:0.75rem;">' + (c.hp != null ? c.hp : '?') + ' / ' + c.maxHp + ' PV</span>'
-      : '';
+    const hpInfo = '';  // Pas de HP — système de Conditions
     return '<div class="combatant-row ' + (active ? 'current-row' : '') + '">' +
       '<span class="combatant-row-icon">' + (c.icon || (c.type === 'monster' ? '👹' : '🎭')) + '</span>' +
       '<span class="combatant-row-name" style="color:' + col + '">' + c.name + '</span>' +
@@ -3212,64 +3754,40 @@ function renderCombat(state) {
 ──────────────────────────────────────────────────────── */
 function showGMView() {
   showScreen('screen-gm');
-  const detach = dbListen(`rooms/${currentRoom}/characters`, chars => {
-    renderGMView(chars || {});
-  });
-  liveListeners.push(detach);
+  const hdrGM = document.getElementById('hdr-code-gm');
+  if (hdrGM) hdrGM.textContent = currentRoom || '——';
   listenSpells();
   listenItems();
+  listenMonsters();
+  listenNPCs();
+  listenLoomSources();
   renderCombatSetup();
-  if (!localMode) {
-    db.ref(`rooms/${currentRoom}/combat/active`).once('value', snap => {
-      const active = snap.val();
-      const sb = document.getElementById('btn-start-combat');
-      const eb = document.getElementById('btn-end-combat');
-      if (sb) sb.style.display = active ? 'none' : '';
-      if (eb) eb.style.display = active ? '' : 'none';
-    });
-  }
+  // Track live characters for GM combat view
+  const detachChars = dbListen(`rooms/${currentRoom}/characters`, chars => {
+    gmCombatChars = chars || {};
+    if (lastCombatState && lastCombatState.active) renderGMActiveCombat(lastCombatState);
+  });
+  liveListeners.push(detachChars);
+  // Track combat state
+  const detachCombat = dbListen(`rooms/${currentRoom}/combat`, state => {
+    lastCombatState = state;
+    const active = state && state.active;
+    const sb = document.getElementById('btn-start-combat');
+    const eb = document.getElementById('btn-end-combat');
+    const setupPanel  = document.getElementById('combat-setup-panel');
+    const activePanel = document.getElementById('active-combat-panel');
+    if (sb) sb.style.display = active ? 'none' : '';
+    if (eb) eb.style.display = active ? '' : 'none';
+    if (setupPanel)  setupPanel.style.display = active ? 'none' : '';
+    if (activePanel) activePanel.style.display = active ? '' : 'none';
+    renderGMActiveCombat(state);
+  });
+  liveListeners.push(detachCombat);
 }
 
 function renderGMView(chars) {
-  const grid = document.getElementById('gm-grid');
-  grid.innerHTML = '';
-  const entries = Object.entries(chars);
-  if (!entries.length) {
-    grid.innerHTML = '<div class="loading">Aucun personnage dans ce salon.</div>';
-    return;
-  }
-
-  entries.forEach(([, char]) => {
-    const hp  = char.hp || { current: 0, max: 1 };
-    const pct = Math.max(0, Math.min(100, (hp.current / hp.max) * 100));
-    const hpColor = pct > 50 ? 'var(--success)' : pct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
-    const cons = char.consumables || [];
-
-    const card = document.createElement('div');
-    card.className = 'gm-card';
-
-    const consRows = cons.length
-      ? cons.map(c => {
-          const avail = c.currentUses != null ? c.currentUses : c.maxUses;
-          const color = avail > 0 ? 'var(--accent-gold)' : 'var(--danger)';
-          return '<div class="gm-cons-row"><span>' + (c.icon || '✶') + ' ' + c.name + '</span>' +
-            '<span class="gm-cons-val" style="color:' + color + ';">' + avail + '/' + c.maxUses + '</span></div>';
-        }).join('')
-      : '<div class="empty-state">Aucun consommable</div>';
-
-    card.innerHTML =
-      '<div class="gm-card-head">' +
-        '<div class="gm-avatar">' + (char.icon || '🎭') + '</div>' +
-        '<div><div class="gm-name">' + (char.name || '?') + '</div>' +
-        '<div class="gm-player">' + (char.player || '') + '</div></div>' +
-      '</div>' +
-      '<div style="margin-bottom:0.85rem;">' +
-        '<div class="gm-micro-label">PV — ' + hp.current + ' / ' + hp.max + '</div>' +
-        '<div class="hp-track" style="height:8px;"><div class="hp-fill" style="width:' + pct + '%;background:' + hpColor + ';"></div></div>' +
-      '</div>' +
-      '<div><div class="gm-micro-label" style="margin-bottom:0.45rem;">Consommables</div>' + consRows + '</div>';
-    grid.appendChild(card);
-  });
+  // Legacy: characters are tracked via gmCombatChars
+  gmCombatChars = chars || {};
 }
 
 /* ────────────────────────────────────────────────────────
@@ -3286,8 +3804,8 @@ function openSheet(charId) {
     if (!data) return;
     currentCharData = JSON.parse(JSON.stringify(data));
     document.getElementById('hdr-char-name').textContent = data.name || '?';
-    renderStats(data.stats, getEquippedBonuses(data.inventory));
-    renderHP(data.hp);
+    renderAxes(data.axes);
+    renderConditions(data.conditions);
     renderConsumables(data.consumables || []);
     renderGuilder(data.guilder);
     renderInventory(data.inventory);
@@ -3299,6 +3817,7 @@ function openSheet(charId) {
   listenGameLog();
   listenBackground();
   listenCombat();
+  listenPresentedSource();
 }
 
 /* ── Stats ── */
@@ -3465,6 +3984,926 @@ function renderConsumables(cons) {
   grid.innerHTML += '<div class="cons-card cons-card-add" onclick="showModal(\'modal-cons\')" style="display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:60px;"><span style="font-size:1.4rem;color:var(--text-muted);">+</span></div>';
 }
 
+
+/* ────────────────────────────────────────────────────────
+   PLAYER GAME VIEW
+──────────────────────────────────────────────────────── */
+function toggleSheet() {
+  const drawer = document.getElementById('sheet-drawer');
+  if (drawer) drawer.classList.toggle('sheet-hidden');
+}
+
+function updateCombatHUD(state) {
+  const hud = document.getElementById('player-combat-hud');
+  if (!hud) return;
+  if (!state || !state.active) {
+    hud.classList.add('hud-hidden');
+    return;
+  }
+  hud.classList.remove('hud-hidden');
+  // Conditions row
+  const conditions = currentCharData && currentCharData.conditions ? currentCharData.conditions : {};
+  const hudCondRow = document.getElementById('hud-conditions-row');
+  if (hudCondRow) {
+    const catDefs = [
+      { key: 'physique', label: '⚡', color: '#e08050' },
+      { key: 'social',   label: '💬', color: '#5080c0' },
+      { key: 'mental',   label: '🧠', color: '#9060c0' },
+    ];
+    hudCondRow.innerHTML = catDefs.map(cat => {
+      const conds = Array.isArray(conditions[cat.key]) ? conditions[cat.key] : [];
+      const dots = Array.from({ length: 3 }, (_, i) =>
+        '<div class="hud-cond-dot' + (i < conds.length ? ' filled' : '') + '" style="' + (i < conds.length ? 'border-color:' + cat.color + ';background:' + cat.color + ';' : '') + '"></div>'
+      ).join('');
+      return '<div class="hud-cond-group"><span style="font-size:0.75rem;">' + cat.label + '</span>' + dots + '</div>';
+    }).join('');
+  }
+  // Consumables
+  const cons    = currentCharData && currentCharData.consumables ? currentCharData.consumables : [];
+  const hudCons = document.getElementById('hud-consumables');
+  if (hudCons) {
+    hudCons.innerHTML = cons.map((c, idx) => {
+      const avail    = c.currentUses != null ? c.currentUses : c.maxUses;
+      const depleted = avail <= 0;
+      return '<button class="hud-cons-btn"' + (depleted ? ' disabled' : '') +
+        ' onclick="useConsumable(' + idx + ')" title="' + c.name + '">' +
+        (c.icon || '✶') + ' <span style="color:' + (depleted ? 'var(--danger)' : 'var(--accent-gold)') + '">(' + avail + ')</span></button>';
+    }).join('');
+  }
+  // Loom charges
+  const charges    = currentCharData && currentCharData.guilder ? (currentCharData.guilder.charges ?? 0) : 0;
+  const hudCharges = document.getElementById('hud-charges');
+  if (hudCharges) hudCharges.textContent = charges;
+}
+
+/* ────────────────────────────────────────────────────────
+   GM LIBRARY NAVIGATION
+──────────────────────────────────────────────────────── */
+function showGMLibrary(type) {
+  const map = {
+    items:    'screen-gm-items',
+    spells:   'screen-gm-spells',
+    monsters: 'screen-gm-monsters',
+    npcs:     'screen-gm-npcs',
+    sources:  'screen-gm-sources'
+  };
+  const target = map[type];
+  if (!target) return;
+  showScreen(target);
+  const roomBadges = {
+    items: 'hdr-code-gm-items', spells: 'hdr-code-gm-spells',
+    monsters: 'hdr-code-gm-monsters', npcs: 'hdr-code-gm-npcs',
+    sources: 'hdr-code-gm-sources'
+  };
+  Object.values(roomBadges).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = currentRoom || '——';
+  });
+}
+
+/* ────────────────────────────────────────────────────────
+   GM ACTIVE COMBAT CARDS
+──────────────────────────────────────────────────────── */
+function renderGMActiveCombat(state) {
+  const container = document.getElementById('gm-combat-cards');
+  if (!container) return;
+  if (!state || !state.active) {
+    container.innerHTML = '<div style="color:var(--text-muted);font-size:0.78rem;text-align:center;padding:1.25rem 0;">Aucun combat en cours.<br>Ajoutez des monstres et cliquez sur ▶ Lancer.</div>';
+    return;
+  }
+  const combatants = state.combatants || [];
+  const currentIdx = state.currentTurnIdx || 0;
+  container.innerHTML = '';
+
+  combatants.forEach((c, idx) => {
+    const isPlayer  = c.type === 'player';
+    const isCurrent = idx === currentIdx;
+    const nameColor = isPlayer ? 'var(--accent-gold)' : (c.color || 'var(--danger)');
+
+    // For players use live data; for monsters use combat state data
+    let hpCur, hpMax;
+    if (isPlayer && c.id && gmCombatChars[c.id] && gmCombatChars[c.id].hp) {
+      hpCur = gmCombatChars[c.id].hp.current;
+      hpMax = gmCombatChars[c.id].hp.max;
+    } else {
+      hpCur = c.hp;
+      hpMax = c.maxHp;
+    }
+    const hpPct   = hpMax > 0 ? Math.max(0, Math.min(100, (hpCur / hpMax) * 100)) : 0;
+    const hpColor = hpPct > 50 ? 'var(--success)' : hpPct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
+
+    const card = document.createElement('div');
+    card.className = 'gm-combat-card' +
+      (isPlayer   ? ' is-player'        : '') +
+      (isCurrent  ? ' current-combatant': '');
+    if (isPlayer && c.id) card.onclick = () => openGMCharSheet(c.id);
+
+    const hpBar = '<div class="hp-track" style="flex:1;height:6px;">' +
+      '<div class="hp-fill" style="width:' + hpPct + '%;background:' + hpColor + ';transition:width 0.3s;"></div></div>';
+
+    // Conditions pour les joueurs
+    let playerCondHtml = '';
+    if (isPlayer && c.id && gmCombatChars[c.id] && gmCombatChars[c.id].conditions) {
+      const pConds = gmCombatChars[c.id].conditions;
+      const catDefs = [{ key:'physique', color:'#e08050' },{ key:'social', color:'#5080c0' },{ key:'mental', color:'#9060c0' }];
+      playerCondHtml = '<div style="display:flex;gap:0.5rem;margin-top:0.45rem;">' +
+        catDefs.map(cd => {
+          const count = Array.isArray(pConds[cd.key]) ? pConds[cd.key].length : 0;
+          const dots = Array.from({length:3},(_,i) => '<span style="font-size:0.6rem;color:' + (i<count ? cd.color : 'var(--text-muted)') + ';">●</span>').join('');
+          return '<span>' + dots + '</span>';
+        }).join('') +
+        (pConds.physique?.length>=3||pConds.social?.length>=3||pConds.mental?.length>=3
+          ? '<span style="font-size:0.58rem;color:var(--danger);font-weight:700;">⚠ RUPTURE</span>' : '') +
+      '</div>';
+    }
+
+    const hpHtml = isPlayer
+      ? playerCondHtml
+      : '<div class="gm-hp-edit-row">' +
+          '<button onclick="event.stopPropagation();gmAdjMonsterHP(' + idx + ',-5)">-5</button>' +
+          '<button onclick="event.stopPropagation();gmAdjMonsterHP(' + idx + ',-1)">-1</button>' +
+          hpBar +
+          '<button onclick="event.stopPropagation();gmAdjMonsterHP(' + idx + ',1)">+1</button>' +
+          '<button onclick="event.stopPropagation();gmAdjMonsterHP(' + idx + ',5)">+5</button>' +
+          '<span class="gm-hp-label">' + hpCur + '/' + hpMax + '</span></div>';
+
+    card.innerHTML =
+      '<div class="gm-combat-card-head">' +
+        '<span class="gm-combat-icon" style="color:' + nameColor + '">' + (c.icon || (isPlayer ? '\U0001f3ad' : '\U0001f479')) + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="gm-combat-name" style="color:' + nameColor + '">' + c.name + '</div>' +
+          '<div class="gm-combat-type">' + (isPlayer ? 'Joueur' : 'Monstre') +
+            (isCurrent ? ' · <span style="color:var(--accent-gold);">⚡ Son tour</span>' : '') + '</div>' +
+        '</div>' +
+      '</div>' + hpHtml;
+    container.appendChild(card);
+  });
+}
+
+async function gmAdjMonsterHP(combatIdx, delta) {
+  if (!currentRoom || localMode) return;
+  const snap  = await db.ref(`rooms/${currentRoom}/combat`).once('value');
+  const state = snap.val();
+  if (!state || !state.active || !state.combatants || !state.combatants[combatIdx]) return;
+  const c     = state.combatants[combatIdx];
+  const newHp = Math.max(0, Math.min(c.maxHp, c.hp + delta));
+  await db.ref(`rooms/${currentRoom}/combat/combatants/${combatIdx}/hp`).set(newHp);
+  if (delta !== 0) {
+    const sign = delta > 0 ? '+' + delta : '' + delta;
+    logEvent(delta > 0 ? '\U0001f49a' : '\U0001fa78', c.name,
+      (delta > 0 ? 'gagne' : 'perd') + ' ' + Math.abs(delta) + ' PV (' + sign + ')');
+  }
+}
+
+/* ────────────────────────────────────────────────────────
+   GM — FICHE PERSONNAGE (modal)
+──────────────────────────────────────────────────────── */
+async function openGMCharSheet(charId) {
+  const charData = gmCombatChars[charId]
+    || (await dbGet(`rooms/${currentRoom}/characters/${charId}`));
+  if (!charData) { showToast('Personnage introuvable.'); return; }
+  const modal = document.getElementById('gm-char-modal');
+  if (modal) modal.classList.remove('hidden');
+  renderGMCharSheet(charId, charData);
+}
+
+function closeGMCharSheet() {
+  const modal = document.getElementById('gm-char-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function renderGMCharSheet(charId, char) {
+  const el = document.getElementById('gm-char-modal-content');
+  if (!el) return;
+  const hp      = char.hp || { current: 0, max: 1 };
+  const pct     = hp.max > 0 ? Math.max(0, Math.min(100, (hp.current / hp.max) * 100)) : 0;
+  const hpColor = pct > 50 ? 'var(--success)' : pct > 25 ? 'var(--accent-gold)' : 'var(--danger)';
+  const cons    = char.consumables || [];
+
+  // Stats
+  // Axes
+  let statsHtml = '';
+  const axes = char.axes || {};
+  const axesDefs = [
+    { key:'physique', label:'Physique', low:'Bourrin', high:'Filou' },
+    { key:'social',   label:'Social',   low:'Star',    high:'Fouine' },
+    { key:'mental',   label:'Mental',   low:'PlanMaker', high:'Improvisateur' },
+  ];
+  if (Object.keys(axes).length) {
+    statsHtml += '<div style="margin-bottom:0.85rem;">';
+    axesDefs.forEach(a => {
+      const val = axes[a.key] || 3;
+      const dominant = val >= 4 ? a.high : a.low;
+      const dots = Array.from({length:6}, (_, i) =>
+        '<div class="axis-dot ' + (i < val ? 'on' : '') + '" style="width:13px;height:13px;cursor:default;pointer-events:none;"></div>'
+      ).join('');
+      statsHtml += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">' +
+        '<span style="font-size:0.6rem;color:var(--text-muted);width:55px;text-align:right;">' + a.low + '</span>' +
+        '<div style="display:flex;gap:3px;">' + dots + '</div>' +
+        '<span style="font-size:0.6rem;color:var(--text-muted);width:55px;">' + a.high + '</span>' +
+        '<span style="font-size:0.62rem;color:var(--accent-gold);font-weight:700;margin-left:auto;">' + dominant + '</span>' +
+        '</div>';
+    });
+    statsHtml += '</div>';
+  }
+
+  // Consumables
+  const consHtml = cons.length
+    ? cons.map((c, i) => {
+        const avail = c.currentUses != null ? c.currentUses : c.maxUses;
+        const col   = avail > 0 ? 'var(--accent-gold)' : 'var(--danger)';
+        return '<div class="gm-cons-row">' +
+          '<span>' + (c.icon || '✶') + ' ' + c.name + '</span>' +
+          '<span class="gm-cons-val" style="color:' + col + ';">' + avail + '/' + c.maxUses + '</span>' +
+          '</div>';
+      }).join('')
+    : '<div style="color:var(--text-muted);font-size:0.75rem;">Aucun consommable</div>';
+
+  // Build conditions HTML for GM modal
+  const gmCondDefs = [
+    { key:'physique', label:'⚡ Physique', color:'#e08050' },
+    { key:'social',   label:'💬 Social',   color:'#5080c0' },
+    { key:'mental',   label:'🧠 Mental',   color:'#9060c0' },
+  ];
+  const charConds = char.conditions || {};
+  const gmCondHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;">' +
+    gmCondDefs.map(cd => {
+      const conds = Array.isArray(charConds[cd.key]) ? charConds[cd.key] : [];
+      const tags = conds.map((c, i) =>
+        '<div style="display:flex;align-items:center;gap:0.25rem;font-size:0.68rem;padding:0.2rem 0.35rem;background:var(--bg-panel);border-radius:4px;border:1px solid var(--border);margin-bottom:0.2rem;">' +
+          (c.icon||'◆') + ' <span>' + c.name + '</span>' +
+          '<button onclick="gmRemoveCondition(\'' + charId + '\',\'' + cd.key + '\',' + i + ')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.55rem;margin-left:auto;">✕</button>' +
+        '</div>'
+      ).join('');
+      const addBtn = '<button onclick="gmOpenAddCondition(\'' + charId + '\',\'' + cd.key + '\')" style="width:100%;background:none;border:1px dashed var(--border);border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:0.68rem;padding:0.2rem;font-family:inherit;margin-top:0.15rem;">' + (conds.length>=3?'⚠ Rupture':'+') + '</button>';
+      return '<div><div style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:' + cd.color + ';margin-bottom:0.3rem;font-weight:700;">' + cd.label + '</div>' + tags + (conds.length<3?addBtn:'') + '</div>';
+    }).join('') +
+  '</div>';
+
+  el.innerHTML =
+    '<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">' +
+      '<div style="font-size:2rem;">' + (char.icon || '\U0001f3ad') + '</div>' +
+      '<div>' +
+        '<div style="font-size:1.05rem;font-weight:700;">' + (char.name || '?') + '</div>' +
+        '<div style="font-size:0.72rem;color:var(--text-muted);">' + (char.player || '') + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:1rem;">' +
+      '<div class="gm-micro-label" style="margin-bottom:0.35rem;">PV — ' + hp.current + ' / ' + hp.max + '</div>' +
+      '<div class="hp-track" style="height:10px;margin-bottom:0.45rem;">' +
+        '<div class="hp-fill" style="width:' + pct + '%;background:' + hpColor + ';"></div></div>' +
+      '<div style="display:flex;gap:0.35rem;">' +
+        '<button class="hp-btn hp-minus" onclick="gmAdjCharHP(\'' + charId + '\',-5)">-5</button>' +
+        '<button class="hp-btn hp-minus" onclick="gmAdjCharHP(\'' + charId + '\',-1)">-1</button>' +
+        '<button class="hp-btn" onclick="gmAdjCharHP(\'' + charId + '\',1)">+1</button>' +
+        '<button class="hp-btn" onclick="gmAdjCharHP(\'' + charId + '\',5)">+5</button>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:1rem;"><div class="gm-micro-label" style="margin-bottom:0.5rem;">Axes</div>' + statsHtml + '</div>' +
+    '<div><div class="gm-micro-label" style="margin-bottom:0.45rem;">Consommables</div>' + consHtml + '</div>';
+}
+
+async function gmAdjCharHP(charId, delta) {
+  const data = gmCombatChars[charId] || await dbGet(`rooms/${currentRoom}/characters/${charId}`);
+  if (!data || !data.hp) return;
+  const hp     = data.hp;
+  const newCur = Math.max(0, Math.min(hp.max, hp.current + delta));
+  await dbUpdate(`rooms/${currentRoom}/characters/${charId}/hp`, { current: newCur });
+  // Refresh modal
+  if (gmCombatChars[charId]) {
+    gmCombatChars[charId].hp.current = newCur;
+    renderGMCharSheet(charId, gmCombatChars[charId]);
+  }
+  const sign = delta > 0 ? '+' + delta : '' + delta;
+  logEvent(delta > 0 ? '\U0001f49a' : '\U0001fa78', data.name || '?',
+    (delta > 0 ? 'gagne' : 'perd') + ' ' + Math.abs(delta) + ' PV (' + sign + ')');
+}
+
+/* ────────────────────────────────────────────────────────
+   MONSTER LIBRARY
+──────────────────────────────────────────────────────── */
+function listenMonsters() {
+  const detach = dbListen(`rooms/${currentRoom}/monsterLibrary`, data => {
+    campaignMonsters = data || {};
+    renderMonsterLibrary();
+  });
+  liveListeners.push(detach);
+}
+
+function renderMonsterLibrary() {
+  const list = document.getElementById('lib-monster-list');
+  if (!list) return;
+  const entries = Object.entries(campaignMonsters);
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun monstre. Cliquez sur « + Nouveau monstre » pour commencer.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([id, m]) =>
+    '<div class="monster-lib-card">' +
+      '<div class="monster-lib-card-head">' +
+        '<span class="monster-lib-icon">' + (m.icon || '\U0001f479') + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="monster-lib-name" style="color:' + (m.color || 'var(--danger)') + '">' + m.name + '</div>' +
+          '<div class="monster-lib-meta">' + (m.category || '') + (m.hp ? ' · ' + m.hp + ' PV' : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      (m.description ? '<div class="monster-lib-desc">' + m.description + '</div>' : '') +
+      (m.powers ? '<div class="monster-lib-desc" style="color:var(--text-muted);font-style:italic;">⚡ ' + m.powers + '</div>' : '') +
+      '<div class="monster-lib-actions">' +
+        '<button class="loom-btn primary" style="padding:0.28rem 0.65rem;font-size:0.7rem;" onclick="addMonsterFromLibrary(\'' + id + '\')">+ Combat</button>' +
+        '<button class="spell-del-btn" onclick="editMonster(\'' + id + '\')">&#9999;</button>' +
+        '<button class="spell-del-btn" onclick="deleteMonster(\'' + id + '\')">&#x2715;</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function openMonsterCreate() {
+  ['m-monster-id','m-monster-name','m-monster-icon','m-monster-cat','m-monster-desc','m-monster-powers'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('m-monster-hp').value    = '20';
+  document.getElementById('m-monster-color').value = '#e74c3c';
+  document.getElementById('monster-modal-title').textContent = 'Nouveau monstre';
+  showModal('modal-monster');
+}
+
+function editMonster(id) {
+  const m = campaignMonsters[id];
+  if (!m) return;
+  document.getElementById('m-monster-id').value     = id;
+  document.getElementById('m-monster-name').value   = m.name;
+  document.getElementById('m-monster-icon').value   = m.icon || '';
+  document.getElementById('m-monster-hp').value     = m.hp || 20;
+  document.getElementById('m-monster-color').value  = m.color || '#e74c3c';
+  document.getElementById('m-monster-cat').value    = m.category || '';
+  document.getElementById('m-monster-desc').value   = m.description || '';
+  document.getElementById('m-monster-powers').value = m.powers || '';
+  document.getElementById('monster-modal-title').textContent = 'Modifier le monstre';
+  showModal('modal-monster');
+}
+
+async function saveMonster() {
+  const id   = document.getElementById('m-monster-id').value || 'monster_' + Date.now();
+  const name = document.getElementById('m-monster-name').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  await dbSet(`rooms/${currentRoom}/monsterLibrary/${id}`, {
+    name,
+    icon:        document.getElementById('m-monster-icon').value.trim()   || '\U0001f479',
+    hp:          parseInt(document.getElementById('m-monster-hp').value)  || 20,
+    color:       document.getElementById('m-monster-color').value,
+    category:    document.getElementById('m-monster-cat').value.trim(),
+    description: document.getElementById('m-monster-desc').value.trim(),
+    powers:      document.getElementById('m-monster-powers').value.trim(),
+  });
+  hideModal('modal-monster');
+  showToast('Monstre enregistré !');
+}
+
+async function deleteMonster(id) {
+  if (!confirm('Supprimer ce monstre de la bibliothèque ?')) return;
+  if (!localMode && db) await db.ref(`rooms/${currentRoom}/monsterLibrary/${id}`).remove();
+  else delete campaignMonsters[id];
+  renderMonsterLibrary();
+  showToast('Monstre supprimé.');
+}
+
+function addMonsterFromLibrary(id) {
+  const m = campaignMonsters[id];
+  if (!m) return;
+  combatSetup.push({
+    id: 'monster_' + Date.now(), type: 'monster',
+    name: m.name, icon: m.icon || '\U0001f479',
+    color: m.color || '#e74c3c', hp: m.hp || 20, maxHp: m.hp || 20
+  });
+  renderCombatSetup();
+  showToast(m.name + ' ajouté au combat !');
+  showScreen('screen-gm');
+}
+
+/* ────────────────────────────────────────────────────────
+   NPC LIBRARY
+──────────────────────────────────────────────────────── */
+function listenNPCs() {
+  const detach = dbListen(`rooms/${currentRoom}/npcs`, data => {
+    campaignNPCs = data || {};
+    renderNPCLibrary();
+  });
+  liveListeners.push(detach);
+}
+
+function renderNPCLibrary() {
+  const list = document.getElementById('lib-npc-list');
+  if (!list) return;
+  const entries = Object.entries(campaignNPCs);
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucun PNJ. Cliquez sur « + Nouveau PNJ » pour commencer.</div>';
+    return;
+  }
+  const attLabel = { ami: '\U0001f49a Ami', neutre: '⚪ Neutre', hostile: '\U0001f534 Hostile' };
+  list.innerHTML = entries.map(([id, n]) => {
+    const att = n.attitude || 'neutre';
+    return '<div class="npc-lib-card">' +
+      '<div class="npc-lib-card-head">' +
+        '<span class="npc-lib-icon">' + (n.icon || '\U0001f9d1') + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="npc-lib-name">' + n.name + '</div>' +
+          '<div class="npc-lib-meta">' + (n.role || '') + '</div>' +
+        '</div>' +
+        '<span class="npc-attitude-badge ' + att + '">' + (attLabel[att] || att) + '</span>' +
+      '</div>' +
+      (n.description ? '<div class="npc-lib-desc">' + n.description + '</div>' : '') +
+      (n.notes ? '<div class="npc-lib-desc" style="color:var(--text-muted);font-style:italic;font-size:0.7rem;">\U0001f512 ' + n.notes + '</div>' : '') +
+      '<div class="npc-lib-actions">' +
+        '<button class="spell-del-btn" onclick="editNPC(\'' + id + '\')">&#9999;</button>' +
+        '<button class="spell-del-btn" onclick="deleteNPC(\'' + id + '\')">&#x2715;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openNPCCreate() {
+  ['m-npc-id','m-npc-name','m-npc-icon','m-npc-role','m-npc-desc','m-npc-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('m-npc-attitude').value = 'neutre';
+  document.getElementById('npc-modal-title').textContent = 'Nouveau PNJ';
+  showModal('modal-npc');
+}
+
+function editNPC(id) {
+  const n = campaignNPCs[id];
+  if (!n) return;
+  document.getElementById('m-npc-id').value       = id;
+  document.getElementById('m-npc-name').value     = n.name;
+  document.getElementById('m-npc-icon').value     = n.icon || '';
+  document.getElementById('m-npc-role').value     = n.role || '';
+  document.getElementById('m-npc-attitude').value = n.attitude || 'neutre';
+  document.getElementById('m-npc-desc').value     = n.description || '';
+  document.getElementById('m-npc-notes').value    = n.notes || '';
+  document.getElementById('npc-modal-title').textContent = 'Modifier le PNJ';
+  showModal('modal-npc');
+}
+
+async function saveNPC() {
+  const id   = document.getElementById('m-npc-id').value || 'npc_' + Date.now();
+  const name = document.getElementById('m-npc-name').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  await dbSet(`rooms/${currentRoom}/npcs/${id}`, {
+    name,
+    icon:        document.getElementById('m-npc-icon').value.trim()  || '\U0001f9d1',
+    role:        document.getElementById('m-npc-role').value.trim(),
+    attitude:    document.getElementById('m-npc-attitude').value,
+    description: document.getElementById('m-npc-desc').value.trim(),
+    notes:       document.getElementById('m-npc-notes').value.trim(),
+  });
+  hideModal('modal-npc');
+  showToast('PNJ enregistré !');
+}
+
+async function deleteNPC(id) {
+  if (!confirm('Supprimer ce PNJ ?')) return;
+  if (!localMode && db) await db.ref(`rooms/${currentRoom}/npcs/${id}`).remove();
+  else delete campaignNPCs[id];
+  renderNPCLibrary();
+  showToast('PNJ supprimé.');
+}
+
+
+/* ════════════════════════════════════════════════════════
+   AXES (remplace les stats classiques)
+════════════════════════════════════════════════════════ */
+const AXES = [
+  { key: 'physique', label: 'Physique', low: 'Bourrin',     high: 'Filou',          color: '#c87840' },
+  { key: 'social',   label: 'Social',   low: 'Star',         high: 'Fouine',         color: '#4878c0' },
+  { key: 'mental',   label: 'Mental',   low: 'PlanMaker',    high: 'Improvisateur',  color: '#8858b8' },
+];
+
+function renderAxes(axes) {
+  const container = document.getElementById('axes-container');
+  if (!container) return;
+  axes = axes || {};
+  container.innerHTML = '<div class="axes-block">' +
+    '<div class="axes-title">Axes · Tendances</div>' +
+    AXES.map(axis => {
+      const val = axes[axis.key] || 3;
+      const dominant = val >= 4 ? 'high' : val <= 2 ? 'low' : null;
+      const isHighDom = dominant === 'high';
+      const isLowDom  = dominant === 'low';
+      const dots = Array.from({ length: 6 }, (_, i) => {
+        const dotVal = i + 1;
+        return '<div class="axis-dot ' + (dotVal <= val ? 'on' : '') + '" onclick="setAxis(\'' +
+          axis.key + '\',' + dotVal + ')"></div>';
+      }).join('');
+      // Hint text
+      let hint = '';
+      if (val > 3) hint = axis.high + ' : 1–' + val + ' · ' + axis.low + ' : ' + val + '–6';
+      else if (val < 4) hint = axis.low + ' : ' + val + '–6 · ' + axis.high + ' : 1–' + val;
+      else hint = 'Neutre (1–' + val + ' / ' + val + '–6)';
+      return '<div class="axis-row">' +
+        '<span class="axis-label-low' + (isLowDom ? ' dominant' : '') + '">' + axis.low + '</span>' +
+        '<div class="axis-center">' +
+          '<span class="axis-key-label">' + axis.label + '</span>' +
+          '<div class="axis-scale">' + dots + '</div>' +
+          '<div class="axis-hint">' + hint + '</div>' +
+        '</div>' +
+        '<span class="axis-label-high' + (isHighDom ? ' dominant' : '') + '">' + axis.high + '</span>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+async function setAxis(key, value) {
+  if (!currentCharId) return;
+  const current = currentCharData && currentCharData.axes ? (currentCharData.axes[key] || 3) : 3;
+  const newVal  = current === value ? Math.max(1, value - 1) : value;
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/axes`, { [key]: newVal });
+  if (localMode) {
+    if (!currentCharData.axes) currentCharData.axes = {};
+    currentCharData.axes[key] = newVal;
+    renderAxes(currentCharData.axes);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   CONDITIONS
+════════════════════════════════════════════════════════ */
+const COND_MAX = 3;
+const COND_DEFS = [
+  { key: 'physique', label: '⚡ Physique', color: '#c87840' },
+  { key: 'social',   label: '\U0001f4ac Social',   color: '#4878c0' },
+  { key: 'mental',   label: '\U0001f9e0 Mental',   color: '#8858b8' },
+];
+
+function renderConditions(conditions) {
+  const container = document.getElementById('conditions-container');
+  if (!container) return;
+  conditions = conditions || {};
+  const canEdit = !!(currentCharId);
+
+  container.innerHTML = '<div class="conditions-outer"><div class="conditions-panels">' +
+    COND_DEFS.map(cat => {
+      const conds = Array.isArray(conditions[cat.key]) ? conditions[cat.key] : [];
+      const atMax = conds.length >= COND_MAX;
+      const tags = conds.map((c, idx) =>
+        '<div class="cond-tag">' +
+          '<span class="cond-tag-icon">' + (c.icon || '◆') + '</span>' +
+          '<span class="cond-tag-name" title="' + (c.description || '') + '">' + c.name + '</span>' +
+          (canEdit ? '<button class="cond-tag-remove" onclick="removeCondition(\'' + cat.key + '\',' + idx + ')">✕</button>' : '') +
+        '</div>'
+      ).join('');
+      const emptySlots = Array.from({ length: Math.max(0, COND_MAX - conds.length) }, () =>
+        '<div class="cond-empty-slot"></div>'
+      ).join('');
+      return '<div class="cond-panel">' +
+        '<div class="cond-panel-hdr">' +
+          '<span class="cond-panel-title" style="color:' + cat.color + ';">' + cat.label + '</span>' +
+          (canEdit ? '<button class="cond-panel-add' + (atMax ? ' danger-btn' : '') + '" onclick="openAddCondition(\'' + cat.key + '\')" title="' + (atMax ? 'RUPTURE si ajout !' : 'Ajouter') + '">' + (atMax ? '⚠' : '+') + '</button>' : '') +
+        '</div>' +
+        '<div class="cond-slots">' + tags + emptySlots + '</div>' +
+        (atMax ? '<div class="cond-rupture-warn">⚠ Rupture imminente</div>' : '') +
+      '</div>';
+    }).join('') +
+  '</div></div>';
+}
+
+function openAddCondition(category) {
+  const conditions = currentCharData && currentCharData.conditions ? currentCharData.conditions : {};
+  const conds = Array.isArray(conditions[category]) ? conditions[category] : [];
+  if (conds.length >= COND_MAX) {
+    // Déclencher rupture immédiatement
+    triggerRupture(currentCharData?.name || '?', category, true);
+    return;
+  }
+  pendingConditionCategory = category;
+  document.getElementById('m-cond-category').value = category;
+  document.getElementById('m-cond-name').value  = '';
+  document.getElementById('m-cond-icon').value  = '';
+  document.getElementById('m-cond-desc').value  = '';
+  const labels = { physique: 'Physique', social: 'Sociale', mental: 'Mentale' };
+  document.getElementById('cond-modal-title').textContent = 'Condition ' + (labels[category] || category);
+  showModal('modal-condition');
+}
+
+async function confirmAddCondition() {
+  const name = document.getElementById('m-cond-name').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  const icon = document.getElementById('m-cond-icon').value.trim() || '◆';
+  const desc = document.getElementById('m-cond-desc').value.trim();
+  const cat  = document.getElementById('m-cond-category').value;
+
+  const conditions = JSON.parse(JSON.stringify(currentCharData?.conditions || {}));
+  if (!Array.isArray(conditions[cat])) conditions[cat] = [];
+  if (conditions[cat].length >= COND_MAX) {
+    hideModal('modal-condition');
+    triggerRupture(currentCharData?.name || '?', cat, true);
+    return;
+  }
+  conditions[cat].push({ name, icon, description: desc });
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { conditions });
+  if (localMode) { currentCharData.conditions = conditions; renderConditions(conditions); }
+  hideModal('modal-condition');
+  logEvent(icon, currentCharData?.name || '?', 'reçoit la condition : ' + name);
+  showToast('Condition ajoutée !');
+}
+
+async function removeCondition(category, idx) {
+  const conditions = JSON.parse(JSON.stringify(currentCharData?.conditions || {}));
+  if (!Array.isArray(conditions[category])) return;
+  const removed = conditions[category].splice(idx, 1)[0];
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { conditions });
+  if (localMode) { currentCharData.conditions = conditions; renderConditions(conditions); }
+  if (removed) logEvent('✅', currentCharData?.name || '?', 'se libère de : ' + removed.name);
+}
+
+// Fonctions MJ pour modifier les conditions depuis le modal GM
+async function gmOpenAddCondition(charId, category) {
+  pendingConditionCategory = category;
+  const charData = gmCombatChars[charId] || await dbGet(`rooms/${currentRoom}/characters/${charId}`);
+  const conds = charData?.conditions?.[category];
+  if (Array.isArray(conds) && conds.length >= COND_MAX) {
+    triggerRupture(charData?.name || '?', category, false);
+    // Clear conditions
+    const conditions = JSON.parse(JSON.stringify(charData?.conditions || {}));
+    conditions[category] = [];
+    await dbUpdate(`rooms/${currentRoom}/characters/${charId}`, { conditions });
+    if (gmCombatChars[charId]) { gmCombatChars[charId].conditions = conditions; renderGMCharSheet(charId, gmCombatChars[charId]); }
+    return;
+  }
+  // Use the quick-add modal, targeting the other character
+  document.getElementById('m-cond-category').value = category;
+  document.getElementById('m-cond-name').value  = '';
+  document.getElementById('m-cond-icon').value  = '';
+  document.getElementById('m-cond-desc').value  = '';
+  document.getElementById('cond-modal-title').textContent = 'Condition → ' + (charData?.name || charId);
+  // Override confirm to target specific char
+  window._gmCondTargetId = charId;
+  showModal('modal-condition');
+}
+
+const _origConfirmAddCondition = confirmAddCondition;
+confirmAddCondition = async function() {
+  if (window._gmCondTargetId && window._gmCondTargetId !== currentCharId) {
+    // GM adds condition to another character
+    const targetId = window._gmCondTargetId;
+    window._gmCondTargetId = null;
+    const name = document.getElementById('m-cond-name').value.trim();
+    if (!name) { showToast('Le nom est obligatoire.'); return; }
+    const icon = document.getElementById('m-cond-icon').value.trim() || '◆';
+    const desc = document.getElementById('m-cond-desc').value.trim();
+    const cat  = document.getElementById('m-cond-category').value;
+    const charData = gmCombatChars[targetId] || await dbGet(`rooms/${currentRoom}/characters/${targetId}`);
+    const conditions = JSON.parse(JSON.stringify(charData?.conditions || {}));
+    if (!Array.isArray(conditions[cat])) conditions[cat] = [];
+    if (conditions[cat].length >= COND_MAX) {
+      hideModal('modal-condition');
+      triggerRupture(charData?.name || '?', cat, false);
+      return;
+    }
+    conditions[cat].push({ name, icon, description: desc });
+    await dbUpdate(`rooms/${currentRoom}/characters/${targetId}`, { conditions });
+    if (gmCombatChars[targetId]) { gmCombatChars[targetId].conditions = conditions; renderGMCharSheet(targetId, gmCombatChars[targetId]); }
+    hideModal('modal-condition');
+    logEvent(icon, charData?.name || '?', 'reçoit la condition : ' + name);
+    showToast('Condition ajoutée !');
+  } else {
+    window._gmCondTargetId = null;
+    return _origConfirmAddCondition();
+  }
+};
+
+async function gmRemoveCondition(charId, category, idx) {
+  const charData = gmCombatChars[charId] || await dbGet(`rooms/${currentRoom}/characters/${charId}`);
+  const conditions = JSON.parse(JSON.stringify(charData?.conditions || {}));
+  if (!Array.isArray(conditions[category])) return;
+  const removed = conditions[category].splice(idx, 1)[0];
+  await dbUpdate(`rooms/${currentRoom}/characters/${charId}`, { conditions });
+  if (gmCombatChars[charId]) { gmCombatChars[charId].conditions = conditions; renderGMCharSheet(charId, gmCombatChars[charId]); }
+  if (removed) logEvent('✅', charData?.name || '?', 'se libère de : ' + removed.name);
+}
+
+/* ════════════════════════════════════════════════════════
+   RUPTURES
+════════════════════════════════════════════════════════ */
+function triggerRupture(charName, category, clearConditions = true) {
+  const labels   = { physique: 'Physique', social: 'Sociale', mental: 'Mentale' };
+  const colors   = { physique: '#c87840',  social: '#4878c0', mental: '#8858b8' };
+  const descs    = {
+    physique: 'Le corps cède. Épuisement total, mutation, effondrement ou perte de conscience — la chair règle sa dette.',
+    social:   'Le tissu social se déchire. Disgrâce, bannissement, réputation anéantie — le monde vous tourne le dos.',
+    mental:   "L'esprit se fracture. Hallucinations, possession, contamination — le Loom s'engouffre dans les failles."
+  };
+  const catLabel = labels[category] || category;
+  const catColor = colors[category] || 'var(--danger)';
+
+  const overlay = document.getElementById('rupture-overlay');
+  if (overlay) { overlay.classList.remove('hidden'); overlay.style.background = '#000'; }
+  const catEl  = document.getElementById('rupture-category-label');
+  const nameEl = document.getElementById('rupture-char-label');
+  const descEl = document.getElementById('rupture-desc-label');
+  if (catEl)  { catEl.textContent = 'Rupture ' + catLabel; catEl.style.color = catColor; }
+  if (nameEl) nameEl.textContent = charName;
+  if (descEl) descEl.textContent = descs[category] || 'Une rupture secoue l\'être de ' + charName + '.';
+
+  logEvent('\U0001f4a5', charName, 'subit une Rupture ' + catLabel + ' !');
+
+  // Vider les conditions de cette catégorie
+  if (clearConditions && currentCharId && currentCharData) {
+    const conditions = JSON.parse(JSON.stringify(currentCharData.conditions || {}));
+    conditions[category] = [];
+    dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}`, { conditions });
+    if (localMode) { currentCharData.conditions = conditions; }
+  }
+
+  setTimeout(() => dismissRupture(), 8000);
+}
+
+function dismissRupture() {
+  const overlay = document.getElementById('rupture-overlay');
+  if (overlay) overlay.classList.add('hidden');
+  // Re-render conditions après rupture
+  if (currentCharData) renderConditions(currentCharData.conditions);
+}
+
+/* ════════════════════════════════════════════════════════
+   LOOM SOURCES (Anomalies — Lire ou Récolter)
+════════════════════════════════════════════════════════ */
+function listenLoomSources() {
+  const detach = dbListen(`rooms/${currentRoom}/loomSources`, data => {
+    campaignLoomSources = data || {};
+    renderLoomSourceList();
+  });
+  liveListeners.push(detach);
+}
+
+function listenPresentedSource() {
+  const detach = dbListen(`rooms/${currentRoom}/presentedSource`, data => {
+    if (data && data.id) {
+      presentedSourceData = data;
+      showPresentedSource(data);
+    } else {
+      presentedSourceData = null;
+    }
+  });
+  liveListeners.push(detach);
+}
+
+function showPresentedSource(src) {
+  const school = SCHOOLS[src.color] || {};
+  const nameEl    = document.getElementById('ls-present-name');
+  const descEl    = document.getElementById('ls-present-desc');
+  const emojiEl   = document.getElementById('ls-present-emoji');
+  const hintEl    = document.getElementById('ls-present-spell-hint');
+  const readBtn   = document.getElementById('btn-read-source');
+  if (emojiEl) { emojiEl.textContent = school.emoji || '✶'; emojiEl.style.color = school.color || 'var(--accent-gold)'; }
+  if (nameEl)  nameEl.textContent  = src.name || '';
+  if (descEl)  descEl.textContent  = src.description || '';
+  if (hintEl && readBtn) {
+    if (src.linkedSpellId && campaignSpells[src.linkedSpellId]) {
+      const spell = campaignSpells[src.linkedSpellId];
+      hintEl.style.display = '';
+      hintEl.textContent = '\U0001f4d6 Lire : découvrir « ' + spell.name + ' »';
+      readBtn.style.display = '';
+    } else {
+      hintEl.style.display = 'none';
+      readBtn.style.display = 'none';
+    }
+  }
+  showModal('modal-loom-present');
+}
+
+async function harvestLoomSource() {
+  if (!presentedSourceData) return;
+  const charges = presentedSourceData.charges || 2;
+  const current = currentCharData?.guilder?.charges ?? 0;
+  await dbUpdate(`rooms/${currentRoom}/characters/${currentCharId}/guilder`, { charges: current + charges });
+  if (localMode) {
+    if (!currentCharData.guilder) currentCharData.guilder = {};
+    currentCharData.guilder.charges = current + charges;
+    renderGuilder(currentCharData.guilder);
+  }
+  logEvent('⚗️', currentCharData?.name || '?', 'récolte ' + charges + ' charges depuis « ' + (presentedSourceData.name || '') + ' »');
+  hideModal('modal-loom-present');
+  showToast('+' + charges + ' Charges récoltées !');
+}
+
+async function readLoomSource() {
+  if (!presentedSourceData || !presentedSourceData.linkedSpellId) {
+    showToast('Cette source ne contient pas de sort lisible.'); return;
+  }
+  const spellId  = presentedSourceData.linkedSpellId;
+  const existing = currentCharData?.knownSpells || [];
+  if (existing.includes(spellId)) {
+    showToast('Vous connaissez déjà ce sort.'); hideModal('modal-loom-present'); return;
+  }
+  const newSpells = [...existing, spellId];
+  await dbSet(`rooms/${currentRoom}/characters/${currentCharId}/knownSpells`, newSpells);
+  if (localMode) { currentCharData.knownSpells = newSpells; }
+  const spell = campaignSpells[spellId];
+  logEvent('\U0001f4d6', currentCharData?.name || '?', 'apprend : « ' + (spell?.name || '?') + ' »');
+  hideModal('modal-loom-present');
+  showToast('✨ Sort appris : ' + (spell?.name || '?') + ' !');
+}
+
+function renderLoomSourceList() {
+  const list = document.getElementById('lib-source-list');
+  if (!list) return;
+  const entries = Object.entries(campaignLoomSources);
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:0.5rem 0;">Aucune anomalie. Cliquez sur « + Nouvelle anomalie » pour commencer.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(([id, src]) => {
+    const school = SCHOOLS[src.color] || {};
+    const linkedSpell = src.linkedSpellId ? campaignSpells[src.linkedSpellId] : null;
+    return '<div class="loom-source-card">' +
+      '<div class="loom-source-head">' +
+        '<span style="font-size:1.5rem;color:' + (school.color || 'var(--accent-gold)') + ';">' + (school.emoji || '✶') + '</span>' +
+        '<div style="flex:1;">' +
+          '<div class="loom-source-name" style="color:' + (school.color || 'var(--accent-gold)') + '">' + src.name + '</div>' +
+          '<div style="font-size:0.62rem;color:var(--text-muted);">' + (school.label || src.color || '') +
+            ' · Récolte : ' + (src.charges||2) + ' charges' +
+            (linkedSpell ? ' · Lecture : ' + linkedSpell.name : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      (src.description ? '<div class="loom-source-desc">' + src.description + '</div>' : '') +
+      '<div class="loom-source-actions">' +
+        '<button class="loom-btn primary" style="padding:0.3rem 0.7rem;font-size:0.72rem;" onclick="presentLoomSource(\'' + id + '\')">✨ Présenter</button>' +
+        '<button class="spell-del-btn" onclick="editLoomSource(\'' + id + '\')">&#9999;</button>' +
+        '<button class="spell-del-btn" onclick="deleteLoomSource(\'' + id + '\')">&#x2715;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openLoomSourceCreate() {
+  ['m-ls-id','m-ls-name','m-ls-desc'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('m-ls-color').value   = 'vert';
+  document.getElementById('m-ls-charges').value = '2';
+  populateLoomSourceSpells('');
+  document.getElementById('loom-source-modal-title').textContent = 'Nouvelle Anomalie Loom';
+  showModal('modal-loom-source');
+}
+
+function editLoomSource(id) {
+  const src = campaignLoomSources[id];
+  if (!src) return;
+  document.getElementById('m-ls-id').value      = id;
+  document.getElementById('m-ls-name').value    = src.name;
+  document.getElementById('m-ls-color').value   = src.color || 'vert';
+  document.getElementById('m-ls-desc').value    = src.description || '';
+  document.getElementById('m-ls-charges').value = src.charges || 2;
+  populateLoomSourceSpells(src.linkedSpellId || '');
+  document.getElementById('loom-source-modal-title').textContent = "Modifier l'anomalie";
+  showModal('modal-loom-source');
+}
+
+function populateLoomSourceSpells(selectedId) {
+  const sel = document.getElementById('m-ls-spell');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Aucun sort lié</option>' +
+    Object.entries(campaignSpells).map(([id, s]) =>
+      '<option value="' + id + '"' + (id === selectedId ? ' selected' : '') + '>' +
+        (SCHOOLS[s.school]?.emoji || '') + ' ' + s.name + '</option>'
+    ).join('');
+}
+
+async function saveLoomSource() {
+  const id   = document.getElementById('m-ls-id').value || 'ls_' + Date.now();
+  const name = document.getElementById('m-ls-name').value.trim();
+  if (!name) { showToast('Le nom est obligatoire.'); return; }
+  await dbSet(`rooms/${currentRoom}/loomSources/${id}`, {
+    name,
+    color:         document.getElementById('m-ls-color').value,
+    description:   document.getElementById('m-ls-desc').value.trim(),
+    charges:       parseInt(document.getElementById('m-ls-charges').value) || 2,
+    linkedSpellId: document.getElementById('m-ls-spell').value || null,
+  });
+  hideModal('modal-loom-source');
+  showToast('Anomalie enregistrée !');
+}
+
+async function deleteLoomSource(id) {
+  if (!confirm('Supprimer cette anomalie ?')) return;
+  if (!localMode && db) await db.ref(`rooms/${currentRoom}/loomSources/${id}`).remove();
+  else delete campaignLoomSources[id];
+  renderLoomSourceList();
+  showToast('Anomalie supprimée.');
+}
+
+async function presentLoomSource(id) {
+  const src = campaignLoomSources[id];
+  if (!src) return;
+  await dbSet(`rooms/${currentRoom}/presentedSource`, { ...src, id });
+  logEvent('✨', 'Le MJ', 'révèle : « ' + src.name + ' »');
+  showToast('✨ Anomalie présentée !');
+}
+
+async function clearPresentedSource() {
+  await dbSet(`rooms/${currentRoom}/presentedSource`, null);
+  showToast('Présentation retirée.');
+}
+
 /* ────────────────────────────────────────────────────────
    MODALS
 ──────────────────────────────────────────────────────── */
@@ -3472,7 +4911,8 @@ function showModal(id) { document.getElementById(id).classList.remove('hidden');
 function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
 
 ['modal-char','modal-cons','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
- 'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import','modal-bg'].forEach(id => {
+ 'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import','modal-bg',
+ 'modal-monster','modal-npc','modal-condition','modal-loom-source','modal-loom-present'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', e => { if (e.target.id === id) hideModal(id); });
 });
@@ -3560,4 +5000,3 @@ document.getElementById('inp-create-name').addEventListener('keydown', e => {
 renderRecentSessions();
 </script>
 </body>
-</html>
