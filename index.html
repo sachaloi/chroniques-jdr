@@ -336,6 +336,17 @@
 
     .char-card-add { border-style: dashed; color: var(--text-muted); }
     .char-card-add:hover { color: var(--accent-gold); border-color: var(--accent-dim); }
+    .char-card-actions {
+      display: flex; gap: 0.3rem; margin-top: 0.5rem;
+    }
+    .char-action-btn {
+      flex: 1; padding: 0.25rem 0; font-size: 0.68rem;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: 5px; color: var(--text-muted);
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .char-action-btn:hover { color: var(--text-primary); border-color: var(--accent-dim); }
+    .char-action-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
 
     /* ─── Character sheet ────────────────────────────── */
     .sheet-grid {
@@ -2777,7 +2788,11 @@ function renderCharList(chars) {
     card.innerHTML = `
       <div class="char-avatar">${char.icon || '🎭'}</div>
       <div class="char-name">${char.name || '?'}</div>
-      <div class="char-player">${char.player || ''}</div>`;
+      <div class="char-player">${char.player || ''}</div>
+      <div class="char-card-actions">
+        <button class="char-action-btn" onclick="event.stopPropagation();renameChar('${id}','${(char.name||'').replace(/'/g,"\\'")}')">✏️ Renommer</button>
+        <button class="char-action-btn danger" onclick="event.stopPropagation();deleteChar('${id}','${(char.name||'?').replace(/'/g,"\\'")}')">🗑 Suppr.</button>
+      </div>`;
     card.onclick = () => openSheet(id);
     grid.appendChild(card);
   });
@@ -2791,6 +2806,21 @@ function renderCharList(chars) {
     <div class="char-player">personnage</div>`;
   add.onclick = () => showModal('modal-char');
   grid.appendChild(add);
+}
+
+async function renameChar(id, currentName) {
+  const newName = prompt('Nouveau nom du personnage :', currentName);
+  if (!newName || !newName.trim() || newName.trim() === currentName) return;
+  if (localMode) { showToast('Impossible en mode local.'); return; }
+  await db.ref(`rooms/${currentRoom}/characters/${id}/name`).set(newName.trim());
+  showToast('Personnage renommé.');
+}
+
+async function deleteChar(id, name) {
+  if (!confirm(`Supprimer définitivement "${name}" ? Cette action est irréversible.`)) return;
+  if (localMode) { showToast('Impossible en mode local.'); return; }
+  await db.ref(`rooms/${currentRoom}/characters/${id}`).remove();
+  showToast(`"${name}" supprimé.`);
 }
 
 async function createCharacter() {
@@ -4955,49 +4985,23 @@ async function exportSession() {
     URL.revokeObjectURL(url);
     showToast('✅ Session exportée !');
   } catch(e) {
-    console.error(e);
-    showToast('❌ Erreur lors de l\'export.');
+    showToast('❌ Erreur export : ' + e.message);
   }
 }
 
-function triggerImport() {
-  document.getElementById('import-file-input').click();
-}
-
-async function importSession(file) {
-  if (!file) return;
+async function importSession(e) {
+  const file = e.target.files[0];
+  if (!file || !currentRoom || localMode) return;
   try {
     const text = await file.text();
     const data = JSON.parse(text);
-    if (!data || typeof data !== 'object' || !data.name) {
-      showToast('❌ Fichier invalide ou corrompu.'); return;
-    }
-    const ok = confirm('Importer "' + file.name + '" ?\n\nCampagne : ' + data.name + '\n⚠️ Toutes les données actuelles du salon ' + currentRoom + ' seront remplacées.');
-    if (!ok) return;
-    if (localMode) {
-      localStore[currentRoom] = data;
-    } else {
-      await db.ref(`rooms/${currentRoom}`).set(data);
-    }
+    if (!confirm('Importer cette session ? Les données actuelles seront remplacées.')) return;
+    await db.ref('rooms/' + currentRoom).set(data);
     showToast('✅ Session importée !');
-  } catch(e) {
-    console.error(e);
-    showToast('❌ Fichier invalide ou erreur lors de l\'import.');
+  } catch(err) {
+    showToast('❌ Erreur import : ' + err.message);
   }
 }
-
-/* ────────────────────────────────────────────────────────
-   TOAST
-──────────────────────────────────────────────────────── */
-let toastTimer = null;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
 
 // Afficher les sessions récentes au chargement
 renderRecentSessions();
