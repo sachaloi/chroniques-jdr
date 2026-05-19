@@ -2103,7 +2103,7 @@
       </div>
       <div>
         <div class="field-label">Icône (emoji)</div>
-        <input type="text" id="m-item-icon" placeholder="⚔️" maxlength="2"
+        <input type="text" id="m-item-icon" placeholder="⚔️" maxlength="8"
                style="font-size:1.5rem;text-align:center;">
       </div>
     </div>
@@ -2377,7 +2377,7 @@
     <div class="field-label">Nom de la Condition</div>
     <input type="text" id="m-cond-name" placeholder="Brûlé, Paniqué, Humilié…">
     <div class="field-label">Icône (emoji)</div>
-    <input type="text" id="m-cond-icon" placeholder="🔥" maxlength="2"
+    <input type="text" id="m-cond-icon" placeholder="🔥" maxlength="8"
            style="font-size:1.5rem;text-align:center;">
     <div class="field-label">Description (optionnel)</div>
     <textarea id="m-cond-desc" rows="2" placeholder="Contexte narratif de la condition…"
@@ -3244,7 +3244,11 @@ async function saveItem() {
       if (sel && inp) statBonuses[sel.value] = parseInt(inp.value) || 0;
     });
   }
-  await dbSet(`rooms/${currentRoom}/itemLibrary/${id}`, { name, icon, category:cat, description:desc, isMagic, statBonuses });
+  const itemData = { name, icon, category: cat, description: desc, isMagic, statBonuses };
+  await dbSet(`rooms/${currentRoom}/itemLibrary/${id}`, itemData);
+  // Mise à jour locale immédiate (sans attendre le callback Firebase)
+  campaignItems[id] = itemData;
+  renderGMItemList(campaignItems);
   hideModal('modal-item-create');
   showToast('Objet enregistré !');
 }
@@ -3334,7 +3338,7 @@ function renderGuilder(guilder) {
     orb.className = 'guilder-orb' + (g.color === key ? ' selected' : '');
     orb.style.cssText = `background:${school.color};color:${school.color};`;
     orb.title = `${school.label} — ${school.art}`;
-    orb.innerHTML = `<span class="orb-label">${school.label}</span>`;
+    orb.innerHTML = '';
     orb.onclick = () => setGuilderColor(key);
     container.appendChild(orb);
   });
@@ -4573,8 +4577,8 @@ async function setAxis(key, value) {
 const COND_MAX = 3;
 const COND_DEFS = [
   { key: 'physique', label: '⚡ Physique', color: '#c87840' },
-  { key: 'social',   label: '\U0001f4ac Social',   color: '#4878c0' },
-  { key: 'mental',   label: '\U0001f9e0 Mental',   color: '#8858b8' },
+  { key: 'social',   label: '💬 Social',  color: '#4878c0' },
+  { key: 'mental',   label: '🧠 Mental',  color: '#8858b8' },
 ];
 
 function renderConditions(conditions) {
