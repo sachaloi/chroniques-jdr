@@ -1840,6 +1840,7 @@
       <div class="dice-result-die-label" id="dice-result-label"></div>
       <div class="dice-result-number" id="dice-result-number"></div>
       <div class="dice-result-qualifier" id="dice-result-qualifier"></div>
+      <div class="dice-result-success" id="dice-result-success" style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;margin-top:0.3rem;"></div>
       <div class="dice-result-roller" id="dice-result-roller"></div>
     </div>
   </div>
@@ -5130,6 +5131,13 @@ function rollForAxis(axisKey, pole) {
   const qualIdx = Math.round(quality * 5);
   const qualifier = DICE_QUAL[qualIdx];
 
+  // Success based on character's axis value
+  const axisVal = currentCharData?.axes?.[axisKey] ?? null;
+  let isSuccess = null;
+  if (axisVal !== null) {
+    isSuccess = pole === 'high' ? roll >= axisVal : roll <= axisVal;
+  }
+
   // Close picker
   const picker = document.getElementById('dice-picker');
   const fab    = document.getElementById('dice-fab');
@@ -5149,8 +5157,14 @@ function rollForAxis(axisKey, pole) {
     numEl.style.color       = color;
     qualEl.textContent      = qualifier;
     qualEl.style.color      = color;
-    rollerEl.textContent    = roller;
-    box.style.borderColor   = color + '66';
+    rollerEl.textContent    = roller + (axisVal !== null ? '  (axe ' + axisVal + '/6)' : '');
+    const succEl = document.getElementById('dice-result-success');
+    if (succEl) {
+      if (isSuccess === null) { succEl.textContent = ''; }
+      else if (isSuccess)     { succEl.textContent = '✓ Réussite'; succEl.style.color = color; }
+      else                    { succEl.textContent = '✗ Échec';    succEl.style.color = '#c94a4a'; }
+    }
+    box.style.borderColor   = (isSuccess === false ? '#c94a4a' : color) + '88';
     // Re-trigger animation
     box.style.animation = 'none';
     void box.offsetWidth;
@@ -5162,7 +5176,8 @@ function rollForAxis(axisKey, pole) {
 
   // Log
   const emoji = quality >= 0.8 ? '✨' : quality >= 0.5 ? '🎲' : quality >= 0.2 ? '⚠️' : '💀';
-  logEvent(emoji, roller, 'lance un d6 [' + axis.label + ' — ' + poleName + '] → ' + roll + ' · ' + qualifier);
+  const successStr = isSuccess === null ? '' : (isSuccess ? ' — ✓ Réussite' : ' — ✗ Échec');
+  logEvent(emoji, roller, 'lance un d6 [' + axis.label + ' — ' + poleName + '] → ' + roll + ' · ' + qualifier + successStr);
 }
 
 // Afficher les sessions récentes au chargement
