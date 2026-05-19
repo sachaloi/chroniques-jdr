@@ -1394,15 +1394,15 @@
     }
     /* Sheet Drawer */
     .sheet-drawer {
-      position: absolute; top: 0; right: 0; bottom: 0;
-      width: min(440px, 100vw);
-      background: var(--bg-card); border-left: 1px solid var(--border);
+      position: absolute; inset: 0;
+      width: 100%;
+      background: var(--bg-card);
       z-index: 30; overflow-y: auto;
-      transform: translateX(0); transition: transform 0.28s ease;
+      transform: translateY(0); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
       scrollbar-width: thin;
     }
-    .sheet-drawer.sheet-hidden { transform: translateX(100%); }
-    .sheet-drawer-inner { padding: 1rem 1.1rem; }
+    .sheet-drawer.sheet-hidden { transform: translateY(100%); }
+    .sheet-drawer-inner { padding: 1.25rem 1.5rem; max-width: 760px; margin: 0 auto; }
     .sheet-drawer-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 0.85rem; padding-bottom: 0.6rem;
@@ -1417,7 +1417,6 @@
     .sheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
     @media (max-width: 600px) {
       .sheet-grid { grid-template-columns: 1fr; }
-      .sheet-drawer { width: 100vw; }
     }
     /* Player Combat HUD */
     .player-combat-hud {
@@ -1721,6 +1720,7 @@
       <span id="hdr-code-sheet" class="room-badge"></span>
       <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;">🎨 Scène</button>
       <button class="icon-btn game-sheet-btn" onclick="toggleSheet()">📋 Fiche</button>
+      <button id="btn-combat-toggle" class="icon-btn" onclick="toggleCombatHUD()" style="display:none;">⚔ Combat</button>
     </div>
   </div>
   <!-- Character sheet drawer -->
@@ -3993,14 +3993,26 @@ function toggleSheet() {
   if (drawer) drawer.classList.toggle('sheet-hidden');
 }
 
+function toggleCombatHUD() {
+  const hud = document.getElementById('player-combat-hud');
+  if (hud) hud.classList.toggle('hud-hidden');
+}
+
 function updateCombatHUD(state) {
   const hud = document.getElementById('player-combat-hud');
+  const btn = document.getElementById('btn-combat-toggle');
   if (!hud) return;
   if (!state || !state.active) {
     hud.classList.add('hud-hidden');
+    if (btn) btn.style.display = 'none';
     return;
   }
-  hud.classList.remove('hud-hidden');
+  if (btn) btn.style.display = '';
+  // N'ouvrir le HUD automatiquement que si le combat vient de démarrer
+  if (hud.classList.contains('hud-hidden') && (!window._lastCombatActive)) {
+    hud.classList.remove('hud-hidden');
+  }
+  window._lastCombatActive = true;
   // Conditions row
   const conditions = currentCharData && currentCharData.conditions ? currentCharData.conditions : {};
   const hudCondRow = document.getElementById('hud-conditions-row');
@@ -4986,17 +4998,9 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-/* ────────────────────────────────────────────────────────
-   KEYBOARD SHORTCUTS
-──────────────────────────────────────────────────────── */
-document.getElementById('inp-join-code').addEventListener('keydown', e => {
-  if (e.key === 'Enter') joinRoom();
-});
-document.getElementById('inp-create-name').addEventListener('keydown', e => {
-  if (e.key === 'Enter') createRoom();
-});
 
 // Afficher les sessions récentes au chargement
 renderRecentSessions();
 </script>
 </body>
+</html>
