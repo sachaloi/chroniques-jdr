@@ -5176,8 +5176,10 @@ function rollForAxis(axisKey, pole) {
 
   // Log
   const emoji = quality >= 0.8 ? '✨' : quality >= 0.5 ? '🎲' : quality >= 0.2 ? '⚠️' : '💀';
-  const successStr = isSuccess === null ? '' : (isSuccess ? ' — ✓ Réussite' : ' — ✗ Échec');
-  logEvent(emoji, roller, 'lance un d6 [' + axis.label + ' — ' + poleName + '] → ' + roll + ' · ' + qualifier + successStr);
+  const threshold  = axisVal !== null ? (pole === 'high' ? '≥ ' + axisVal : '≤ ' + axisVal) : null;
+  const successStr  = isSuccess === null ? '' : (isSuccess ? ' — ✓ Réussite' : ' — ✗ Échec');
+  const threshStr   = threshold ? ' (seuil : ' + threshold + ')' : '';
+  logEvent(emoji, roller, 'lance un d6 [' + axis.label + ' — ' + poleName + '] → ' + roll + ' · ' + qualifier + successStr + threshStr);
 }
 
 // Afficher les sessions récentes au chargement
