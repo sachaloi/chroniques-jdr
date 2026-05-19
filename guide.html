@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chroniques — Guide Utilisateur</title>
+  <title>Chroniques — Guide du Joueur</title>
   <style>
     :root {
       --bg-deep:        #0d0d1a;
@@ -13,15 +13,13 @@
       --accent-dim:     #8a6d2a;
       --text-primary:   #e8e0cc;
       --text-secondary: #9a9080;
-      --text-muted:     #4a4858;
+      --text-muted:     #5a5870;
       --border:         #252540;
       --success:        #4a9a6a;
       --danger:         #c94a4a;
-      --loom-vert:   #2ecc71;
-      --loom-noir:   #778899;
-      --loom-rouge:  #e74c3c;
-      --loom-jaune:  #f1c40f;
-      --loom-violet: #9b59b6;
+      --phys-color:     #c87840;
+      --social-color:   #4878c0;
+      --mental-color:   #8858b8;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,31 +28,42 @@
       background: var(--bg-deep);
       color: var(--text-primary);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.7;
+      line-height: 1.75;
     }
 
     /* ── Header ── */
     .site-header {
-      background: var(--bg-card);
+      background: linear-gradient(180deg, #0a0a18 0%, var(--bg-card) 100%);
       border-bottom: 1px solid var(--border);
-      padding: 2.5rem 1.5rem 2rem;
+      padding: 3.5rem 1.5rem 2.5rem;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
     }
 
     .site-logo {
-      font-size: 2.5rem;
-      font-weight: 300;
-      letter-spacing: 0.35em;
+      font-size: 3rem;
+      font-weight: 200;
+      letter-spacing: 0.5em;
       color: var(--accent-gold);
       text-transform: uppercase;
+      position: relative;
     }
 
     .site-tagline {
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-top: 0.25rem;
+      margin-top: 0.4rem;
+      position: relative;
     }
 
     .guide-badge {
@@ -62,668 +71,557 @@
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 0.3rem 1rem;
-      font-size: 0.72rem;
+      padding: 0.3rem 1.1rem;
+      font-size: 0.68rem;
       color: var(--text-secondary);
-      margin-top: 1rem;
-      letter-spacing: 0.1em;
+      margin-top: 1.25rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
+      position: relative;
     }
 
     /* ── Layout ── */
-    .page { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .page { max-width: 800px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
 
-    /* ── TOC ── */
-    .toc {
+    /* ── Lore block ── */
+    .lore-block {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem 1.75rem;
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 0 12px 12px 0;
+      padding: 2rem 2.25rem;
       margin-bottom: 3rem;
+      position: relative;
     }
 
-    .toc-title {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--accent-gold);
-      margin-bottom: 1rem;
+    .lore-block::before {
+      content: '❝';
+      position: absolute;
+      top: 1rem; left: 1.5rem;
+      font-size: 2rem;
+      color: var(--accent-dim);
+      opacity: 0.4;
+      line-height: 1;
     }
 
-    .toc-cols {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.25rem 2rem;
-    }
-
-    @media (max-width: 500px) { .toc-cols { grid-template-columns: 1fr; } }
-
-    .toc a {
+    .lore-text {
+      font-size: 0.97rem;
+      line-height: 1.85;
       color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.2rem 0;
-      transition: color 0.15s;
+      font-style: italic;
     }
 
-    .toc a:hover { color: var(--accent-gold); }
+    .lore-text p + p { margin-top: 1rem; }
 
-    .toc-num {
-      font-size: 0.62rem;
-      color: var(--text-muted);
-      min-width: 1.4rem;
-      font-family: monospace;
-    }
-
-    /* ── Sections ── */
-    .section {
-      margin-bottom: 3rem;
-    }
-
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .section-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    .section-heading {
-      font-size: 1.15rem;
-      font-weight: 600;
+    .lore-highlight {
       color: var(--text-primary);
+      font-style: normal;
+      font-weight: 500;
     }
 
-    .section-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
+    /* ── Section ── */
+    .section { margin-bottom: 2.75rem; }
+
+    .section-label {
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-top: 0.15rem;
+      letter-spacing: 0.25em;
+      color: var(--accent-gold);
+      margin-bottom: 0.6rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
     }
 
     h3 {
-      font-size: 0.7rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 1.5rem 0 0.5rem;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--accent-gold);
-      margin: 1.5rem 0 0.75rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.08em;
     }
 
-    p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; }
+    p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      margin-bottom: 0.75rem;
+    }
 
     /* ── Cards ── */
-    .card {
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .info-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      padding: 1.25rem 1.4rem;
     }
 
-    .card-title {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text-primary);
+    .info-card-icon {
+      font-size: 1.5rem;
       margin-bottom: 0.5rem;
+    }
+
+    .info-card-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .info-card p { margin: 0; font-size: 0.85rem; }
+
+    /* ── Axes ── */
+    .axes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .axis-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.4rem;
+      border-top: 3px solid;
+    }
+
+    .axis-card.phys  { border-top-color: var(--phys-color); }
+    .axis-card.soc   { border-top-color: var(--social-color); }
+    .axis-card.ment  { border-top-color: var(--mental-color); }
+
+    .axis-name {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.6rem;
+    }
+    .axis-card.phys  .axis-name { color: var(--phys-color); }
+    .axis-card.soc   .axis-name { color: var(--social-color); }
+    .axis-card.ment  .axis-name { color: var(--mental-color); }
+
+    .axis-spectrum {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
     }
 
-    .card p { margin-bottom: 0; }
+    .axis-pole {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.78rem;
+    }
 
-    /* ── Steps ── */
-    .steps { list-style: none; }
+    .axis-bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--bg-panel) 0%, var(--border) 100%);
+    }
 
-    .steps li {
+    .axis-card p { font-size: 0.84rem; }
+
+    /* ── Conditions ── */
+    .cond-dots {
+      display: flex;
+      gap: 0.4rem;
+      margin: 0.5rem 0;
+    }
+
+    .cond-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+    }
+
+    .cond-dot.filled { background: var(--phys-color); border-color: var(--phys-color); }
+    .cond-dot.filled.soc { background: var(--social-color); border-color: var(--social-color); }
+    .cond-dot.filled.ment { background: var(--mental-color); border-color: var(--mental-color); }
+
+    /* ── Loom ── */
+    .loom-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      margin-top: 1.25rem;
+    }
+
+    .loom-colors {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin: 0.85rem 0;
+    }
+
+    .loom-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .loom-pill.vert   { background: rgba(46,204,113,0.12); color: #2ecc71; border: 1px solid rgba(46,204,113,0.25); }
+    .loom-pill.noir   { background: rgba(119,136,153,0.12); color: #9ab; border: 1px solid rgba(119,136,153,0.25); }
+    .loom-pill.rouge  { background: rgba(231,76,60,0.12); color: #e74c3c; border: 1px solid rgba(231,76,60,0.25); }
+    .loom-pill.jaune  { background: rgba(241,196,15,0.12); color: #f1c40f; border: 1px solid rgba(241,196,15,0.25); }
+    .loom-pill.violet { background: rgba(155,89,182,0.12); color: #9b59b6; border: 1px solid rgba(155,89,182,0.25); }
+
+    /* ── Rupture warning ── */
+    .rupture-block {
+      background: rgba(201, 74, 74, 0.07);
+      border: 1px solid rgba(201, 74, 74, 0.25);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .rupture-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--danger);
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .rupture-block p { font-size: 0.86rem; color: var(--text-secondary); margin: 0; }
+
+    /* ── Mystery block ── */
+    .mystery-block {
+      background: var(--bg-panel);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.25rem;
+      text-align: center;
+    }
+
+    .mystery-block p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin: 0;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Step list ── */
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+    }
+
+    .step-list li {
       display: flex;
       gap: 1rem;
-      margin-bottom: 0.75rem;
-      align-items: flex-start;
-      font-size: 0.88rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
       color: var(--text-secondary);
     }
 
+    .step-list li:last-child { border-bottom: none; }
+
     .step-num {
       width: 24px; height: 24px;
-      border-radius: 50%;
       background: var(--bg-panel);
-      border: 1px solid var(--accent-dim);
-      color: var(--accent-gold);
-      font-size: 0.7rem;
-      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      color: var(--accent-gold);
       flex-shrink: 0;
       margin-top: 0.1rem;
     }
 
-    /* ── Tips ── */
-    .tip {
-      background: #1a1a00;
-      border: 1px solid var(--accent-dim);
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      font-size: 0.82rem;
-      color: #c4a040;
-      margin: 0.75rem 0;
-      line-height: 1.55;
-    }
-
-    .tip::before { content: '💡 '; }
-
-    .warn {
-      background: #1a0505;
-      border: 1px solid #5a1010;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      font-size: 0.82rem;
-      color: #c06060;
-      margin: 0.75rem 0;
-      line-height: 1.55;
-    }
-
-    .warn::before { content: '⚠️ '; }
-
-    /* ── Tags ── */
-    .tag {
-      display: inline-block;
-      padding: 0.15rem 0.55rem;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      vertical-align: middle;
-    }
-
-    .tag-gm     { background: #2a1e00; color: var(--accent-gold); border: 1px solid var(--accent-dim); }
-    .tag-player { background: #0a1a2a; color: #5a9acc; border: 1px solid #2a4a6a; }
-    .tag-both   { background: #151525; color: var(--text-secondary); border: 1px solid var(--border); }
-
-    /* ── Key ── */
-    kbd {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.1rem 0.45rem;
-      font-size: 0.75rem;
-      font-family: monospace;
-      color: var(--text-primary);
-    }
-
-    /* ── Loom schools ── */
-    .schools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.6rem;
-      margin: 0.75rem 0;
-    }
-
-    .school-card {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.75rem;
-      text-align: center;
-    }
-
-    .school-orb {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      margin: 0 auto 0.5rem;
-    }
-
-    .school-name { font-size: 0.78rem; font-weight: 600; }
-    .school-art  { font-size: 0.62rem; color: var(--text-muted); margin-top: 0.15rem; }
-
-    /* ── Stat dots demo ── */
-    .dots-demo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0.5rem 0;
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-    }
-
-    .dot-demo {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .dot-gold   { background: var(--accent-gold); }
-    .dot-purple { background: #a880ff; }
-    .dot-empty  { background: var(--border); border: 1px solid var(--text-muted); }
-
-    /* ── Inventory demo ── */
-    .inv-demo {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.4rem;
-      margin: 0.75rem 0;
-    }
-
-    .inv-slot-demo {
-      aspect-ratio: 1;
-      border-radius: 7px;
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      gap: 0.1rem;
-    }
-
-    .inv-slot-demo.equipped { border-color: var(--accent-gold); background: #1a1800; }
-    .inv-slot-demo.empty    { border-style: dashed; opacity: 0.35; }
-    .inv-slot-demo span.lbl { font-size: 0.45rem; color: var(--text-muted); }
-
-    /* ── Role header ── */
-    .role-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .role-icon { font-size: 2rem; }
-    .role-title { font-size: 1rem; font-weight: 600; }
-    .role-desc  { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.15rem; }
-
     /* ── Footer ── */
-    .guide-footer {
+    .site-footer {
       text-align: center;
-      color: var(--text-muted);
-      font-size: 0.72rem;
-      padding-top: 2rem;
+      padding: 2rem;
       border-top: 1px solid var(--border);
-      margin-top: 3rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
     }
 
-    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    @media (max-width: 500px) {
+      .card-grid, .axes-grid { grid-template-columns: 1fr; }
+      .site-logo { font-size: 2rem; letter-spacing: 0.3em; }
+    }
   </style>
 </head>
 <body>
 
-<div class="site-header">
+<!-- ══ HEADER ══════════════════════════════════════════ -->
+<header class="site-header">
   <div class="site-logo">Chroniques</div>
-  <div class="site-tagline">Suivi de Campagne JDR</div>
-  <div class="guide-badge">Guide utilisateur</div>
-</div>
+  <div class="site-tagline">Suivi de Campagne · JDR</div>
+  <div class="guide-badge">Guide du Joueur</div>
+</header>
 
-<div class="page">
+<main class="page">
 
-  <!-- TABLE DES MATIÈRES -->
-  <div class="toc">
-    <div class="toc-title">Sommaire</div>
-    <div class="toc-cols">
-      <a href="#acces"><span class="toc-num">01</span> Accéder à l'application</a>
-      <a href="#fiche"><span class="toc-num">05</span> La fiche de personnage</a>
-      <a href="#rejoindre"><span class="toc-num">02</span> Rejoindre une session</a>
-      <a href="#loom"><span class="toc-num">06</span> Le Guildeur &amp; le Loom</a>
-      <a href="#sessions-recentes"><span class="toc-num">03</span> Sessions récentes</a>
-      <a href="#inventaire"><span class="toc-num">07</span> Inventaire &amp; trading</a>
-      <a href="#creer"><span class="toc-num">04</span> Créer une session (MJ)</a>
-      <a href="#mj"><span class="toc-num">08</span> Vue Maître de Jeu</a>
-    </div>
-  </div>
+  <!-- ══ LORE ══════════════════════════════════════════ -->
+  <section class="section" id="lore">
+    <div class="section-label">Le monde</div>
+    <h2>Ce que vous devez savoir</h2>
 
-  <!-- ══════════ 01 — ACCÈS ══════════ -->
-  <div class="section" id="acces">
-    <div class="section-divider">
-      <div class="section-icon">🌐</div>
-      <div>
-        <div class="section-heading">Accéder à l'application</div>
-        <div class="section-sub">Tous les joueurs</div>
+    <div class="lore-block">
+      <div class="lore-text">
+        <p>Le monde n'est plus tout à fait réel. Depuis <span class="lore-highlight">la Fracture</span>, quelque chose traverse les villes, les ruines et les êtres vivants : <span class="lore-highlight">le Loom</span>. Personne ne sait ce qu'il est réellement. Une énergie. Une maladie. Une conscience. Une erreur dans le tissu du monde.</p>
+        <p>Le Loom apparaît sous forme d'<span class="lore-highlight">anomalies</span> : des créatures impossibles, des lieux instables, des objets qui semblent porteurs d'une volonté étrangère. Certains ont appris à le récolter. D'autres à le lire. Car le Loom contient des vérités capables de modifier la réalité.</p>
+        <p>Depuis, <span class="lore-highlight">les guildes se forment</span>. Elles explorent les zones contaminées, acceptent des missions, récupèrent les anomalies et se disputent les découvertes les plus précieuses. Dans les quelques guildes réputées, les tableaux de missions débordent : disparitions, phénomènes inexpliqués, créatures altérées, accidents liés au Loom.</p>
+        <p>Les guildes ne sont pas constituées de héros. Ce sont des <span class="lore-highlight">prospecteurs du bizarre</span>, des récupérateurs, des spécialistes du danger — et parfois des survivants à peine stables. Car le Loom laisse toujours des traces. Les expéditions changent les corps. Déforment les souvenirs. Altèrent la perception du réel.</p>
+        <p>Et pourtant, malgré les risques, les guildes continuent de s'enfoncer dans les ruines de ce nouveau monde. Parce que quelque chose est en train de naître. Et que personne ne peut encore dire si cela sauvera la civilisation… <span class="lore-highlight">ou achèvera de la dévorer.</span></p>
       </div>
     </div>
+  </section>
 
-    <p>Chroniques est une application web accessible depuis n'importe quel navigateur, sur ordinateur ou téléphone. Aucune installation requise.</p>
+  <hr class="divider">
 
-    <div class="card">
-      <div class="card-title">🔗 URL de l'application</div>
-      <p>Votre Maître de Jeu vous communiquera l'adresse. Elle ressemble à :<br>
-      <code style="color:var(--accent-gold);font-size:0.85rem;">sachaloi.github.io/chroniques-jdr/</code></p>
-    </div>
+  <!-- ══ DÉMARRAGE ══════════════════════════════════════ -->
+  <section class="section" id="start">
+    <div class="section-label">Premiers pas</div>
+    <h2>Rejoindre une session</h2>
 
-    <div class="tip">L'application fonctionne entièrement dans le navigateur. Vos données sont synchronisées en temps réel entre tous les joueurs connectés à la même session.</div>
-  </div>
+    <p>Tout se passe dans une page web unique. Votre MJ vous donnera un <strong>code de salon à 6 caractères</strong>. Entrez-le sur l'écran d'accueil pour rejoindre la session.</p>
 
-  <!-- ══════════ 02 — REJOINDRE ══════════ -->
-  <div class="section" id="rejoindre">
-    <div class="section-divider">
-      <div class="section-icon">🚪</div>
-      <div>
-        <div class="section-heading">Rejoindre une session</div>
-        <div class="section-sub"><span class="tag tag-player">Joueur</span></div>
-      </div>
-    </div>
-
-    <ul class="steps">
-      <li><span class="step-num">1</span>Ouvrez l'URL de l'application dans votre navigateur.</li>
-      <li><span class="step-num">2</span>Dans le champ <strong>Code de salon</strong>, tapez le code à 6 caractères fourni par votre MJ (ex. <kbd>AB3K7Z</kbd>).</li>
-      <li><span class="step-num">3</span>Appuyez sur <kbd>Entrée</kbd> ou cliquez <strong>Rejoindre →</strong>.</li>
-      <li><span class="step-num">4</span>La liste des personnages de la session s'affiche. Cliquez sur le vôtre pour ouvrir votre fiche.</li>
+    <ul class="step-list">
+      <li><div class="step-num">1</div><div>Ouvrez l'application et saisissez le code de salon fourni par votre MJ.</div></li>
+      <li><div class="step-num">2</div><div>Choisissez votre personnage dans la liste, ou créez-en un nouveau si c'est votre première session.</div></li>
+      <li><div class="step-num">3</div><div>Vous arrivez sur votre vue de jeu. Tout est synchronisé en temps réel — ce que voit votre MJ se met à jour en direct.</div></li>
+      <li><div class="step-num">4</div><div>Utilisez le bouton <strong>📋 Fiche</strong> (en haut à droite) pour ouvrir votre fiche de personnage à tout moment.</div></li>
     </ul>
+  </section>
 
-    <div class="tip">Si votre personnage n'existe pas encore, cliquez sur <strong>+ Nouveau personnage</strong> pour le créer. Votre MJ peut aussi le créer pour vous depuis la Vue MJ.</div>
-  </div>
+  <hr class="divider">
 
-  <!-- ══════════ 03 — SESSIONS RÉCENTES ══════════ -->
-  <div class="section" id="sessions-recentes">
-    <div class="section-divider">
-      <div class="section-icon">🕐</div>
-      <div>
-        <div class="section-heading">Sessions récentes</div>
-        <div class="section-sub"><span class="tag tag-both">Tous</span></div>
+  <!-- ══ AXES ══════════════════════════════════════════ -->
+  <section class="section" id="axes">
+    <div class="section-label">Votre personnage</div>
+    <h2>Les trois Axes</h2>
+
+    <p>Votre personnage n'a pas de statistiques classiques. Il est défini par <strong>trois Axes opposés</strong>, chacun noté de 1 à 6. La valeur indique vers quel pôle vous penchez naturellement — ni bien ni mal, juste un style.</p>
+
+    <div class="axes-grid">
+      <div class="axis-card phys">
+        <div class="axis-name">Physique</div>
+        <div class="axis-spectrum">
+          <span class="axis-pole">Bourrin</span>
+          <div class="axis-bar"></div>
+          <span class="axis-pole">Filou</span>
+        </div>
+        <p style="font-size:0.82rem;">Force brute et endurance contre agilité et discrétion. Un 1 frappe fort et encaisse ; un 6 esquive, glisse et frappe dans le dos.</p>
+      </div>
+      <div class="axis-card soc">
+        <div class="axis-name">Social</div>
+        <div class="axis-spectrum">
+          <span class="axis-pole">Star</span>
+          <div class="axis-bar"></div>
+          <span class="axis-pole">Fouine</span>
+        </div>
+        <p style="font-size:0.82rem;">Charisme et présence contre discrétion et manipulation dans l'ombre. Un 1 brille en public ; un 6 obtient des informations sans qu'on remarque sa présence.</p>
+      </div>
+      <div class="axis-card ment">
+        <div class="axis-name">Mental</div>
+        <div class="axis-spectrum">
+          <span class="axis-pole">PlanMaker</span>
+          <div class="axis-bar"></div>
+          <span class="axis-pole">Improvisateur</span>
+        </div>
+        <p style="font-size:0.82rem;">Préparation méticuleuse contre adaptation instantanée. Un 1 arrive avec un plan sur dix pages ; un 6 invente en tombant.</p>
       </div>
     </div>
 
-    <p>Après votre première connexion à une session, elle apparaît automatiquement dans la section <strong>Sessions récentes</strong> en bas de l'écran d'accueil. Il vous suffit de cliquer dessus pour y retourner sans retaper le code.</p>
+    <p style="margin-top:1.25rem;">Ces valeurs guident la narration et les décisions du MJ — elles ne sont pas des bonus mécaniques figés. Votre façon de jouer doit refléter vos axes.</p>
+  </section>
 
-    <div class="card">
-      <div class="card-title">🟡 Badge MJ &nbsp; 🔵 Badge Joueur</div>
-      <p>Chaque session affiche un badge indiquant votre rôle. Les sessions où vous êtes MJ affichent le bouton <strong>Vue MJ</strong> et <strong>🎨 Thème</strong> — ces boutons sont invisibles pour les joueurs.</p>
-    </div>
+  <hr class="divider">
 
-    <div class="warn">L'historique est enregistré dans votre navigateur. Si vous changez de navigateur ou d'appareil, vous devrez retaper le code.</div>
-  </div>
+  <!-- ══ CONDITIONS ══════════════════════════════════════ -->
+  <section class="section" id="conditions">
+    <div class="section-label">État du personnage</div>
+    <h2>Conditions &amp; Ruptures</h2>
 
-  <!-- ══════════ 04 — CRÉER SESSION ══════════ -->
-  <div class="section" id="creer">
-    <div class="section-divider">
-      <div class="section-icon">⚙️</div>
-      <div>
-        <div class="section-heading">Créer une session</div>
-        <div class="section-sub"><span class="tag tag-gm">Maître de Jeu</span></div>
+    <p>Il n'y a pas de points de vie. La santé de votre personnage — physique, sociale, mentale — se mesure en <strong>Conditions</strong>. Une condition est un état narratif : <em>blessé à l'épaule</em>, <em>décrédibilisé</em>, <em>paranoïaque</em>…</p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="info-card-icon">⚡</div>
+        <div class="info-card-title">Physique</div>
+        <div class="cond-dots">
+          <div class="cond-dot filled"></div>
+          <div class="cond-dot filled"></div>
+          <div class="cond-dot"></div>
+        </div>
+        <p>Blessures, fatigue, dégradation du corps. Chaque dommage physique laisse une trace concrète.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">💬</div>
+        <div class="info-card-title">Social</div>
+        <div class="cond-dots">
+          <div class="cond-dot filled soc"></div>
+          <div class="cond-dot"></div>
+          <div class="cond-dot"></div>
+        </div>
+        <p>Réputation entamée, trahisons, humiliations. Ce que les autres pensent de vous a du poids.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🧠</div>
+        <div class="info-card-title">Mental</div>
+        <div class="cond-dots">
+          <div class="cond-dot filled ment"></div>
+          <div class="cond-dot filled ment"></div>
+          <div class="cond-dot filled ment"></div>
+        </div>
+        <p>Trauma, peur, distorsion de la réalité. L'exposition au Loom attaque souvent l'esprit en premier.</p>
       </div>
     </div>
 
-    <ul class="steps">
-      <li><span class="step-num">1</span>Sur l'écran d'accueil, saisissez le nom de votre campagne dans le champ <strong>Nom de la campagne</strong>.</li>
-      <li><span class="step-num">2</span>Cliquez sur <strong>Créer la session</strong>.</li>
-      <li><span class="step-num">3</span>Un code à 6 caractères apparaît en haut à droite — c'est le code à partager à vos joueurs.</li>
-    </ul>
+    <p style="margin-top:1.25rem;">Chaque catégorie peut accumuler jusqu'à <strong>3 conditions</strong>. Au-delà...</p>
 
-    <div class="tip">Créez vos personnages à l'avance depuis la Vue MJ pour que vos joueurs n'aient qu'à cliquer sur leur nom en arrivant.</div>
-
-    <h3>Choisir un thème de campagne</h3>
-    <p>Cliquez sur le bouton <strong>🎨 Thème</strong> dans le header pour sélectionner l'ambiance visuelle. Le thème s'applique instantanément à tous les joueurs connectés.</p>
-
-    <div class="card">
-      <div class="card-title">Les 5 thèmes disponibles</div>
-      <p>
-        <strong style="color:#c9a84c;">Médiéval Fantastique</strong> — Royaumes anciens, magie et épopées.<br>
-        <strong style="color:#c87828;">SteamPunk</strong> — Vapeur, engrenages et cuivre brûlant.<br>
-        <strong style="color:#00d4ff;">Futuriste / Digital</strong> — Néons, code et IA.<br>
-        <strong style="color:#a880ff;">Spatial</strong> — Cosmos infini et nébuleuses.<br>
-        <strong style="color:#c02828;">Mystérieux</strong> — Ombres, secrets et horreur douce.
-      </p>
+    <div class="rupture-block">
+      <div class="rupture-title">⚠ Rupture</div>
+      <p>Quand une quatrième condition s'abat sur une catégorie déjà pleine, c'est la <strong>Rupture</strong>. Un moment cinématique, brutal, inoubliable. Les conditions de la catégorie sont effacées — mais quelque chose a changé. Le MJ et la narration décident de ce qui reste.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- ══════════ 05 — FICHE ══════════ -->
-  <div class="section" id="fiche">
-    <div class="section-divider">
-      <div class="section-icon">📋</div>
-      <div>
-        <div class="section-heading">La fiche de personnage</div>
-        <div class="section-sub"><span class="tag tag-player">Joueur</span></div>
+  <hr class="divider">
+
+  <!-- ══ LOOM ══════════════════════════════════════════ -->
+  <section class="section" id="loom">
+    <div class="section-label">Le Loom</div>
+    <h2>Charges &amp; Sorts</h2>
+
+    <p>Le Loom est la ressource centrale du jeu. Vous accumulez des <strong>charges de Loom</strong> en explorant des anomalies, en récoltant des sources ou en recevant des récompenses. Ces charges alimentent vos <strong>sorts</strong> — des manipulations de la réalité apprises au fil des expéditions.</p>
+
+    <div class="loom-block">
+      <p style="margin:0 0 0.75rem; font-size:0.87rem; color: var(--text-secondary);">Le Loom se manifeste sous <strong>cinq couleurs</strong>, chacune associée à une école de sorts. Ces couleurs indiquent l'origine et la nature de l'anomalie — elles ne limitent pas mécaniquement votre usage des charges, mais elles racontent quelque chose.</p>
+      <div class="loom-colors">
+        <span class="loom-pill vert">● Vert</span>
+        <span class="loom-pill noir">● Gris</span>
+        <span class="loom-pill rouge">● Rouge</span>
+        <span class="loom-pill jaune">● Jaune</span>
+        <span class="loom-pill violet">● Violet</span>
+      </div>
+      <p style="margin:0; font-size:0.82rem; color:var(--text-muted); font-style:italic;">Ce que chaque couleur signifie, vous l'apprendrez en jeu.</p>
+    </div>
+
+    <h3>Anomalies — Lire ou Récolter</h3>
+    <p>Le MJ peut vous présenter une <strong>source Loom</strong> : une anomalie que votre groupe a découverte. Face à elle, vous aurez le choix :</p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="info-card-icon">⚗️</div>
+        <div class="info-card-title">Récolter</div>
+        <p>Extraire l'énergie brute de l'anomalie. Vous gagnez des charges de Loom, utilisables pour vos sorts. Rapide, pragmatique — et peut-être un peu brutal.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📖</div>
+        <div class="info-card-title">Lire</div>
+        <p>Décrypter le sens profond de l'anomalie. Vous apprenez un nouveau sort. Plus lent, plus risqué — mais vous comprenez quelque chose que peu de gens peuvent voir.</p>
       </div>
     </div>
 
-    <h3>Statistiques (3 × 3)</h3>
-    <p>Votre personnage possède <strong>9 caractéristiques</strong> réparties en trois catégories :</p>
-
-    <div class="card">
-      <div class="card-title">⚔️ Physique</div>
-      <p>Force · Dextérité · Résistance</p>
+    <div class="mystery-block" style="margin-top:1.25rem;">
+      <p>Certaines anomalies ont une description étrange — une phrase qui ne fait pas tout à fait sens. Gardez-la en tête.</p>
     </div>
-    <div class="card">
-      <div class="card-title">🗣️ Social</div>
-      <p>Présence · Manipulation · Sang-froid</p>
-    </div>
-    <div class="card">
-      <div class="card-title">🧠 Mental</div>
-      <p>Intelligence · Astuce · Résolution</p>
-    </div>
+  </section>
 
-    <p>Chaque stat est représentée par des <strong>cercles (dots)</strong>. Cliquez dessus pour modifier la valeur. Cliquer sur le dernier cercle rempli le vide (diminue d'un).</p>
+  <hr class="divider">
 
-    <div class="dots-demo">
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-empty"></span>
-      <span class="dot-demo dot-empty"></span>
-      <span style="margin-left:4px;">= valeur naturelle 3/5</span>
-    </div>
+  <!-- ══ INVENTAIRE & OR ══════════════════════════════════ -->
+  <section class="section" id="inventaire">
+    <div class="section-label">Équipement</div>
+    <h2>Inventaire &amp; Or</h2>
 
-    <div class="dots-demo">
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-gold"></span>
-      <span class="dot-demo dot-empty"></span>
-      <span class="dot-demo dot-empty"></span>
-      <span class="dot-demo dot-purple"></span>
-      <span class="dot-demo dot-purple"></span>
-      <span style="margin-left:4px;color:#a880ff;">= +2 via objet magique (total 5)</span>
-    </div>
+    <p>Votre fiche comporte un inventaire limité en <strong>emplacements</strong> (slots). Les objets trouvés en mission ou achetés entre deux sessions s'y logent. Certains objets ont un effet actif, d'autres sont passifs — lisez leur description.</p>
 
-    <div class="tip">Le maximum naturel est <strong>5</strong>. Un objet magique équipé peut pousser une stat jusqu'à <strong>7</strong> — les dots violets représentent ces bonus.</div>
+    <p>L'<strong>or</strong> est la monnaie du monde post-Fracture. Vous pouvez donner des objets à vos alliés directement depuis votre inventaire, ce qui facilite la gestion d'équipe en pleine session.</p>
 
-    <h3>Points de vie</h3>
-    <p>Utilisez les boutons <kbd>−5</kbd> <kbd>−1</kbd> <kbd>+1</kbd> <kbd>+5</kbd> pour modifier vos PV en temps réel. La barre change de couleur : verte au-dessus de 50 %, dorée entre 25 et 50 %, rouge en dessous.</p>
+    <p>Les <strong>capacités &amp; ressources</strong> (consommables) apparaissent aussi dans votre fiche. Ce sont des choses que vous pouvez faire un certain nombre de fois par session — compétences, objets à usage limité, pouvoirs spéciaux. Un bouton <em>Nouvelle session</em> les réinitialise quand le MJ démarre une nouvelle partie.</p>
+  </section>
 
-    <h3>Or 💰</h3>
-    <p>Compteur de pièces d'or. Modifiez-le directement en tapant une valeur ou avec les boutons −10/−1/+1/+10.</p>
+  <hr class="divider">
 
-    <h3>Capacités &amp; Consommables</h3>
-    <p>Cette section liste vos capacités à usage limité (pouvoirs, potions, sorts physiques…). Chaque item affiche ses <strong>charges restantes / charges de session</strong>.</p>
-    <ul style="list-style:none;padding:0;">
-      <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.4rem;">▸ <strong>Utiliser</strong> — dépense une charge.</li>
-      <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.4rem;">▸ <strong>↺</strong> — restaure une charge manuellement.</li>
-      <li style="font-size:0.85rem;color:var(--text-secondary);">▸ <strong>↺ Nouvelle session</strong> — remet toutes les charges au maximum d'un coup.</li>
-    </ul>
-  </div>
+  <!-- ══ EN JEU ══════════════════════════════════════════ -->
+  <section class="section" id="enjeu">
+    <div class="section-label">Pendant la partie</div>
+    <h2>La vue de jeu</h2>
 
-  <!-- ══════════ 06 — LOOM ══════════ -->
-  <div class="section" id="loom">
-    <div class="section-divider">
-      <div class="section-icon">🔮</div>
-      <div>
-        <div class="section-heading">Le Guildeur &amp; le Loom</div>
-        <div class="section-sub"><span class="tag tag-player">Joueur</span></div>
+    <p>Une fois dans une session, votre écran affiche la <strong>scène</strong> définie par le MJ — une image ou une ambiance visuelle. Tout change automatiquement quand le MJ met à jour le décor.</p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="info-card-icon">📋</div>
+        <div class="info-card-title">Fiche</div>
+        <p>Ouvre votre fiche personnage en plein écran. Axes, conditions, Loom, inventaire — tout est là.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">⚔</div>
+        <div class="info-card-title">Combat</div>
+        <p>Apparaît quand le MJ lance un combat. Affiche vos conditions et vos ressources actives. Peut être ouvert ou fermé à la demande.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">✨</div>
+        <div class="info-card-title">Anomalies</div>
+        <p>Quand le MJ vous présente une source Loom, une fenêtre s'ouvre avec le choix Lire ou Récolter.</p>
       </div>
     </div>
 
-    <p>Le <strong>Loom</strong> est l'énergie magique qui imprègne le monde. Chaque personnage porte un <strong>Guildeur Constellé</strong> — un bijou taillé dans de l'écume servant de réservoir à cette énergie.</p>
-
-    <h3>Les 5 écoles</h3>
-    <div class="schools-grid">
-      <div class="school-card">
-        <div class="school-orb" style="background:var(--loom-vert);"></div>
-        <div class="school-name">Ulmèques</div>
-        <div class="school-art">Onirique</div>
-      </div>
-      <div class="school-card">
-        <div class="school-orb" style="background:var(--loom-noir);"></div>
-        <div class="school-name">Ashragors</div>
-        <div class="school-art">Nécromance</div>
-      </div>
-      <div class="school-card">
-        <div class="school-orb" style="background:var(--loom-rouge);"></div>
-        <div class="school-name">Ghemdals</div>
-        <div class="school-art">Art Guerrier</div>
-      </div>
-      <div class="school-card">
-        <div class="school-orb" style="background:var(--loom-jaune);"></div>
-        <div class="school-name">Venn'dys</div>
-        <div class="school-art">Sorcellerie</div>
-      </div>
-      <div class="school-card">
-        <div class="school-orb" style="background:var(--loom-violet);"></div>
-        <div class="school-name">Kheyzas</div>
-        <div class="school-art">Sémantique</div>
-      </div>
+    <div class="mystery-block" style="margin-top:1.5rem;">
+      <p>D'autres choses peuvent apparaître pendant la session. Le MJ contrôle ce que vous voyez — et quand vous le voyez.</p>
     </div>
+  </section>
 
-    <h3>Choisir son école</h3>
-    <p>Sur votre fiche, cliquez sur l'une des <strong>5 orbes colorées</strong> pour lier votre Guildeur à cette école. Ce choix définit quelle couleur de Loom vous pouvez canaliser.</p>
+  <hr class="divider">
 
-    <h3>Charges de Loom</h3>
-    <p>Les charges représentent l'énergie accumulée dans votre Guildeur. Utilisez les boutons <kbd>+</kbd> et <kbd>−</kbd> pour les gérer. Il n'y a pas de maximum — vous pouvez en accumuler autant que vous en trouvez en jeu.</p>
+  <!-- ══ CONSEILS ══════════════════════════════════════════ -->
+  <section class="section" id="conseils">
+    <div class="section-label">Jouer dans Chroniques</div>
+    <h2>Quelques mots</h2>
 
-    <div class="card">
-      <div class="card-title">📖 Lire le Loom</div>
-      <p>Vous apprenez un nouveau sort. Votre MJ l'ajoute à votre liste de sorts connus depuis la Vue MJ. Une fois appris, il reste permanent.</p>
-    </div>
+    <p>Ce jeu n'est pas un jeu de puissance. Vos personnages ne sont pas des héros invincibles — ils sont des gens capables, souvent cabossés, qui avancent dans un monde qui ne leur doit rien.</p>
 
-    <div class="card">
-      <div class="card-title">⚡ Récolter le Loom</div>
-      <p>Vous accumulez de l'énergie dans votre Guildeur. Augmentez vos charges manuellement. Ces charges serviront à lancer vos sorts.</p>
-    </div>
+    <p>Les <strong>Conditions</strong> ne sont pas des punitions. Elles racontent ce qui vous arrive. Jouez-les. Un personnage avec trois conditions physiques qui continue à agir malgré tout est bien plus intéressant qu'un personnage toujours intact.</p>
 
-    <h3>Lancer un sort</h3>
-    <ul class="steps">
-      <li><span class="step-num">1</span>Cliquez sur <strong>⚡ Sorts disponibles</strong> — seuls les sorts de votre école dont le coût est ≤ vos charges actuelles s'affichent.</li>
-      <li><span class="step-num">2</span>Cliquez sur <strong>Lancer</strong> pour dépenser les charges et activer le sort.</li>
-      <li><span class="step-num">3</span>Cliquez sur <strong>📜 Tous mes sorts</strong> pour consulter l'ensemble de vos sorts connus, même ceux que vous ne pouvez pas encore lancer.</li>
-    </ul>
+    <p>Le <strong>Loom</strong> est fascinant et dangereux. Ne vous précipitez pas. Certaines anomalies méritent d'être observées avant d'être touchées.</p>
 
-    <div class="tip">Un sort grisé signifie que vos charges sont insuffisantes. Récoltez davantage de Loom avant de tenter de le lancer.</div>
-  </div>
+    <p>Et si quelque chose dans la réalité du jeu vous semble étrange, incohérent, ou impossible — c'est peut-être intentionnel.</p>
+  </section>
 
-  <!-- ══════════ 07 — INVENTAIRE ══════════ -->
-  <div class="section" id="inventaire">
-    <div class="section-divider">
-      <div class="section-icon">🎒</div>
-      <div>
-        <div class="section-heading">Inventaire &amp; Échanges</div>
-        <div class="section-sub"><span class="tag tag-player">Joueur</span></div>
-      </div>
-    </div>
+</main>
 
-    <p>L'inventaire affiche vos objets sous forme de grille de slots. Par défaut vous avez <strong>10 emplacements</strong>. Posséder un <strong>sac</strong> dans votre inventaire l'étend à <strong>30 emplacements</strong>.</p>
+<footer class="site-footer">
+  Chroniques · Guide du Joueur · Ce document est mis à jour au fil de la campagne
+</footer>
 
-    <div class="inv-demo">
-      <div class="inv-slot-demo equipped">⚔️<span class="lbl">Épée</span></div>
-      <div class="inv-slot-demo">🧪<span class="lbl">Potion</span></div>
-      <div class="inv-slot-demo">🎒<span class="lbl">Sac</span></div>
-      <div class="inv-slot-demo empty"></div>
-      <div class="inv-slot-demo empty"></div>
-    </div>
-    <p style="font-size:0.72rem;color:var(--text-muted);">Le contour doré indique un objet équipé. ✦ violet = objet magique.</p>
-
-    <h3>Équiper un objet</h3>
-    <ul class="steps">
-      <li><span class="step-num">1</span>Cliquez sur l'objet dans la grille.</li>
-      <li><span class="step-num">2</span>Dans la fenêtre de détail, cliquez sur <strong>Équiper</strong>.</li>
-      <li><span class="step-num">3</span>Les stats sont immédiatement mises à jour si l'objet est magique et confère des bonus.</li>
-    </ul>
-
-    <div class="tip">Vous pouvez déséquiper un objet en cliquant à nouveau dessus. Il reste dans l'inventaire mais ses bonus ne s'appliquent plus.</div>
-
-    <h3>Objets magiques ✦</h3>
-    <p>Les objets rares ou uniques définis par le MJ peuvent conférer des <strong>bonus à vos statistiques</strong>. Un dot violet apparaît alors à côté de la stat concernée, ainsi qu'un badge <code style="color:#a880ff;">+X</code>.</p>
-    <p>Attention : même avec les bonus, une stat ne peut jamais dépasser <strong>7</strong>.</p>
-
-    <h3>Donner un objet à un autre joueur 🤝</h3>
-    <ul class="steps">
-      <li><span class="step-num">1</span>Cliquez sur <strong>🤝 Donner</strong> en haut de l'inventaire (ou dans le détail d'un objet).</li>
-      <li><span class="step-num">2</span>Dans la colonne gauche, cliquez sur les objets à transférer — ils passent dans la colonne droite <em>À envoyer</em>.</li>
-      <li><span class="step-num">3</span>Sélectionnez le destinataire dans la liste déroulante.</li>
-      <li><span class="step-num">4</span>Cliquez <strong>Envoyer →</strong>. Les objets apparaissent immédiatement dans l'inventaire du destinataire.</li>
-    </ul>
-
-    <div class="warn">Si l'inventaire du destinataire est plein, le transfert est bloqué. Il doit d'abord jeter ou envoyer des objets.</div>
-  </div>
-
-  <!-- ══════════ 08 — VUE MJ ══════════ -->
-  <div class="section" id="mj">
-    <div class="section-divider">
-      <div class="section-icon">👁️</div>
-      <div>
-        <div class="section-heading">Vue Maître de Jeu</div>
-        <div class="section-sub"><span class="tag tag-gm">Maître de Jeu uniquement</span></div>
-      </div>
-    </div>
-
-    <div class="role-header">
-      <div class="role-icon">🔒</div>
-      <div>
-        <div class="role-title">Accès réservé</div>
-        <div class="role-desc">Le bouton <strong>Vue MJ</strong> n'est visible que sur le navigateur qui a créé la session. Les joueurs n'y ont pas accès.</div>
-      </div>
-    </div>
-
-    <h3>Tableau de bord des personnages</h3>
-    <p>La Vue MJ affiche en temps réel une carte pour chaque personnage avec ses PV, son Guildeur et ses consommables.</p>
-
-    <h3>Bibliothèque d'objets</h3>
-    <p>Créez, modifiez et supprimez les objets disponibles dans votre campagne. Vous pouvez :</p>
-    <ul style="list-style:none;padding:0;">
-      <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.4rem;">▸ <strong>+ Nouvel objet</strong> — créer un objet avec nom, catégorie, icône, description. Cocher <em>Objet magique</em> pour ajouter des bonus de stats.</li>
-      <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.4rem;">▸ <strong>📦 Importer le thème</strong> — charge les 10 objets pré-définis du thème choisi (MedFan, SteamPunk…) en un clic. Les doublons sont ignorés.</li>
-      <li style="font-size:0.85rem;color:var(--text-secondary);">▸ <strong>Donner</strong> — assigne directement un objet de la bibliothèque à un personnage.</li>
-    </ul>
-
-    <h3>Bibliothèque de sorts</h3>
-    <p>Créez les sorts disponibles dans votre campagne — nom, école, coût en charges, description. Vous êtes le seul à pouvoir créer des sorts et les attribuer.</p>
-    <ul style="list-style:none;padding:0;">
-      <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.4rem;">▸ <strong>+ Nouveau sort</strong> — définissez l'école (couleur de Loom), le coût et la description.</li>
-      <li style="font-size:0.85rem;color:var(--text-secondary);">▸ <strong>Assigner</strong> — donne un sort à un personnage. Il apparaît dans sa liste de sorts connus.</li>
-    </ul>
-
-    <div class="tip">Importez d'abord les objets du thème avant la session. Ça évite de créer les potions et armes de base à la main à chaque campagne.</div>
-
-    <div class="tip">Créez quelques sorts à l'avance pour avoir de quoi récompenser les joueurs qui <em>lisent le Loom</em> pendant la session.</div>
-
-    <h3>Résumé des actions MJ</h3>
-    <div class="card">
-      <div class="card-title">Avant la session</div>
-      <p>1. Créer la session → noter le code.<br>
-         2. Choisir le thème de campagne.<br>
-         3. Importer les objets du thème.<br>
-         4. Créer les sorts de la session.<br>
-         5. Créer les personnages des joueurs.</p>
-    </div>
-    <div class="card">
-      <div class="card-title">Pendant la session</div>
-      <p>▸ Distribuer objets et sorts via les boutons <em>Donner</em> / <em>Assigner</em>.<br>
-         ▸ Surveiller les PV et consommables en temps réel depuis le tableau de bord.<br>
-         ▸ Demander aux joueurs de gérer leur Guildeur eux-mêmes.</p>
-    </div>
-    <div class="card">
-      <div class="card-title">Fin de session</div>
-      <p>▸ Chaque joueur clique sur <strong>↺ Nouvelle session</strong> pour réinitialiser ses consommables.</p>
-    </div>
-  </div>
-
-  <div class="guide-footer">
-    Chroniques — Guide Utilisateur &nbsp;·&nbsp; Bonne campagne ! ⚔️
-  </div>
-
-</div>
 </body>
 </html>
