@@ -5639,6 +5639,19 @@ function switchGuildTab(tab) {
   if (panel) panel.classList.add('active');
 }
 
+function _getMemberDisplayName(memberId, m) {
+  // memberId is "pj_charId" or "npc_npcId" or legacy plain charId
+  if (m && m.type === 'npc' && m.charId) {
+    const npc = campaignNPCs && campaignNPCs[m.charId];
+    return (npc && npc.name) ? npc.name : (m.charId || memberId);
+  }
+  if (m && m.type === 'pj' && m.charId) {
+    return _getCharNameById(m.charId);
+  }
+  // Legacy: memberId is plain charId
+  return _getCharNameById(memberId);
+}
+
 function _getCharNameById(charId) {
   if (window.gmCombatChars && window.gmCombatChars[charId] && window.gmCombatChars[charId].name)
     return window.gmCombatChars[charId].name;
@@ -5655,13 +5668,18 @@ function renderGuildMembers(guildId, g) {
     el.innerHTML = '<div style="padding:0.75rem 1rem;font-size:0.78rem;color:var(--text-muted);">Aucun membre.</div>';
     return;
   }
-  el.innerHTML = entries.map(([charId, m]) => {
+  el.innerHTML = entries.map(([memberId, m]) => {
     const rankIdx = m.rankIdx != null ? m.rankIdx : 0;
     const rankSel = ranks.map((r, i) => '<option value="' + i + '"' + (i === rankIdx ? ' selected' : '') + '>' + r + '</option>').join('');
+    const displayName = _getMemberDisplayName(memberId, m);
+    const typeTag = m.type === 'npc'
+      ? '<span style="font-size:0.62rem;color:var(--text-muted);background:var(--bg-deep);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.35rem;margin-right:0.35rem;">PNJ</span>'
+      : '<span style="font-size:0.62rem;color:var(--accent-gold);background:var(--accent-dim);border:1px solid var(--accent-gold);border-radius:4px;padding:0.1rem 0.35rem;margin-right:0.35rem;">PJ</span>';
     return '<div class="member-row">' +
-      '<span class="member-name">' + _getCharNameById(charId) + '</span>' +
-      '<select class="member-rank-sel" onchange="updateMemberRank(\' + guildId + \',\' + charId + \',this.value)">' + rankSel + '</select>' +
-      '<button class="loom-btn" style="padding:0.18rem 0.5rem;font-size:0.7rem;border-color:var(--danger);color:var(--danger);" onclick="removeMember(\' + guildId + \',\' + charId + \')">✕</button>' +
+      typeTag +
+      '<span class="member-name">' + displayName + '</span>' +
+      '<select class="member-rank-sel" onchange="updateMemberRank(\'' + guildId + '\',\'' + memberId + '\',this.value)">' + rankSel + '</select>' +
+      '<button class="loom-btn" style="padding:0.18rem 0.5rem;font-size:0.7rem;border-color:var(--danger);color:var(--danger);" onclick="removeMember(\'' + guildId + '\',\'' + memberId + '\')">✕</button>' +
     '</div>';
   }).join('');
 }
@@ -5827,9 +5845,19 @@ function updateMemberRank(guildId, charId, rankIdx) {
   dbSet('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + charId + '/rankIdx', parseInt(rankIdx));
 }
 
-function removeMember(guildId, charId) {
-  dbSet('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + charId, null);
-  dbSet('rooms/' + currentRoom + '/characters/' + charId + '/guildId', null);
+function removeMember(guildId, memberId) {
+  dbSet('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + memberId, null);
+  // Also clear guildId from source record
+  const g = allGuildsData[guildId];
+  const m = g && g.members && g.members[memberId];
+  if (m && m.type === 'npc' && m.charId) {
+    dbSet('rooms/' + currentRoom + '/npcs/' + m.charId + '/guildId', null);
+  } else if (m && m.type === 'pj' && m.charId) {
+    dbSet('rooms/' + currentRoom + '/characters/' + m.charId + '/guildId', null);
+  } else {
+    // Legacy plain charId
+    dbSet('rooms/' + currentRoom + '/characters/' + memberId + '/guildId', null);
+  }
 }
 
 async function openAssignGuildMember() {
