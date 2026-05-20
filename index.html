@@ -5414,6 +5414,14 @@ async function clearPresentedSource() {
 ──────────────────────────────────────────────────────── */
 function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function hideModal(id) { document.getElementById(id).classList.add('hidden'); }
+function showToast(msg, duration) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), duration || 2800);
+}
 
 ['modal-char','modal-spells','modal-spell-create','modal-spell-assign','modal-theme',
  'modal-item-detail','modal-trade','modal-item-create','modal-item-assign','modal-theme-import','modal-bg',
