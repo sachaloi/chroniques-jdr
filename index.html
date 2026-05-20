@@ -4583,19 +4583,23 @@ function renderGMGuildList() {
     el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:2rem 0;">Aucune guilde. Créez la première !</div>';
     return;
   }
-  el.innerHTML = guilds.map(([id, g]) => {
-    const mc = g.members ? Object.keys(g.members).length : 0;
-    return '<div class="guild-card" onclick="openGuildDetail(\' + id + \')">' +
+  el.innerHTML = '';
+  guilds.forEach(function(entry) {
+    var id = entry[0], g = entry[1];
+    var mc = g.members ? Object.keys(g.members).length : 0;
+    var card = document.createElement('div');
+    card.className = 'guild-card';
+    card.innerHTML =
       '<div class="guild-card-header">' +
         '<span class="guild-icon">' + (g.icon || '') + '</span>' +
         '<span class="guild-name">' + (g.name || 'Guilde sans nom') + '</span>' +
         '<span class="guild-member-count">' + mc + ' membre' + (mc !== 1 ? 's' : '') + '</span>' +
       '</div>' +
-      '<div class="guild-desc">' + (g.desc || '') + '</div>' +
-    '</div>';
-  }).join('');
+      '<div class="guild-desc">' + (g.desc || '') + '</div>';
+    card.onclick = (function(gid) { return function() { openGuildDetail(gid); }; })(id);
+    el.appendChild(card);
+  });
 }
-
 function showGuildList() {
   document.getElementById('guild-list-view').style.display = '';
   document.getElementById('guild-detail-view').style.display = 'none';
