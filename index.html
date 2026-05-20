@@ -5653,8 +5653,8 @@ function _getMemberDisplayName(memberId, m) {
 }
 
 function _getCharNameById(charId) {
-  if (window.gmCombatChars && window.gmCombatChars[charId] && window.gmCombatChars[charId].name)
-    return window.gmCombatChars[charId].name;
+  if (gmCombatChars && gmCombatChars[charId] && gmCombatChars[charId].name)
+    return gmCombatChars[charId].name;
   return charId;
 }
 
@@ -5862,13 +5862,34 @@ function removeMember(guildId, memberId) {
 
 async function openAssignGuildMember() {
   const charSel = document.getElementById('m-assign-char');
-  // Use gmCombatChars if available, else fetch from Firebase
-  let chars = window.gmCombatChars || {};
-  if (!Object.keys(chars).length && currentRoom) {
-    try { chars = (await dbGet('rooms/' + currentRoom + '/characters')) || {}; } catch(e) {}
+  // PJs — variable de script (pas window.) + fallback Firebase
+  let pjs = gmCombatChars || {};
+  if (!Object.keys(pjs).length && currentRoom) {
+    try { pjs = (await dbGet('rooms/' + currentRoom + '/characters')) || {}; } catch(e) {}
   }
-  charSel.innerHTML = Object.entries(chars).map(([id, c]) => '<option value="' + id + '">' + (c.name || id) + '</option>').join('');
-  if (!charSel.innerHTML) { showToast('Aucun personnage trouvé dans la session.'); return; }
+  // PNJs — campaignNPCs + fallback Firebase
+  let npcs = campaignNPCs || {};
+  if (!Object.keys(npcs).length && currentRoom) {
+    try { npcs = (await dbGet('rooms/' + currentRoom + '/npcs')) || {}; } catch(e) {}
+  }
+  const pjEntries  = Object.entries(pjs);
+  const npcEntries = Object.entries(npcs);
+  if (!pjEntries.length && !npcEntries.length) {
+    showToast('Aucun personnage ou PNJ trouvé dans la session.');
+    return;
+  }
+  let html = '';
+  if (pjEntries.length) {
+    html += '<optgroup label="&#129489; Personnages joueurs">' +
+      pjEntries.map(([id, c]) => '<option value="pj:' + id + '">' + (c.name || id) + '</option>').join('') +
+    '</optgroup>';
+  }
+  if (npcEntries.length) {
+    html += '<optgroup label="&#127917; PNJ">' +
+      npcEntries.map(([id, n]) => '<option value="npc:' + id + '">' + (n.name || id) + '</option>').join('') +
+    '</optgroup>';
+  }
+  charSel.innerHTML = html;
   const guildSel = document.getElementById('m-assign-guild');
   guildSel.innerHTML = Object.entries(allGuildsData).map(([id, g]) => '<option value="' + id + '">' + (g.name || id) + '</option>').join('');
   if (!guildSel.innerHTML) { showToast('Aucune guilde disponible.'); return; }
@@ -5887,14 +5908,22 @@ function refreshAssignRankSelect() {
 }
 
 async function saveCharGuildAssign() {
-  const charId = document.getElementById('m-assign-char').value;
+  const rawVal  = document.getElementById('m-assign-char').value; // "pj:id" ou "npc:id"
   const guildId = document.getElementById('m-assign-guild').value;
   const rankIdx = parseInt(document.getElementById('m-assign-rank').value);
-  if (!charId || !guildId) return;
-  await dbUpdate('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + charId, { rankIdx });
-  await dbSet('rooms/' + currentRoom + '/characters/' + charId + '/guildId', guildId);
+  if (!rawVal || !guildId) return;
+  const colonIdx = rawVal.indexOf(':');
+  const type   = colonIdx >= 0 ? rawVal.slice(0, colonIdx) : 'pj';
+  const charId = colonIdx >= 0 ? rawVal.slice(colonIdx + 1) : rawVal;
+  const memberId = type + '_' + charId;
+  await dbUpdate('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + memberId, { rankIdx, type, charId });
+  if (type === 'npc') {
+    await dbSet('rooms/' + currentRoom + '/npcs/' + charId + '/guildId', guildId);
+  } else {
+    await dbSet('rooms/' + currentRoom + '/characters/' + charId + '/guildId', guildId);
+  }
   hideModal('modal-assign-guild');
-  showToast('Personnage assigné.');
+  showToast('Assigné à la guilde.');
 }
 
 function openMissionCreate() {
