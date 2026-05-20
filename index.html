@@ -4547,6 +4547,23 @@ function showGMLibrary(type) {
     const el = document.getElementById(id);
     if (el) el.textContent = currentRoom || '——';
   });
+  // Re-register listeners for screens that need live data
+  if (type === 'guilds') {
+    listenGuilds();
+    renderGMGuildList();
+  } else if (type === 'map') {
+    listenMaps();
+  } else if (type === 'items') {
+    listenItems(); renderGMItemList(campaignItems);
+  } else if (type === 'spells') {
+    listenSpells();
+  } else if (type === 'monsters') {
+    listenMonsters();
+  } else if (type === 'npcs') {
+    listenNPCs();
+  } else if (type === 'sources') {
+    listenLoomSources();
+  }
 }
 
 /* ────────────────────────────────────────────────────────
@@ -5790,6 +5807,9 @@ async function saveGuild() {
   const data = Object.assign({}, existing, { icon, color, name, desc, resVisible, updatedAt: Date.now() });
   if (!data.ranks) data.ranks = ['Chef', 'Éminent', 'Membre'];
   await dbSet('rooms/' + currentRoom + '/guilds/' + id, data);
+  // Optimistic local update — don't wait for Firebase echo
+  allGuildsData[id] = data;
+  renderGMGuildList();
   hideModal('modal-guild');
   showToast('Guilde enregistrée.');
 }
@@ -5812,9 +5832,13 @@ function removeMember(guildId, charId) {
   dbSet('rooms/' + currentRoom + '/characters/' + charId + '/guildId', null);
 }
 
-function openAssignGuildMember() {
+async function openAssignGuildMember() {
   const charSel = document.getElementById('m-assign-char');
-  const chars = window.gmCombatChars || {};
+  // Use gmCombatChars if available, else fetch from Firebase
+  let chars = window.gmCombatChars || {};
+  if (!Object.keys(chars).length && currentRoom) {
+    try { chars = (await dbGet('rooms/' + currentRoom + '/characters')) || {}; } catch(e) {}
+  }
   charSel.innerHTML = Object.entries(chars).map(([id, c]) => '<option value="' + id + '">' + (c.name || id) + '</option>').join('');
   if (!charSel.innerHTML) { showToast('Aucun personnage trouvé dans la session.'); return; }
   const guildSel = document.getElementById('m-assign-guild');
@@ -5882,6 +5906,9 @@ async function saveMission() {
   };
   if (!data.title) { showToast('Donnez un titre à la mission.'); return; }
   await dbSet('rooms/' + currentRoom + '/guilds/' + currentGuildId + '/missions/' + id, data);
+  if (!allGuildsData[currentGuildId].missions) allGuildsData[currentGuildId].missions = {};
+  allGuildsData[currentGuildId].missions[id] = data;
+  renderGuildMissions(currentGuildId, allGuildsData[currentGuildId]);
   hideModal('modal-mission');
   showToast('Mission enregistrée.');
 }
@@ -5927,6 +5954,9 @@ async function saveResource() {
   };
   if (!data.name) { showToast('Donnez un nom à la ressource.'); return; }
   await dbSet('rooms/' + currentRoom + '/guilds/' + currentGuildId + '/resources/' + id, data);
+  if (!allGuildsData[currentGuildId].resources) allGuildsData[currentGuildId].resources = {};
+  allGuildsData[currentGuildId].resources[id] = data;
+  renderGuildResources(currentGuildId, allGuildsData[currentGuildId]);
   hideModal('modal-resource');
   showToast('Ressource enregistrée.');
 }
@@ -5969,6 +5999,9 @@ async function saveBuilding() {
   };
   if (!data.name) { showToast('Donnez un nom au bâtiment.'); return; }
   await dbSet('rooms/' + currentRoom + '/guilds/' + currentGuildId + '/buildings/' + id, data);
+  if (!allGuildsData[currentGuildId].buildings) allGuildsData[currentGuildId].buildings = {};
+  allGuildsData[currentGuildId].buildings[id] = data;
+  renderGuildBuildings(currentGuildId, allGuildsData[currentGuildId]);
   hideModal('modal-building');
   showToast('Bâtiment enregistré.');
 }
@@ -6226,6 +6259,11 @@ async function saveMarker() {
     visible: document.getElementById('m-marker-visible').checked
   };
   await dbSet('rooms/' + currentRoom + '/maps/' + mapId + '/markers/' + id, data);
+  if (allMapsData[mapId]) {
+    if (!allMapsData[mapId].markers) allMapsData[mapId].markers = {};
+    allMapsData[mapId].markers[id] = data;
+    renderMapArea();
+  }
   hideModal('modal-marker');
   mapAddingMarker = false;
   showToast('Marqueur placé.');
@@ -6269,9 +6307,13 @@ async function saveMap() {
   const imageUrl = document.getElementById('m-map-img').value.trim();
   if (!name) { showToast('Donnez un nom à la carte.'); return; }
   const existing = allMapsData[id] || {};
-  await dbSet('rooms/' + currentRoom + '/maps/' + id, Object.assign({}, existing, { name, imageUrl, updatedAt: Date.now() }));
-  hideModal('modal-map');
+  const mapData = Object.assign({}, existing, { name, imageUrl, updatedAt: Date.now() });
+  await dbSet('rooms/' + currentRoom + '/maps/' + id, mapData);
+  allMapsData[id] = mapData;
   currentMapId = id;
+  renderMapTabs();
+  renderMapArea();
+  hideModal('modal-map');
   showToast('Carte enregistrée.');
 }
 
