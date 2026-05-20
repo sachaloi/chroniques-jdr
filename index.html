@@ -5878,18 +5878,14 @@ async function openAssignGuildMember() {
     showToast('Aucun personnage ou PNJ trouvé dans la session.');
     return;
   }
-  let html = '';
+  let optHtml = '';
   if (pjEntries.length) {
-    html += '<optgroup label="&#129489; Personnages joueurs">' +
-      pjEntries.map(([id, c]) => '<option value="pj:' + id + '">' + (c.name || id) + '</option>').join('') +
-    '</optgroup>';
+    optHtml += pjEntries.map(([id, c]) => '<option value="pj:' + id + '">&#129489; ' + (c.name || id) + '</option>').join('');
   }
   if (npcEntries.length) {
-    html += '<optgroup label="&#127917; PNJ">' +
-      npcEntries.map(([id, n]) => '<option value="npc:' + id + '">' + (n.name || id) + '</option>').join('') +
-    '</optgroup>';
+    optHtml += npcEntries.map(([id, n]) => '<option value="npc:' + id + '">&#127917; ' + (n.name || id) + ' (PNJ)</option>').join('');
   }
-  charSel.innerHTML = html;
+  charSel.innerHTML = optHtml;
   const guildSel = document.getElementById('m-assign-guild');
   guildSel.innerHTML = Object.entries(allGuildsData).map(([id, g]) => '<option value="' + id + '">' + (g.name || id) + '</option>').join('');
   if (!guildSel.innerHTML) { showToast('Aucune guilde disponible.'); return; }
