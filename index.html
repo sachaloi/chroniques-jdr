@@ -179,7 +179,7 @@
       border-color: var(--accent-dim);
     }
 
-    select option { background: var(--bg-panel); }
+    select option { background: var(--bg-panel); color: var(--text); }
 
     .btn {
       display: block;
@@ -2754,17 +2754,23 @@
 
 <!-- Modal — Assigner personnage -->
 <div id="modal-assign-guild" class="overlay hidden">
-  <div class="modal" style="max-width:420px;">
-    <h3>Assigner un personnage</h3>
-    <div class="field-label">Personnage</div>
-    <select id="m-assign-char" style="width:100%;"></select>
-    <div class="field-label">Guilde</div>
-    <select id="m-assign-guild" style="width:100%;" onchange="refreshAssignRankSelect()"></select>
-    <div class="field-label">Rang</div>
+  <div class="modal" style="max-width:520px;">
+    <h3 id="assign-guild-title">Membres de la guilde</h3>
+    <div class="trade-cols">
+      <div class="trade-col">
+        <div class="trade-col-lbl">Disponibles</div>
+        <div id="assign-available"></div>
+      </div>
+      <div class="trade-col">
+        <div class="trade-col-lbl">Membres</div>
+        <div id="assign-members"></div>
+      </div>
+    </div>
+    <div class="field-label" style="margin-top:0.8rem;">Rang à l'ajout</div>
     <select id="m-assign-rank" style="width:100%;"></select>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="hideModal('modal-assign-guild')">Annuler</button>
-      <button class="btn btn-primary" onclick="saveCharGuildAssign()">Assigner →</button>
+      <button class="btn btn-primary" onclick="saveGuildMembers()">Sauvegarder →</button>
     </div>
   </div>
 </div>
@@ -5575,6 +5581,8 @@ function rollForAxis(axisKey, pole) {
 ════════════════════════════════════════════════════════ */
 let allGuildsData = {};
 let currentGuildId = null;
+let assignPending = {};
+let assignAllChars = {};
 
 function listenGuilds() {
   const detach = dbListen('rooms/' + currentRoom + '/guilds', data => {
@@ -5869,65 +5877,109 @@ function removeMember(guildId, memberId) {
 }
 
 async function openAssignGuildMember() {
-  const charSel = document.getElementById('m-assign-char');
-  // PJs — variable de script (pas window.) + fallback Firebase
+  if (!currentGuildId) return;
+  const g = allGuildsData[currentGuildId];
+  if (!g) return;
   let pjs = gmCombatChars || {};
   if (!Object.keys(pjs).length && currentRoom) {
     try { pjs = (await dbGet('rooms/' + currentRoom + '/characters')) || {}; } catch(e) {}
   }
-  // PNJs — campaignNPCs + fallback Firebase
   let npcs = campaignNPCs || {};
   if (!Object.keys(npcs).length && currentRoom) {
     try { npcs = (await dbGet('rooms/' + currentRoom + '/npcs')) || {}; } catch(e) {}
   }
-  const pjEntries  = Object.entries(pjs);
-  const npcEntries = Object.entries(npcs);
-  if (!pjEntries.length && !npcEntries.length) {
-    showToast('Aucun personnage ou PNJ trouvé dans la session.');
+  assignAllChars = {};
+  Object.entries(pjs).forEach(function(e) {
+    assignAllChars['pj:' + e[0]] = { type: 'pj', charId: e[0], name: e[1].name || e[0] };
+  });
+  Object.entries(npcs).forEach(function(e) {
+    assignAllChars['npc:' + e[0]] = { type: 'npc', charId: e[0], name: (e[1].name || e[0]) + ' (PNJ)' };
+  });
+  if (!Object.keys(assignAllChars).length) {
+    showToast('Aucun personnage ou PNJ trouvé.');
     return;
   }
-  let optHtml = '';
-  if (pjEntries.length) {
-    optHtml += pjEntries.map(([id, c]) => '<option value="pj:' + id + '">&#129489; ' + (c.name || id) + '</option>').join('');
-  }
-  if (npcEntries.length) {
-    optHtml += npcEntries.map(([id, n]) => '<option value="npc:' + id + '">&#127917; ' + (n.name || id) + ' (PNJ)</option>').join('');
-  }
-  charSel.innerHTML = optHtml;
-  const guildSel = document.getElementById('m-assign-guild');
-  guildSel.innerHTML = Object.entries(allGuildsData).map(([id, g]) => '<option value="' + id + '">' + (g.name || id) + '</option>').join('');
-  if (!guildSel.innerHTML) { showToast('Aucune guilde disponible.'); return; }
-  refreshAssignRankSelect();
+  assignPending = {};
+  Object.entries(g.members || {}).forEach(function(e) {
+    var mid = e[0], m = e[1];
+    assignPending[mid] = { type: m.type || 'pj', charId: m.charId || mid, rankIdx: m.rankIdx || 0 };
+  });
+  document.getElementById('assign-guild-title').textContent = 'Membres — ' + (g.name || currentGuildId);
+  var ranks = g.ranks || ['Chef', 'Membre'];
+  var rankSel = document.getElementById('m-assign-rank');
+  rankSel.innerHTML = ranks.map(function(r, i) { return '<option value="' + i + '">' + r + '</option>'; }).join('');
+  rankSel.value = String(ranks.length - 1);
+  renderAssignPanels();
   showModal('modal-assign-guild');
 }
 
-function refreshAssignRankSelect() {
-  const guildSel = document.getElementById('m-assign-guild');
-  const rankSel = document.getElementById('m-assign-rank');
-  if (!guildSel || !rankSel) return;
-  const gId = guildSel.value;
-  const g = allGuildsData[gId];
-  const ranks = g && g.ranks ? g.ranks : ['Chef', 'Membre'];
-  rankSel.innerHTML = ranks.map((r, i) => '<option value="' + i + '">' + r + '</option>').join('');
+function renderAssignPanels() {
+  var availDiv   = document.getElementById('assign-available');
+  var membersDiv = document.getElementById('assign-members');
+  if (!availDiv || !membersDiv) return;
+  var g = allGuildsData[currentGuildId];
+  var ranks = g && g.ranks ? g.ranks : ['Chef', 'Membre'];
+  var pendingSet = new Set(Object.values(assignPending).map(function(m) { return m.type + ':' + m.charId; }));
+  availDiv.innerHTML = '';
+  var anyAvail = false;
+  Object.entries(assignAllChars).forEach(function(entry) {
+    var key = entry[0], c = entry[1];
+    if (pendingSet.has(key)) return;
+    anyAvail = true;
+    var row = document.createElement('div');
+    row.className = 'trade-item';
+    var emoji = c.type === 'npc' ? '🎭' : '🧑';
+    row.innerHTML = '<span>' + emoji + '</span><span style="flex:1">' + c.name + '</span><span style="margin-left:auto;font-size:0.65rem;color:var(--accent-dim)">→</span>';
+    row.onclick = (function(cc) { return function() {
+      var rankIdx = parseInt(document.getElementById('m-assign-rank').value) || 0;
+      assignPending[cc.type + '_' + cc.charId] = { type: cc.type, charId: cc.charId, rankIdx: rankIdx };
+      renderAssignPanels();
+    }; })(c);
+    availDiv.appendChild(row);
+  });
+  if (!anyAvail) availDiv.innerHTML = '<div class="trade-empty">Tous assignés</div>';
+  membersDiv.innerHTML = '';
+  var anyMember = false;
+  Object.entries(assignPending).forEach(function(entry) {
+    var memberId = entry[0], m = entry[1];
+    anyMember = true;
+    var c = assignAllChars[m.type + ':' + m.charId];
+    var name = c ? c.name : (m.charId || memberId);
+    var emoji = m.type === 'npc' ? '🎭' : '🧑';
+    var rankName = ranks[m.rankIdx] !== undefined ? ranks[m.rankIdx] : ranks[ranks.length - 1];
+    var row = document.createElement('div');
+    row.className = 'trade-item';
+    row.innerHTML = '<span>' + emoji + '</span><span style="flex:1">' + name + '</span>'
+      + '<span style="font-size:0.65rem;color:var(--text-muted);margin-right:0.4rem">' + rankName + '</span>'
+      + '<span style="font-size:0.7rem;color:var(--danger)">&#x2715;</span>';
+    row.onclick = (function(mid) { return function() { delete assignPending[mid]; renderAssignPanels(); }; })(memberId);
+    membersDiv.appendChild(row);
+  });
+  if (!anyMember) membersDiv.innerHTML = '<div class="trade-empty">Aucun membre</div>';
 }
 
-async function saveCharGuildAssign() {
-  const rawVal  = document.getElementById('m-assign-char').value; // "pj:id" ou "npc:id"
-  const guildId = document.getElementById('m-assign-guild').value;
-  const rankIdx = parseInt(document.getElementById('m-assign-rank').value);
-  if (!rawVal || !guildId) return;
-  const colonIdx = rawVal.indexOf(':');
-  const type   = colonIdx >= 0 ? rawVal.slice(0, colonIdx) : 'pj';
-  const charId = colonIdx >= 0 ? rawVal.slice(colonIdx + 1) : rawVal;
-  const memberId = type + '_' + charId;
-  await dbUpdate('rooms/' + currentRoom + '/guilds/' + guildId + '/members/' + memberId, { rankIdx, type, charId });
-  if (type === 'npc') {
-    await dbSet('rooms/' + currentRoom + '/npcs/' + charId + '/guildId', guildId);
-  } else {
-    await dbSet('rooms/' + currentRoom + '/characters/' + charId + '/guildId', guildId);
-  }
+async function saveGuildMembers() {
+  if (!currentGuildId) return;
+  var g = allGuildsData[currentGuildId];
+  var oldMembers = g && g.members ? g.members : {};
+  var ops = [];
+  Object.entries(oldMembers).forEach(function(entry) {
+    var mid = entry[0], m = entry[1];
+    if (!assignPending[mid]) {
+      ops.push(dbSet('rooms/' + currentRoom + '/guilds/' + currentGuildId + '/members/' + mid, null));
+      if (m.type === 'npc' && m.charId) ops.push(dbSet('rooms/' + currentRoom + '/npcs/' + m.charId + '/guildId', null));
+      else if (m.charId) ops.push(dbSet('rooms/' + currentRoom + '/characters/' + m.charId + '/guildId', null));
+    }
+  });
+  Object.entries(assignPending).forEach(function(entry) {
+    var mid = entry[0], m = entry[1];
+    ops.push(dbUpdate('rooms/' + currentRoom + '/guilds/' + currentGuildId + '/members/' + mid, { rankIdx: m.rankIdx, type: m.type, charId: m.charId }));
+    if (m.type === 'npc') ops.push(dbSet('rooms/' + currentRoom + '/npcs/' + m.charId + '/guildId', currentGuildId));
+    else ops.push(dbSet('rooms/' + currentRoom + '/characters/' + m.charId + '/guildId', currentGuildId));
+  });
+  await Promise.all(ops);
   hideModal('modal-assign-guild');
-  showToast('Assigné à la guilde.');
+  showToast('Membres mis à jour.');
 }
 
 function openMissionCreate() {
