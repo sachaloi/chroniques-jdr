@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chroniques — Oneshot 01 : La Cible</title>
+  <style>
+    :root {
+      --bg-deep:        #0d0d1a;
+      --bg-card:        #161625;
+      --bg-panel:       #1e1e32;
+      --accent-gold:    #c9a84c;
+      --accent-dim:     #8a6d2a;
+      --text-primary:   #e8e0cc;
+      --text-secondary: #9a9080;
+      --text-muted:     #5a5870;
+      --border:         #252540;
+      --success:        #4a9a6a;
+      --danger:         #c94a4a;
+      --phys-color:     #c87840;
+      --social-color:   #4878c0;
+      --mental-color:   #8858b8;
+      --sang:    #c87840;
+      --bile:    #c9a84c;
+      --flegme:  #4878c0;
+      --melan:   #8899aa;
+      --ether:   #8858b8;
+      --ash-color: #7878a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-deep); color: var(--text-primary); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.75; }
+
+    /* ── Header ── */
+    .site-header {
+      background: linear-gradient(180deg, #0a0a18 0%, var(--bg-card) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 3.5rem 1.5rem 2.5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .site-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(120,120,160,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .site-logo { font-size: 3rem; font-weight: 200; letter-spacing: 0.5em; color: var(--accent-gold); text-transform: uppercase; position: relative; }
+    .site-tagline { font-size: 0.68rem; letter-spacing: 0.25em; color: var(--text-muted); text-transform: uppercase; margin-top: 0.4rem; position: relative; }
+    .guide-badge { display: inline-block; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 0.3rem 1.1rem; font-size: 0.68rem; color: var(--text-secondary); margin-top: 1.25rem; letter-spacing: 0.12em; text-transform: uppercase; position: relative; }
+    .scenario-title { margin-top: 2rem; position: relative; }
+    .scenario-num { font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ash-color); }
+    .scenario-name { font-size: 1.85rem; font-weight: 300; color: var(--text-primary); letter-spacing: 0.06em; margin-top: 0.35rem; }
+    .scenario-meta { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1.2rem; }
+    .meta-pill { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--text-secondary); letter-spacing: 0.06em; }
+    .meta-pill-icon { color: var(--accent-gold); }
+
+    /* ── Layout ── */
+    .page { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+    /* ── Nav tabs ── */
+    .tab-nav { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; overflow-x: auto; }
+    .tab-btn { background: none; border: none; color: var(--text-muted); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.65rem 1.2rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 2.75rem; }
+    .section-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent-gold); margin-bottom: 0.6rem; }
+    h2 { font-size: 1.3rem; font-weight: 400; color: var(--text-primary); margin-bottom: 1rem; letter-spacing: 0.04em; }
+    h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 1.5rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    p { color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 0.75rem; }
+    p + p { margin-top: 0; }
+
+    /* ── Lore block ── */
+    .lore-block { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--accent-gold); border-radius: 0 12px 12px 0; padding: 1.75rem 2rem; margin-bottom: 1.5rem; position: relative; }
+    .lore-block::before { content: '❝'; position: absolute; top: 0.9rem; left: 1.4rem; font-size: 2rem; color: var(--accent-dim); opacity: 0.4; line-height: 1; }
+    .lore-text { font-size: 0.93rem; color: var(--text-secondary); font-style: italic; line-height: 1.85; }
+    .lore-text p { color: var(--text-secondary); }
+
+    /* ── Scene block ── */
+    .scene-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.25rem; }
+    .scene-header { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    .scene-num { width: 36px; height: 36px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--accent-gold); flex-shrink: 0; }
+    .scene-info { flex: 1; }
+    .scene-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+    .scene-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .scene-body { padding: 1.25rem 1.5rem; }
+    .scene-body p { font-size: 0.9rem; }
+
+    .timing-badge { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.25rem 0.7rem; font-size: 0.67rem; color: var(--text-muted); letter-spacing: 0.06em; flex-shrink: 0; }
+
+    /* ── Beat list ── */
+    .beat-list { list-style: none; margin: 0.75rem 0 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .beat-list li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+    .beat-list li::before { content: '→'; color: var(--accent-dim); font-size: 0.8rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .beat-list li strong { color: var(--text-primary); }
+
+    /* ── MJ Notes ── */
+    .mj-note { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 0.9rem 1.1rem; margin: 0.9rem 0; }
+    .mj-note-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-dim); margin-bottom: 0.35rem; }
+    .mj-note-text { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7; }
+    .mj-note-text strong { color: var(--text-primary); }
+
+    /* ── CAMPAGNE note (sensitive) ── */
+    .mj-campagne { background: rgba(120,120,160,0.08); border: 1px solid rgba(120,120,160,0.35); border-left: 3px solid var(--ash-color); border-radius: 0 10px 10px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .mj-campagne-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ash-color); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px; }
+    .mj-campagne-text { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.75; }
+    .mj-campagne-text strong { color: var(--text-primary); }
+
+    /* ── Reveal block ── */
+    .reveal-block { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+    .reveal-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .reveal-text { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; font-style: italic; }
+    .reveal-text strong { color: var(--text-primary); font-style: normal; }
+
+    /* ── Fin cards ── */
+    .fin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .fin-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .fin-header { padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+    .fin-letter { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+    .fin-title { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .fin-body { padding: 1rem 1.2rem; }
+    .fin-text { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7; }
+    .fin-impact { margin-top: 0.65rem; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    .fin-impact strong { color: var(--accent-dim); }
+
+    /* ── Prétirés ── */
+    .pretire-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem; }
+    .pretire-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .pretire-card::after { content: ''; display: block; height: 3px; }
+    .pretire-card.agnes      .pretire-top::after, .pretire-card.agnes      { --pc-color: #c87840; }
+    .pretire-card.bastien    .pretire-top::after, .pretire-card.bastien    { --pc-color: #c9a84c; }
+    .pretire-card.marguerite .pretire-top::after, .pretire-card.marguerite { --pc-color: #4878c0; }
+    .pretire-card.renaud     .pretire-top::after, .pretire-card.renaud     { --pc-color: #8899aa; }
+    .pretire-stripe { height: 3px; }
+    .pretire-top { padding: 1.25rem 1.4rem 1rem; border-bottom: 1px solid var(--border); }
+    .pretire-name { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+    .pretire-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.1rem; }
+    .pretire-bg { padding: 1rem 1.4rem; border-bottom: 1px solid var(--border); font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7; }
+    .pretire-bg em { color: var(--text-muted); font-size: 0.8rem; }
+    .pretire-stats { padding: 1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
+    .stat-row { display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; }
+    .stat-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; flex-shrink: 0; }
+    .stat-icon.phys { background: rgba(200,120,64,0.2); color: var(--phys-color); }
+    .stat-icon.soc  { background: rgba(72,120,192,0.2); color: var(--social-color); }
+    .stat-icon.ment { background: rgba(136,88,184,0.2); color: var(--mental-color); }
+    .stat-label { color: var(--text-muted); font-size: 0.72rem; width: 70px; flex-shrink: 0; }
+    .stat-pip-row { display: flex; gap: 3px; }
+    .stat-pip { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border); }
+    .stat-pip.filled { background: var(--accent-dim); border-color: var(--accent-gold); }
+    .stat-pole { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-left: 0.35rem; }
+    .pretire-bottom { padding: 1rem 1.4rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .atout-block { background: var(--bg-panel); border-radius: 8px; padding: 0.65rem 0.85rem; }
+    .atout-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 0.2rem; }
+    .atout-text { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+    .atout-text strong { color: var(--text-primary); }
+    .pintacle-block { display: flex; align-items: center; gap: 0.5rem; }
+    .pintacle-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+    .pintacle-val { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: 8px; }
+    .pintacle-mj { font-size: 0.6rem; color: var(--text-muted); margin-left: auto; font-style: italic; }
+    .hook-block { font-size: 0.8rem; color: var(--text-muted); font-style: italic; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 0.65rem; margin-top: 0.1rem; }
+    .hook-block strong { color: var(--text-secondary); font-style: normal; }
+    .guildeur-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .g-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+    /* ── Conditions (empty) ── */
+    .conditions-block { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.25rem; }
+    .cond-axis { display: flex; align-items: center; gap: 0.35rem; }
+    .cond-label { font-size: 0.65rem; color: var(--text-muted); }
+    .cond-slots { display: flex; gap: 3px; }
+    .cond-slot { width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--border); }
+
+    /* ── PNJ cards ── */
+    .pnj-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
+    .pnj-header { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 1rem 1.4rem; display: flex; align-items: center; gap: 0.9rem; }
+    .pnj-avatar { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .pnj-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+    .pnj-role { font-size: 0.72rem; color: var(--text-muted); font-style: italic; }
+    .pnj-body { padding: 1.1rem 1.4rem; }
+    .pnj-body p { font-size: 0.88rem; margin-bottom: 0.6rem; }
+    .pnj-trait { background: var(--bg-panel); border-radius: 8px; padding: 0.5rem 0.75rem; margin-top: 0.5rem; font-size: 0.82rem; color: var(--text-secondary); }
+    .pnj-trait strong { color: var(--accent-gold); }
+    .pnj-axes { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .pnj-axis { font-size: 0.75rem; color: var(--text-muted); }
+    .pnj-axis strong { color: var(--text-primary); }
+
+    /* ── Lieu ── */
+    .lieu-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem 1.6rem; margin-bottom: 1.25rem; }
+    .lieu-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; }
+    .lieu-zone { margin: 0.5rem 0; }
+    .lieu-zone-name { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+    .lieu-zone-desc { font-size: 0.84rem; color: var(--text-muted); margin-top: 0.2rem; line-height: 1.6; }
+
+    /* ── Impact cards ── */
+    .impact-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.4rem; margin-bottom: 1rem; }
+    .impact-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.85rem; }
+    .impact-fin { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 7px; padding: 0.2rem 0.65rem; font-size: 0.67rem; color: var(--text-muted); font-weight: 700; }
+    .impact-title { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
+    .impact-row { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 0.45rem; line-height: 1.6; }
+    .impact-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 0.4rem; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    .site-footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .footer-link { font-size: 0.72rem; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.15s; }
+    .footer-link:hover { color: var(--accent-gold); }
+    .footer-copy { font-size: 0.65rem; color: var(--text-muted); opacity: 0.5; }
+
+    @media(max-width:600px) {
+      .site-logo { font-size: 2rem; letter-spacing: 0.3em; }
+      .scenario-name { font-size: 1.4rem; }
+      .pretire-grid { grid-template-columns: 1fr; }
+      .fin-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-logo">Chroniques</div>
+  <div class="site-tagline">Oneshot · Opérateurs · An 1</div>
+  <div class="guide-badge">⚑ Référence MJ — Confidentiel</div>
+  <div class="scenario-title">
+    <div class="scenario-num">Oneshot 01</div>
+    <div class="scenario-name">La Cible</div>
+  </div>
+  <div class="scenario-meta">
+    <span class="meta-pill"><span class="meta-pill-icon">⏱</span> 3 heures</span>
+    <span class="meta-pill"><span class="meta-pill-icon">◈</span> An 1 post-Rupture</span>
+    <span class="meta-pill"><span class="meta-pill-icon">◆</span> 4 prétirés</span>
+    <span class="meta-pill"><span class="meta-pill-icon">▲</span> Ton sombre</span>
+  </div>
+</header>
+
+<main class="page">
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="scenario">Scénario</button>
+    <button class="tab-btn" data-tab="pretires">Prétirés</button>
+    <button class="tab-btn" data-tab="pnj">PNJ & Lieu</button>
+    <button class="tab-btn" data-tab="impact">Impact</button>
+  </nav>
+
+  <!-- ══════════════ TAB : SCÉNARIO ══════════════ -->
+  <div id="tab-scenario" class="tab-panel active">
+
+    <!-- Synopsis MJ -->
+    <div class="section">
+      <div class="section-label">Résumé MJ</div>
+      <h2>La vérité sur la mission</h2>
+      <div class="lore-block">
+        <div class="lore-text">
+          <p>Les PJ sont des opérateurs indépendants, chacun issu d'une guilde différente, réunis ponctuellement par <strong>Gorrick</strong> — un courtier qui gère les affaires qu'aucune guilde ne veut traiter officiellement. On leur présente une mission simple : éliminer un homme nommé <strong>Servan Toche</strong>, présenté comme un ancien employé des réseaux d'infrastructure qui aurait vendu des données sensibles.</p>
+          <p>C'est un mensonge. Servan n'est pas un comptable. Il était cartographe du Loom — il mesurait les flux pour les guildes d'infrastructure. La nuit de la Rupture, il était sur le terrain. Il a observé comment le Loom s'est déchiré. Et depuis huit mois, il cartographie la propagation en sens inverse pour trouver l'origine.</p>
+          <p>Il a trouvé quelque chose. Quelqu'un veut que ça disparaisse avec lui.</p>
+        </div>
+      </div>
+
+      <div class="mj-note">
+        <div class="mj-note-label">Ce que Gorrick sait — et ne dit pas</div>
+        <div class="mj-note-text">Gorrick a reçu le contrat via un intermédiaire anonyme — quelqu'un qui préférait garder les mains propres. Il ne sait pas qui a commandé l'élimination en amont, ni pourquoi vraiment. Il sait que la cible "pose des questions qui dérangent". Il a été payé pour ne pas poser les siennes. <strong>Son tell : il gratte la peau autour de ses ongles quand il ment ou omet.</strong></div>
+      </div>
+
+      <div class="mj-campagne">
+        <div class="mj-campagne-label">⚑ Note MJ — Joueuse campagne</div>
+        <div class="mj-campagne-text">Les recherches de Servan désignent une direction d'origine — le <strong>quartier Venn'dys de Kern</strong>. Ce n'est pas une preuve, juste un vecteur de propagation. La joueuse campagne peut voir cette information : elle est intrigante mais pas conclusive, et ne révèle pas le "qui" ni le "comment". Ce qu'elle ne doit pas savoir : la connexion entre Liora (la fille de Servan, 8 ans) et ce qu'elle connaît de la campagne — voir tab Impact.</div>
+      </div>
+    </div>
+
+    <!-- Contexte -->
+    <div class="section">
+      <div class="section-label">Contexte</div>
+      <h2>Kern, An 1 — huit mois après la Rupture</h2>
+      <p>Kern est une ville marchande de taille moyenne, à demi-reconstruite. Les quartiers industriels sont encore éventrés. Les guildes ont repris leurs positions mais les anciens équilibres ne tiennent plus vraiment. Des courtiers comme Gorrick y prospèrent — discrets, efficaces, lucrativement neutres.</p>
+      <p>Servan Toche se cache dans un bâtiment effondré du quartier des cartographes — son ancien quartier de travail, maintenant abandonné. Il vit seul avec sa fille de 8 ans, <strong>Liora</strong>, dans ce qui reste du deuxième étage. Il sort peu. Il travaille la nuit.</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ACTE 1 -->
+    <div class="section">
+      <div class="section-label">Pacing · 30 min</div>
+      <h2>Acte 1 — Le Briefing</h2>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">1.1</div>
+          <div class="scene-info">
+            <div class="scene-title">La Cave de Gorrick</div>
+            <div class="scene-meta">Planque de Gorrick · Nuit</div>
+          </div>
+          <div class="timing-badge">~20 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Les quatre PJ sont convoqués dans une arrière-salle d'entrepôt qui sent l'encre et la cire froide. <strong>Gorrick</strong> est déjà là — assis, les mains croisées sur la table, deux bougies, une feuille retournée devant lui.</p>
+          <ul class="beat-list">
+            <li>Il présente la cible : <strong>Servan Toche</strong>, ex-employé des réseaux d'infrastructure, "parti avec des relevés qui appartiennent à son commanditaire". Accusé d'avoir vendu à la concurrence.</li>
+            <li>Il donne une adresse approximative : "le quartier des cartographes, rue du Troisième Relevé, bâtiment avec la porte rouge peinte par-dessus du noir".</li>
+            <li>Consigne : "Faites-le disparaître. Proprement. Le monde est plein d'accidents en ce moment."</li>
+            <li>Il ne mentionne pas de documents à récupérer. Si on lui demande ce que Servan a volé exactement : <strong>il devient vague, gratte son index gauche</strong>. "Des listes clients. Des contrats. Rien qui vous concerne."</li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">À jouer</div>
+            <div class="mj-note-text">Gorrick n'est pas froide — il est <em>professionnel</em>. Il pense vraiment faire le bon boulot. Il se soucie juste de la bonne exécution, pas de la vérité. Si les PJ insistent sur le motif, il dit "c'est pas votre problème" et range la feuille. Ils ne verront jamais ce qu'il y avait dessus.</div>
+          </div>
+          <div class="reveal-block">
+            <div class="reveal-label">Si Marguerite joue (elle connaît Servan)</div>
+            <div class="reveal-text">Marguerite a croisé Servan deux ou trois fois avant la Rupture lors de transactions discrètes. Elle peut choisir de le mentionner à ses coéquipiers — ou pas. <strong>Elle sait qu'il était cartographe, pas un employé administratif.</strong> Ce détail n'a l'air de rien maintenant. Il aura tout son poids à l'Acte 2.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">1.2</div>
+          <div class="scene-info">
+            <div class="scene-title">Préparation & départ</div>
+            <div class="scene-meta">Les rues de Kern · Nuit</div>
+          </div>
+          <div class="timing-badge">~10 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Laisser les PJ se préparer — équipement, tactique, conversations entre eux. C'est là que les personnalités commencent à s'exprimer.</p>
+          <ul class="beat-list">
+            <li>Bastien demande si on récupère les données ou si on les détruit. Gorrick a dit "disparaître" — il n'a pas dit "chercher".</li>
+            <li><strong>Renaud s'arrête une seconde en sortant</strong> — il ressent quelque chose d'inhabituel dans la direction du quartier des cartographes. Pas une anomalie franche, juste un inconfort. Il ne dit rien.</li>
+            <li>Kern la nuit : des gens reconstruisent encore à la lumière des torches. Des gardes Ghemdals (rouge) patrouillent sur l'axe principal. Rien qui bloque le chemin.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTE 2 -->
+    <div class="section">
+      <div class="section-label">Pacing · 60 min</div>
+      <h2>Acte 2 — La Traque</h2>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">2.1</div>
+          <div class="scene-info">
+            <div class="scene-title">La surveillance</div>
+            <div class="scene-meta">Rue du Troisième Relevé · Avant l'approche</div>
+          </div>
+          <div class="timing-badge">~20 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Ils repèrent le bâtiment facilement — porte peinte rouge sur noir, deuxième étage encore intact, une lumière filtrant par un volet brisé. Vers minuit, Servan sort chercher de l'eau à la pompe publique.</p>
+          <ul class="beat-list">
+            <li>Il a l'air <strong>épuisé, tendu, mais pas d'un homme qui se planque après une trahison</strong> — il a les yeux de quelqu'un qui n'a pas dormi depuis des semaines parce qu'il cherche quelque chose, pas parce qu'il fuit.</li>
+            <li>Il ne regarde pas derrière lui. Il regarde <em>vers le ciel</em>, dans la direction du vieux quartier Venn'dys.</li>
+            <li>Il rentre avec son eau, recommence à travailler. On voit son ombre bouger sur des feuilles étalées.</li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">Ce que ça dit</div>
+            <div class="mj-note-text">Servan ne ressemble pas au portrait que Gorrick a fait. Un PJ attentif peut le remarquer sans qu'on lui force la main. Ne soulignez pas trop — laissez la dissonance s'installer.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">2.2</div>
+          <div class="scene-info">
+            <div class="scene-title">L'espace de travail</div>
+            <div class="scene-meta">Rez-de-chaussée du bâtiment · Effraction ou attente</div>
+          </div>
+          <div class="timing-badge">~25 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Que les PJ entrent pendant l'absence de Servan ou qu'ils attendent son retour pour forcer l'entrée : ils découvrent son espace de travail au rez-de-chaussée.</p>
+          <ul class="beat-list">
+            <li><strong>Des cartes. Partout.</strong> Des cartes de Kern et des régions environnantes, couvertes de notations en rouge et noir. Des points reliés par des flèches convergentes.</li>
+            <li>Sur la table centrale : une grande carte avec un cercle marqué d'un point d'origine, et des flèches partant vers l'extérieur. Au centre, en petites lettres : <em>"d'ici. pas par hasard."</em> Le cercle encercle le vieux quartier Venn'dys.</li>
+            <li>Des carnets de relevés — des observations datées, des mesures du Loom sur plusieurs semaines. Ce n'est pas de la comptabilité.</li>
+          </ul>
+          <div class="mj-campagne">
+            <div class="mj-campagne-label">⚑ Note MJ — Joueuse campagne</div>
+            <div class="mj-campagne-text">La joueuse peut lire la carte et la note <em>"d'ici. pas par hasard."</em> Elle peut voir le quartier Venn'dys désigné. C'est une information intrigante — une hypothèse de Servan, pas une preuve. Elle ne doit <strong>pas</strong> voir les carnets codés (Theo peut y accéder mais ils prennent du temps à déchiffrer — la scène avance avant qu'il ait quelque chose de conclusif).</div>
+          </div>
+          <div class="reveal-block">
+            <div class="reveal-label">Si Bastien déchiffre (jet Mental · Logique)</div>
+            <div class="reveal-text">En quelques minutes il peut extraire : <strong>"propagation depuis un nœud unique — deux témoins indépendants confirment le point de départ — quelqu'un devait surveiller ce nœud"</strong>. Juste avant que Servan rentre, il n'a pas eu le temps de trouver qui surveillait.</div>
+          </div>
+          <div class="reveal-block">
+            <div class="reveal-label">Renaud dans le bâtiment</div>
+            <div class="reveal-text">Le ressenti qu'il avait dans la rue est plus fort ici. Ce n'est pas une Anomalie — c'est comme un <em>écho</em>. Le bâtiment est dans l'axe direct du point d'origine sur la carte. <strong>Renaud peut pointer vers la carte sans avoir lu les notes.</strong> Instinct du Loom.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">2.3</div>
+          <div class="scene-info">
+            <div class="scene-title">Servan rentre — et Liora</div>
+            <div class="scene-meta">Le bâtiment · Point de bascule</div>
+          </div>
+          <div class="timing-badge">~15 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Servan rentre avec son eau. Il voit les PJ. Il ne crie pas — il recule vers la porte. Son premier réflexe n'est pas de se défendre : c'est de <strong>regarder le plafond</strong>, vers l'étage. Liora est là-haut.</p>
+          <ul class="beat-list">
+            <li>Si les PJ l'interceptent : il est coopératif pour une seule raison — il veut que sa fille ne soit pas impliquée. Il dira tout ce qu'on veut si Liora sort saine et sauve.</li>
+            <li>Ce qu'il dit si on lui donne la parole : <em>"Je sais pas qui vous a payés pour me faire taire — mais c'est pas pour du vol de données. J'ai pas touché un livre de compte depuis deux ans. Demandez à votre commanditaire ce qu'il a peur que je trouve."</em></li>
+            <li><strong>Liora</strong> : si les PJ font du bruit, elle descend les escaliers à mi-hauteur et s'arrête. 8 ans, les yeux grands ouverts. Elle tient une feuille pliée — un des relevés de son père qu'elle avait prise pour dessiner au verso. Elle ne la lâche pas.</li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">La présence de Liora</div>
+            <div class="mj-note-text">Ne la montrez pas comme une manipulation émotionnelle facile. Elle est là, c'est tout. C'est aux PJ de décider ce que ça change pour eux — ou pas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTE 3 -->
+    <div class="section">
+      <div class="section-label">Pacing · 60 min</div>
+      <h2>Acte 3 — La Confrontation</h2>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">3.1</div>
+          <div class="scene-info">
+            <div class="scene-title">Les Chasseurs arrivent</div>
+            <div class="scene-meta">Vingt minutes après l'entrée des PJ</div>
+          </div>
+          <div class="timing-badge">~20 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Trois opérateurs entrent par la fenêtre arrière. <strong>Guildeur jaune visible — Venn'dys.</strong> Ils sont calmes, professionnels. Leur chef s'appelle <strong>Davan</strong>. Ils ne cherchent pas à tuer — ils cherchent les documents.</p>
+          <ul class="beat-list">
+            <li>Davan s'arrête en voyant les PJ. <em>"On pensait pas vous trouver là aussi."</em> Il lève les mains en signe d'apaisement. "On veut juste les carnets. L'homme, vous pouvez le garder."</li>
+            <li>Cette phrase dit tout : les Venn'dys veulent la recherche, pas la mort. Ils pensent que la recherche de Servan pointe vers eux — et ils veulent décider eux-mêmes quoi en faire avant que ça circule.</li>
+            <li>Servan comprend instantanément. <em>"Vous voyez ? Même eux savent que c'est pas une histoire de comptabilité."</em></li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">La dynamique à trois</div>
+            <div class="mj-note-text">La situation idéale : PJ au centre, Servan contre un mur, Davan avec ses deux agents bloquant la sortie arrière. Bâtiment instable — un combat violent risque de faire s'effondrer une section du plancher (avertissement visible : une poutre qui craque si quelqu'un court). Davan <strong>ne veut pas de bruit</strong>. Il est négociable.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">3.2</div>
+          <div class="scene-info">
+            <div class="scene-title">La décision</div>
+            <div class="scene-meta">Le cœur du scénario</div>
+          </div>
+          <div class="timing-badge">~30 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Les PJ ont leurs ordres. Ils ont les carnets de Servan. Ils ont Davan qui veut négocier. Et ils ont Liora en haut des escaliers. C'est à eux de décider ce qui se passe.</p>
+          <h3>Options possibles</h3>
+          <ul class="beat-list">
+            <li><strong>Exécuter la mission</strong> — Servan meurt. Les carnets sont détruits. Davan repart les mains vides et doit être géré (négociation ou confrontation). Liora s'échappe dans la confusion avec sa feuille.</li>
+            <li><strong>Vendre à Davan</strong> — Les carnets partent chez les Venn'dys. Servan peut vivre si les PJ protègent cet accord auprès de Gorrick. Mais le commanditaire a été doublé — il y aura des conséquences.</li>
+            <li><strong>Protéger Servan</strong> — Refus d'exécution. Les PJ s'opposent à la fois aux Venn'dys et à Gorrick. Risqué, mais Servan continue ses recherches. Il faut gérer Gorrick à la fin de la scène.</li>
+            <li><strong>Compromis hybride</strong> — Faire "disparaître" Servan de Kern sans le tuer (fuite organisée), détruire les originaux mais garder une copie. Plusieurs factions pensent que la mission est remplie. La vérité survit partiellement.</li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">Liora dans tout ça</div>
+            <div class="mj-note-text">Quelle que soit la fin, si Servan est en danger, Liora part par la fenêtre de l'étage avec sa feuille pliée. Elle connaît le quartier, elle est rapide. <strong>Personne ne la rattrape si on ne fait pas de ça une priorité absolue.</strong> Et les PJ qui veulent la rattraper doivent assumer que c'est leur choix.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">3.3</div>
+          <div class="scene-info">
+            <div class="scene-title">Gorrick se présente</div>
+            <div class="scene-meta">Optionnel — si la mission déraille</div>
+          </div>
+          <div class="timing-badge">~10 min</div>
+        </div>
+        <div class="scene-body">
+          <p>Si les PJ ne reviennent pas avec une confirmation rapide, ou si le bruit a attiré l'attention, Gorrick arrive avec un second agent. Il est calme — c'est plus inquiétant que de la colère.</p>
+          <ul class="beat-list">
+            <li>En voyant la scène, il évalue immédiatement. Il ne demande pas d'explications. Il attend.</li>
+            <li>Si les PJ ont Servan vivant : <em>"Je vois que ça s'est compliqué."</em> Pause. <em>"Il y a toujours une solution."</em></li>
+            <li>Si Davan est là : <em>"Les Venn'dys. Évidemment."</em> Gorrick réalise que l'information sur Servan a circulé plus largement qu'il ne pensait.</li>
+          </ul>
+          <div class="mj-note">
+            <div class="mj-note-label">Gorrick face à la vérité</div>
+            <div class="mj-note-text">Si les PJ lui montrent les carnets, Gorrick les lit en silence pendant trente secondes. Il ne laisse rien paraître. Il dit : <em>"Brûlez ça."</em> Il n'explique pas. Il ne gratte plus son index. Pour la première fois depuis le début de la soirée, il n'a plus l'air de mentir.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINS -->
+    <div class="section">
+      <div class="section-label">Pacing · 30 min</div>
+      <h2>Fins possibles</h2>
+      <div class="fin-grid">
+
+        <div class="fin-card">
+          <div class="fin-header">
+            <div class="fin-letter" style="background:rgba(201,76,76,0.15); color:#c94a4a; border:1px solid rgba(201,76,76,0.3)">A</div>
+            <div class="fin-title">Le Travail est fait</div>
+          </div>
+          <div class="fin-body">
+            <div class="fin-text">Servan est mort. Les carnets sont détruits. Davan est reparti sans rien ou a été neutralisé. Liora a fui dans la nuit avec sa feuille. Gorrick dit "bien" et range son manteau. Les PJ sont payés. Ils rentrent.</div>
+            <div class="fin-impact"><strong>Impact :</strong> La recherche disparaît. Valdren n'aura jamais les travaux de Toche à croiser à l'An 9. Une lacune dans les archives — mais Liora a une page.</div>
+          </div>
+        </div>
+
+        <div class="fin-card">
+          <div class="fin-header">
+            <div class="fin-letter" style="background:rgba(201,168,76,0.15); color:#c9a84c; border:1px solid rgba(201,168,76,0.3)">B</div>
+            <div class="fin-title">Le Marchandage</div>
+          </div>
+          <div class="fin-body">
+            <div class="fin-text">Les carnets partent avec les Venn'dys. Servan est laissé en vie mais averti de se taire. Gorrick reçoit un rapport partiel. Il n'est pas satisfait, mais il conclut. Les PJ ont une dette envers Davan.</div>
+            <div class="fin-impact"><strong>Impact :</strong> La recherche existe — chez les Venn'dys. Elle influencera leurs décisions pour les 15 prochaines années. Elle ne sera jamais rendue publique.</div>
+          </div>
+        </div>
+
+        <div class="fin-card">
+          <div class="fin-header">
+            <div class="fin-letter" style="background:rgba(72,120,192,0.15); color:#4878c0; border:1px solid rgba(72,120,192,0.3)">C</div>
+            <div class="fin-title">La Fuite organisée</div>
+          </div>
+          <div class="fin-body">
+            <div class="fin-text">Servan "disparaît" de Kern — les PJ l'extraient et l'envoient dans une autre ville. Les carnets sont partiellement détruits, une copie cachée quelque part que Servan connaît. Gorrick croit la mission remplie.</div>
+            <div class="fin-impact"><strong>Impact :</strong> Servan continue ses recherches clandestinement. Il deviendra une des sources de Valdren à l'An 9 — mais difficile à retrouver. La vérité survit, fragmentée.</div>
+          </div>
+        </div>
+
+        <div class="fin-card">
+          <div class="fin-header">
+            <div class="fin-letter" style="background:rgba(136,88,184,0.15); color:#8858b8; border:1px solid rgba(136,88,184,0.3)">D</div>
+            <div class="fin-title">La Trahison ouverte</div>
+          </div>
+          <div class="fin-body">
+            <div class="fin-text">Les PJ protègent Servan et refusent les ordres. Gorrick arrive et la situation dégénère. Les PJ sortent avec Servan vivant mais brûlent leur lien à Gorrick — et au commanditaire derrière lui. Ils ont aussi les carnets.</div>
+            <div class="fin-impact"><strong>Impact :</strong> Les PJ sont désormais des acteurs libres — et cibles du commanditaire anonyme. Servan leur doit tout. La recherche est entre leurs mains.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /tab-scenario -->
+
+  <!-- ══════════════ TAB : PRÉTIRÉS ══════════════ -->
+  <div id="tab-pretires" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">Guildes variées · An 1</div>
+      <h2>Les quatre opérateurs</h2>
+      <p>Quatre personnes de guildes différentes, réunies ponctuellement par Gorrick pour ce contrat. Aucun ne se connaît vraiment avant cette nuit. Chacun a sa raison d'être là — et ses propres loyautés en arrière-plan. Aucun n'est foncièrement mauvais. Ils ont juste appris à ne pas poser trop de questions.</p>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Le <strong>pintacle</strong> est marqué MJ uniquement — les personnages ne connaissent pas leur résonance au Loom. Chaque personnage a son propre guildeur (couleur de sa guilde) avec <strong>2 charges</strong>. Le guildeur est une interface au Loom — il n'est <em>pas</em> lié au pintacle du porteur.</p>
+    </div>
+
+    <div class="pretire-grid">
+
+      <!-- AGNÈS FERRAULT -->
+      <div class="pretire-card agnes">
+        <div class="pretire-stripe" style="background: linear-gradient(90deg, #c87840, #e09060)"></div>
+        <div class="pretire-top">
+          <div class="pretire-name">Agnès Ferrault</div>
+          <div class="pretire-title" style="color:#c87840">La Sergente</div>
+          <div style="margin-top:0.5rem">
+            <span class="guildeur-badge" style="color:#c84a4a"><span class="g-dot" style="background:#c84a4a"></span>Ghemdals · rouge · 2 charges</span>
+          </div>
+        </div>
+        <div class="pretire-bg">
+          Ancienne sergente de la garde bourgeoise de Kern — elle faisait respecter les ordonnances de nuit, réglait les rixes entre compagnons, escortait les convois des guildes. La Rupture a désorganisé les corps de garde ; les Ghemdals ont absorbé ce qui restait. Elle accepte des contrats parallèles pour compléter sa solde et son ennui.
+          <br><br><em>Elle suit les ordres. Pour l'instant — mais Servan ne ressemble pas à un traître.</em>
+        </div>
+        <div class="pretire-stats">
+          <div class="stat-row">
+            <div class="stat-icon phys">Ph</div>
+            <div class="stat-label">Physique</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Force</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon soc">So</div>
+            <div class="stat-label">Social</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Equilibré</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon ment">Me</div>
+            <div class="stat-label">Mental</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Equilibré</span>
+          </div>
+          <div style="margin-top:0.35rem">
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:.12em">Conditions</div>
+            <div class="conditions-block">
+              <div class="cond-axis"><div class="cond-label">Ph</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">So</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">Me</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pretire-bottom">
+          <div class="atout-block">
+            <div class="atout-label">Atout · Résilience (1 charge)</div>
+            <div class="atout-text">Ignore une condition physique pour le reste de la scène. Raconte comment elle encaisse et continue sans broncher.</div>
+          </div>
+          <div class="pintacle-block">
+            <span class="pintacle-label">Pintacle</span>
+            <span class="pintacle-val" style="background:rgba(200,120,64,0.15);color:#c87840;border:1px solid rgba(200,120,64,0.3)">Sang</span>
+            <span class="pintacle-mj">MJ uniquement</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.35rem;line-height:1.5">Neutralité : <span style="color:#8858b8">Éther</span> · <span style="color:#c9a84c">Bile</span> &nbsp;|&nbsp; Dis. faible : <span style="color:#4878c0">Flegme</span> &nbsp;|&nbsp; Dis. forte : <span style="color:#8899aa">Mélancolie</span></div>
+          <div class="hook-block"><strong>Tension personnelle :</strong> Elle a encore un reste de sens du devoir qui dépasse les contrats. Servan ne ressemble pas à un homme coupable de ce qu'on lui reproche. Qu'est-ce qu'elle en fait ?</div>
+        </div>
+      </div>
+
+      <!-- BASTIEN NOCQ -->
+      <div class="pretire-card bastien">
+        <div class="pretire-stripe" style="background: linear-gradient(90deg, #c9a84c, #e8c870)"></div>
+        <div class="pretire-top">
+          <div class="pretire-name">Bastien Nocq</div>
+          <div class="pretire-title" style="color:#c9a84c">Le Copiste</div>
+          <div style="margin-top:0.5rem">
+            <span class="guildeur-badge" style="color:#c9a84c"><span class="g-dot" style="background:#c9a84c"></span>Venn'dys · jaune · 2 charges</span>
+          </div>
+        </div>
+        <div class="pretire-bg">
+          Ancien clerc chez un procureur, reconverti faussaire après la Rupture. Lettres de transit, autorisations de commerce, copies de registres — il vend ce que les guildes ont besoin de faire exister sur le papier sans laisser de trace. Les Venn'dys l'emploient pour ses talents de décrypteur sur contrats ponctuels.
+          <br><br><em>Il est payé pour oublier ce qu'il lit. Sauf que parfois, il n'y arrive pas.</em>
+        </div>
+        <div class="pretire-stats">
+          <div class="stat-row">
+            <div class="stat-icon phys">Ph</div>
+            <div class="stat-label">Physique</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Dextérité</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon soc">So</div>
+            <div class="stat-label">Social</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Equilibré</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon ment">Me</div>
+            <div class="stat-label">Mental</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Logique</span>
+          </div>
+          <div style="margin-top:0.35rem">
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:.12em">Conditions</div>
+            <div class="conditions-block">
+              <div class="cond-axis"><div class="cond-label">Ph</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">So</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">Me</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pretire-bottom">
+          <div class="atout-block">
+            <div class="atout-label">Atout · Décryptage (1 charge)</div>
+            <div class="atout-text">Extrait l'information clé d'un document codé ou d'une situation opaque en quelques minutes. Révèle une information cachée que le MJ choisit.</div>
+          </div>
+          <div class="pintacle-block">
+            <span class="pintacle-label">Pintacle</span>
+            <span class="pintacle-val" style="background:rgba(201,168,76,0.15);color:#c9a84c;border:1px solid rgba(201,168,76,0.3)">Bile</span>
+            <span class="pintacle-mj">MJ uniquement</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.35rem;line-height:1.5">Neutralité : <span style="color:#c87840">Sang</span> · <span style="color:#4878c0">Flegme</span> &nbsp;|&nbsp; Dis. faible : <span style="color:#8899aa">Mélancolie</span> &nbsp;|&nbsp; Dis. forte : <span style="color:#8858b8">Éther</span></div>
+          <div class="hook-block"><strong>Tension personnelle :</strong> Il va lire les carnets. C'est inévitable. Ce qu'il trouve va lui poser un problème : il travaille pour les Venn'dys — et les carnets pointent vers le quartier Venn'dys. Est-ce qu'il le dit à ses coéquipiers ?</div>
+        </div>
+      </div>
+
+      <!-- MARGUERITE LOSSAL -->
+      <div class="pretire-card marguerite">
+        <div class="pretire-stripe" style="background: linear-gradient(90deg, #4878c0, #6090d8)"></div>
+        <div class="pretire-top">
+          <div class="pretire-name">Marguerite Lossal</div>
+          <div class="pretire-title" style="color:#4878c0">La Factrice</div>
+          <div style="margin-top:0.5rem">
+            <span class="guildeur-badge" style="color:#4a9a6a"><span class="g-dot" style="background:#4a9a6a"></span>Ulmèques · vert · 2 charges</span>
+          </div>
+        </div>
+        <div class="pretire-bg">
+          Factrice marchande — elle fait le lien entre négociants, guildes, et gens qui ont besoin de se trouver sans que ça soit officiel. Avant la Rupture, elle gérait des circuits d'approvisionnement discrets. Les Ulmèques la gardent sous contrat de service pour sa connaissance des réseaux parallèles. Elle accepte des missions ponctuelles quand ça paie bien.
+          <br><br><em>Elle a croisé Servan Toche deux ou trois fois avant la Rupture. Elle sait ce qu'il faisait vraiment.</em>
+        </div>
+        <div class="pretire-stats">
+          <div class="stat-row">
+            <div class="stat-icon phys">Ph</div>
+            <div class="stat-label">Physique</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Dextérité</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon soc">So</div>
+            <div class="stat-label">Social</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Eloquence</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon ment">Me</div>
+            <div class="stat-label">Mental</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Intuition</span>
+          </div>
+          <div style="margin-top:0.35rem">
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:.12em">Conditions</div>
+            <div class="conditions-block">
+              <div class="cond-axis"><div class="cond-label">Ph</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">So</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">Me</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pretire-bottom">
+          <div class="atout-block">
+            <div class="atout-label">Atout · Réseau (1 charge)</div>
+            <div class="atout-text">Invoque un contact dans n'importe quelle guilde présente dans la scène. Ce contact lui doit quelque chose — une fois. Le MJ précise ce que le contact peut faire.</div>
+          </div>
+          <div class="pintacle-block">
+            <span class="pintacle-label">Pintacle</span>
+            <span class="pintacle-val" style="background:rgba(72,120,192,0.15);color:#4878c0;border:1px solid rgba(72,120,192,0.3)">Flegme</span>
+            <span class="pintacle-mj">MJ uniquement</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.35rem;line-height:1.5">Neutralité : <span style="color:#c9a84c">Bile</span> · <span style="color:#8899aa">Mélancolie</span> &nbsp;|&nbsp; Dis. faible : <span style="color:#8858b8">Éther</span> &nbsp;|&nbsp; Dis. forte : <span style="color:#c87840">Sang</span></div>
+          <div class="hook-block"><strong>Tension personnelle :</strong> Elle a menti par omission au briefing — elle connaît Servan, elle sait qu'il était cartographe. Elle doit décider si elle le dit à ses coéquipiers, et quand. Plus elle attend, plus ça ressemble à une trahison d'équipe.</div>
+        </div>
+      </div>
+
+      <!-- RENAUD COLS -->
+      <div class="pretire-card renaud">
+        <div class="pretire-stripe" style="background: linear-gradient(90deg, #8899aa, #aabbcc)"></div>
+        <div class="pretire-top">
+          <div class="pretire-name">Renaud Cols</div>
+          <div class="pretire-title" style="color:#8899aa">Le Veilleur</div>
+          <div style="margin-top:0.5rem">
+            <span class="guildeur-badge" style="color:#8858b8"><span class="g-dot" style="background:#8858b8"></span>Kheyzas · violet · 2 charges</span>
+          </div>
+        </div>
+        <div class="pretire-bg">
+          Employé des Kheyzas pendant huit ans comme surveillant des variations du Loom dans les faubourgs de Kern — il mesurait, notait, transmettait. La nuit de la Rupture, il était en poste. Il a senti le tissu se déchirer de l'intérieur. Depuis, les Kheyzas l'ont mis "en disponibilité". Il prend des contrats pour subsister.
+          <br><br><em>Il ne parle plus beaucoup. Il n'a plus les mots pour ce qu'il a ressenti.</em>
+        </div>
+        <div class="pretire-stats">
+          <div class="stat-row">
+            <div class="stat-icon phys">Ph</div>
+            <div class="stat-label">Physique</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div><div class="stat-pip"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Equilibré</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon soc">So</div>
+            <div class="stat-label">Social</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div>
+            </div>
+            <span class="stat-pole">Discrétion</span>
+          </div>
+          <div class="stat-row">
+            <div class="stat-icon ment">Me</div>
+            <div class="stat-label">Mental</div>
+            <div class="stat-pip-row">
+              <div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip filled"></div><div class="stat-pip"></div>
+            </div>
+            <span class="stat-pole">Intuition</span>
+          </div>
+          <div style="margin-top:0.35rem">
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:.12em">Conditions</div>
+            <div class="conditions-block">
+              <div class="cond-axis"><div class="cond-label">Ph</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">So</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+              <div class="cond-axis"><div class="cond-label">Me</div><div class="cond-slots"><div class="cond-slot"></div><div class="cond-slot"></div><div class="cond-slot"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pretire-bottom">
+          <div class="atout-block">
+            <div class="atout-label">Atout · Echo du Loom (1 charge)</div>
+            <div class="atout-text">Perçoit la "mémoire" du Loom d'un lieu — une impression de ce qui s'y est passé d'important. Le MJ décrit une image ou une sensation liée à la Rupture ou aux Anomalies proches.</div>
+          </div>
+          <div class="pintacle-block">
+            <span class="pintacle-label">Pintacle</span>
+            <span class="pintacle-val" style="background:rgba(136,153,170,0.15);color:#8899aa;border:1px solid rgba(136,153,170,0.3)">Mélancolie</span>
+            <span class="pintacle-mj">MJ uniquement</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.35rem;line-height:1.5">Neutralité : <span style="color:#4878c0">Flegme</span> · <span style="color:#8858b8">Éther</span> &nbsp;|&nbsp; Dis. faible : <span style="color:#c87840">Sang</span> &nbsp;|&nbsp; Dis. forte : <span style="color:#c9a84c">Bile</span></div>
+          <div class="hook-block"><strong>Tension personnelle :</strong> Il sait — sans avoir lu une seule note — que cet endroit a un rapport direct avec la Rupture. Son corps le lui dit. Il doit décider si ça change quelque chose à ce qu'il fait ce soir.</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /tab-pretires -->
+
+  <!-- ══════════════ TAB : PNJ & LIEU ══════════════ -->
+  <div id="tab-pnj" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">Personnages non joueurs</div>
+      <h2>PNJ</h2>
+
+      <div class="pnj-card">
+        <div class="pnj-header">
+          <div class="pnj-avatar" style="background:rgba(120,120,160,0.15)">🪝</div>
+          <div>
+            <div class="pnj-name">Gorrick</div>
+            <div class="pnj-role">Courtier indépendant · Celui qui donne les ordres</div>
+          </div>
+        </div>
+        <div class="pnj-body">
+          <p>Quarantaine, cheveux courts, regard qui ne s'arrête jamais longtemps. Il est professionnel avant tout — pas cruel, pas chaleureux. Il pense faire un travail honnête dans un métier qui ne l'est pas. Il ne sait pas vraiment pourquoi Servan doit mourir, mais il a appris à ne pas poser la question.</p>
+          <div class="pnj-trait"><strong>Tell :</strong> Gratte la peau autour de ses ongles gauches quand il ment ou omet. Complètement immobile quand il dit la vérité.</div>
+          <div class="pnj-trait"><strong>À jouer :</strong> Calme, concis. Il ne hausse jamais la voix. Quand quelque chose le surprend, il s'arrête une seconde et réévalue — puis reprend comme avant. La seule fois où il montre quelque chose, c'est quand il voit les carnets de Servan.</div>
+          <div class="pnj-axes">
+            <span class="pnj-axis">Ph <strong>3</strong></span>
+            <span class="pnj-axis">So <strong>2</strong> (Éloquence)</span>
+            <span class="pnj-axis">Me <strong>3</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnj-card">
+        <div class="pnj-header">
+          <div class="pnj-avatar" style="background:rgba(136,88,184,0.15)">🗺</div>
+          <div>
+            <div class="pnj-name">Servan Toche</div>
+            <div class="pnj-role">Cartographe du Loom · La cible</div>
+          </div>
+        </div>
+        <div class="pnj-body">
+          <p>Début quarantaine, l'air d'un homme qui ne dort plus. Avant la Rupture, il mesurait les flux du Loom pour les guildes d'infrastructure — un travail technique, invisible. La nuit de la Rupture, il était sur le terrain. Il a tout vu. Et depuis huit mois, il essaie de comprendre ce qu'il a vu.</p>
+          <p>Il n'est pas courageux au sens héroïque. Il est obstiné. Il sait que ce qu'il a trouvé est important et que quelqu'un veut l'effacer — ce qui le pousse à continuer plus qu'à fuir.</p>
+          <div class="pnj-trait"><strong>Ce qu'il sait :</strong> La Rupture a une origine géographique localisable. Son travail pointe vers le quartier Venn'dys. Il ne sait pas ce que ça signifie — un événement accidentel, une infrastructure qui a lâché, ou quelque chose de délibéré. Il a besoin de plus de données.</div>
+          <div class="pnj-trait"><strong>Sa priorité absolue :</strong> Liora. Tout ce qu'il fait, il le fait autour d'elle. Si elle est en sécurité, il peut parler. Si elle est menacée, il est paralysé.</div>
+          <div class="pnj-axes">
+            <span class="pnj-axis">Ph <strong>4</strong> (Dextérité)</span>
+            <span class="pnj-axis">So <strong>3</strong></span>
+            <span class="pnj-axis">Me <strong>2</strong> (Logique)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnj-card">
+        <div class="pnj-header">
+          <div class="pnj-avatar" style="background:rgba(201,168,76,0.1)">👧</div>
+          <div>
+            <div class="pnj-name">Liora Toche</div>
+            <div class="pnj-role">8 ans · Fille de Servan</div>
+          </div>
+        </div>
+        <div class="pnj-body">
+          <p>Elle vit dans le bâtiment depuis des mois. Elle a l'habitude du danger, de rester silencieuse, de disparaître quand il le faut. Elle ne parle pas aux inconnus. Elle observe.</p>
+          <p>Elle tient une feuille pliée — un relevé de Loom de son père qu'elle avait prise pour dessiner au verso. Elle ne la lâche pas, même si elle ne sait pas ce que c'est. C'est à son père.</p>
+          <div class="pnj-trait"><strong>Si Servan est blessé ou neutralisé :</strong> Elle prend la feuille, passe par la fenêtre arrière et disparaît dans le quartier. Elle connaît chaque passage. Personne ne la rattrape sans en faire une priorité explicite.</div>
+
+          <div class="mj-campagne" style="margin-top:0.85rem">
+            <div class="mj-campagne-label">⚑ Note MJ — Joueuse campagne · NE PAS RÉVÉLER</div>
+            <div class="mj-campagne-text">Liora Toche, 8 ans à l'An 1, aura <strong>28 ans à l'An 20</strong> — l'époque de la campagne principale. Elle a grandi avec la feuille pliée de son père sans jamais comprendre ce qu'elle signifiait. C'est elle qui vend des papiers étranges sur un marché — le point de départ du oneshot "Les Carnets de Valdren". La joueuse campagne <strong>ne doit pas faire le lien ce soir</strong>. Elle voit juste une petite fille qui fuit avec un papier. Le moment "ohhh" viendra dans quelques mois de jeu quand son personnage croisera une marchande de documents nommée Liora dans la campagne principale.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnj-card">
+        <div class="pnj-header">
+          <div class="pnj-avatar" style="background:rgba(201,168,76,0.12)">◆</div>
+          <div>
+            <div class="pnj-name">Davan & les Chasseurs</div>
+            <div class="pnj-role">Opérateurs Venn'dys · Extraction, pas élimination</div>
+          </div>
+        </div>
+        <div class="pnj-body">
+          <p>Trois opérateurs. Guildeurs jaunes visibles. Davan est le chef — la trentaine, calme, habitué aux situations à trois parties. Les deux autres suivent ses instructions sans improviser.</p>
+          <p>Ils ont été envoyés récupérer les carnets de Servan — pas pour les détruire, mais pour que les Venn'dys décident eux-mêmes quoi en faire. L'information qui pointe vers leur quartier les inquiète. Ils veulent la contrôler, pas l'effacer.</p>
+          <div class="pnj-trait"><strong>À jouer Davan :</strong> Pragmatique. Il préfère une transaction à une confrontation. <em>"On veut les carnets. L'homme vous pouvez le garder."</em> Il dit ça sans ironie — c'est une offre honnête selon ses standards. Il ne ment pas sur ses intentions.</div>
+          <div class="pnj-trait"><strong>S'il comprend que les PJ doutent :</strong> Il peut offrir de l'information en échange des carnets. Il sait que quelqu'un a commandé l'élimination via un courtier, sans laisser de trace directe. Il ne sait pas qui. Mais il sait que la commande est venue de quelqu'un qui connaît la valeur des carnets — et qui n'a pas voulu agir directement.</div>
+          <div class="pnj-axes">
+            <span class="pnj-axis">Davan — Ph <strong>3</strong></span>
+            <span class="pnj-axis">So <strong>3</strong></span>
+            <span class="pnj-axis">Me <strong>3</strong></span>
+            <span class="pnj-axis">Agents — Ph <strong>3</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lieu -->
+    <div class="section">
+      <div class="section-label">Le décor</div>
+      <h2>Le bâtiment — Rue du Troisième Relevé</h2>
+
+      <div class="lieu-block">
+        <div class="lieu-title">Vue d'ensemble</div>
+        <p style="font-size:0.88rem; color:var(--text-secondary)">Ancien bâtiment d'archives cartographiques, partiellement effondré lors de la Rupture. Porte d'entrée rouge peinte sur du noir (ancien logo de la guilde cartographique). Trois niveaux : rez-de-chaussée semi-effondré, premier étage praticable, deuxième étage où dorment Servan et Liora. <strong>Structure instable</strong> — tout combat physique intense risque de faire tomber une section.</p>
+        <div class="lieu-zone">
+          <div class="lieu-zone-name">Rez-de-chaussée · Espace de travail</div>
+          <div class="lieu-zone-desc">Tables recouvertes de cartes. Bougies. Encre rouge et noire. Une cloison effondrée crée un recoin qui peut servir de cachette ou de position défensive. La fenêtre arrière est accessible — c'est l'entrée discrète des Chasseurs. Poutre principale fissurée au-dessus de la table centrale : un impact violent dans cette zone fait tomber des gravats (condition physique pour qui est dessous).</div>
+        </div>
+        <div class="lieu-zone">
+          <div class="lieu-zone-name">Escalier · Goulot d'étranglement</div>
+          <div class="lieu-zone-desc">Un seul escalier, en bois, qui grince. Liora s'y arrête à mi-hauteur quand elle entend du bruit. Si on la pousse à fuir, elle monte et passe par une fenêtre d'étage qui donne sur une ruelle. Saut de 3 mètres — elle le fait sans hésiter.</div>
+        </div>
+        <div class="lieu-zone">
+          <div class="lieu-zone-name">Extérieur · Rue</div>
+          <div class="lieu-zone-desc">Déserte à cette heure. Quelques bâtiments reconstruits de l'autre côté — une famille qui dort, une lumière visible. Un garde Ghemdals passe toutes les vingt minutes sur la rue principale perpendiculaire. Du bruit fort attirerait des curieux en moins de dix minutes.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-pnj -->
+
+  <!-- ══════════════ TAB : IMPACT ══════════════ -->
+  <div id="tab-impact" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">Conséquences durables</div>
+      <h2>Impact sur la chronologie</h2>
+      <p>Ce oneshot se déroule à l'An 1 — dix-neuf ans avant la campagne principale. Les choix des joueurs créent des faits historiques sur lesquels tout le reste s'appuie. Voici les états possibles selon les fins.</p>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-header">
+        <span class="impact-fin">Fin A</span>
+        <span class="impact-title">Le travail est fait — Servan mort, carnets détruits</span>
+      </div>
+      <div class="impact-row"><div class="impact-dot" style="background:#c94a4a"></div>La recherche de Toche disparaît. Valdren (An 9) n'aura aucun travail de Toche à croiser — il y aura un vide dans sa reconstruction. Cela explique pourquoi ses archives ont des lacunes sur la propagation.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:#c94a4a"></div>Les Venn'dys n'ont rien récupéré. Ils ignorent ce qu'on leur a caché — ou ce qu'ils ont raté.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:var(--accent-dim)"></div>Liora a une page. Juste une. Elle grandit avec elle sans savoir ce que c'est. À l'An 20, cette page sera parmi les papiers qu'elle vend sur un marché.</div>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-header">
+        <span class="impact-fin">Fin B</span>
+        <span class="impact-title">Le marchandage — carnets chez les Venn'dys</span>
+      </div>
+      <div class="impact-row"><div class="impact-dot" style="background:#c9a84c"></div>La recherche existe — mais chez les Venn'dys. Ils savent que la Rupture a une origine localisée dans leur ancien quartier. Ils garderont cette information pour eux et construiront leur politique autour d'elle pendant 15 ans.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:#c9a84c"></div>Servan est en vie mais silencieux. S'il reprend un jour ses travaux, il aura moins de données que prévu.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:var(--text-muted)"></div>Les PJ ont une dette envers Davan. Ce genre de dette, dans cet univers, se présente toujours au pire moment.</div>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-header">
+        <span class="impact-fin">Fin C</span>
+        <span class="impact-title">La fuite — Servan disparaît de Kern</span>
+      </div>
+      <div class="impact-row"><div class="impact-dot" style="background:#4878c0"></div>Servan continue clandestinement. Il devient difficile à retrouver — mais il existe. À l'An 9, Valdren le retrouvera (avec difficulté) et croisera ses données avec les autres témoignages.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:#4878c0"></div>La recherche survit fragmentée : une version incomplète quelque part que Servan connaît, et la page de Liora.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:var(--text-muted)"></div>Gorrick pense la mission remplie. Pour l'instant.</div>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-header">
+        <span class="impact-fin">Fin D</span>
+        <span class="impact-title">La trahison — PJ contre Gorrick</span>
+      </div>
+      <div class="impact-row"><div class="impact-dot" style="background:#8858b8"></div>Servan vit et continue ses recherches avec un soutien actif. Ses travaux atteignent Valdren en meilleur état. La lacune de l'An 9 est comblée — ou réduite.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:#8858b8"></div>Les PJ ont les carnets. Ils savent ce que Gorrick voulait effacer. Ils sont désormais des acteurs du fil rouge 03 — de l'autre côté.</div>
+      <div class="impact-row"><div class="impact-dot" style="background:#c94a4a"></div>Gorrick les cherche. Et le commanditaire derrière lui aussi. Cette dette-là n'a pas de prescription.</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-label">Connexions à la chronologie</div>
+      <h2>Fil rouge activé</h2>
+      <p>Ce oneshot est l'un des premiers actes du <strong>fil rouge 03 — Quelqu'un efface les traces</strong>. Les PJ en sont les instruments — consentants ou non selon la fin. Quel que soit leur choix, ils viennent de comprendre que leur commanditaire leur a menti sur la nature de la mission. Ce savoir ne s'efface pas.</p>
+      <p>Les événements de cette nuit alimentent directement :</p>
+      <ul class="beat-list" style="margin-top:0.5rem">
+        <li><strong>An 3 — Disparition des Mémoires Vives :</strong> L'effacement dont Servan parlait commence cette même année. Les PJ ont peut-être vu les prémices.</li>
+        <li><strong>An 9 — Disparition de Valdren :</strong> Selon la fin, Valdren trouve ou ne trouve pas les travaux de Toche. Cela change ce qu'il avait découvert — et pourquoi il a disparu.</li>
+        <li><strong>An 20 — Liora sur le marché :</strong> Elle sera là. Elle vendra des papiers. Elle aura 28 ans et une feuille qu'elle ne comprend toujours pas.</li>
+      </ul>
+    </div>
+
+    <div class="mj-campagne" style="margin-top:1rem">
+      <div class="mj-campagne-label">⚑ Récap MJ — Joueuse campagne · Bilan de la soirée</div>
+      <div class="mj-campagne-text">
+        <strong>Ce qu'elle peut avoir vu et retenir :</strong> des cartes avec un point d'origine dans le quartier Venn'dys. Une note disant "d'ici. pas par hasard." Un chercheur qui travaillait sur la propagation de la Rupture. Des Venn'dys qui voulaient récupérer les carnets.
+        <br><br>
+        <strong>Ce qu'elle ne doit pas connecter ce soir :</strong> Liora. Elle a vu une petite fille fuir avec un papier. C'est tout. Ce sera suffisant dans quelques mois de campagne quand elle croisera une femme d'une trentaine d'années nommée Liora qui vend de vieux documents — et qui leur proposera une page de relevé Loom qu'elle porte depuis l'enfance sans savoir ce que c'est.
+        <br><br>
+        <strong>Ton à adopter avec elle ce soir :</strong> ne rien souligner. Laisser les découvertes se faire naturellement. Le point d'origine Venn'dys est l'information qu'elle peut emporter — intrigante, pas conclusive.
+      </div>
+    </div>
+
+  </div><!-- /tab-impact -->
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a class="footer-link" href="lore-timeline.html">← Chronologie</a>
+    <a class="footer-link" href="index.html">App JDR</a>
+  </div>
+  <div class="footer-copy">Chroniques · Oneshot 01 · La Cible · An 1 post-Rupture</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + t).classList.add('active');
+      window.scrollTo(0, 0);
+    });
+  });
+</script>
+
+</body>
+</html>
