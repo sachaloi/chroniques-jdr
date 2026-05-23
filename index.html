@@ -749,45 +749,70 @@
       padding: 1rem 1.1rem;
     }
 
+    /* ── Guildeur pentacle ─────────────────────────── */
     .guilder-colors {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 0.85rem;
+      position: relative;
+      width: 190px; height: 190px;
+      margin: 0 auto 0.25rem;
+    }
+
+    .guilder-pentacle-svg {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
     }
 
     .guilder-orb {
-      width: 38px; height: 38px;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 36px; height: 36px;
       border-radius: 50%;
       cursor: pointer;
       border: 3px solid transparent;
       transition: all 0.2s;
-      position: relative;
-      flex-shrink: 0;
     }
-    .guilder-orb:hover { transform: scale(1.15); filter: brightness(1.15); }
-    .guilder-orb.selected {
-      border-color: #fff;
-      box-shadow: 0 0 10px currentColor;
-    }
-    .guilder-orb .orb-label {
+    .guilder-orb:hover { filter: brightness(1.2); transform: translate(-50%, -50%) scale(1.15); }
+    .guilder-orb.selected { border-color: rgba(255,255,255,0.75); }
+
+    .guilder-center-btn {
       position: absolute;
-      bottom: -1.3rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.55rem;
-      white-space: nowrap;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
+      left: 95px; top: 95px;
+      transform: translate(-50%, -50%);
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.1rem;
+      font-family: inherit;
+      transition: all 0.18s;
+    }
+    .guilder-center-btn:hover { border-color: var(--accent-dim); background: var(--bg-card); }
+
+    .center-charges {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--accent-gold); line-height: 1;
+    }
+    .center-label {
+      font-size: 0.56rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); line-height: 1;
+    }
+
+    .guilder-humeur-label {
+      text-align: center; min-height: 1.3rem;
+      font-size: 0.75rem; padding: 0.05rem 0 0.55rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
     }
 
     .guilder-charges-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 0.5rem;
-      margin-bottom: 0.75rem;
-      padding: 0.6rem 0.8rem;
+      margin-top: 0.25rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 0.8rem;
       background: var(--bg-panel);
       border-radius: 8px;
       border: 1px solid var(--border);
@@ -819,8 +844,6 @@
       font-family: inherit;
     }
     .charge-btn:hover { border-color: var(--accent-dim); color: var(--accent-gold); }
-
-    .guilder-actions { display: flex; gap: 0.5rem; }
 
     .loom-btn {
       flex: 1;
@@ -1820,7 +1843,7 @@
 <!-- ══════════════════════════════════════════════════════
      GAME VIEW (joueur)
 ════════════════════════════════════════════════════════ -->
-<div id="screen-sheet" class="screen"> <!-- Background scene --> <div id="scene-bg" class="scene-bg-full"> <div id="scene-placeholder" class="scene-bg-placeholder"> <br><br>Le Maître de Jeu<br>n'a pas encore défini la scène </div> </div> <!-- Game log overlay --> <div id="game-log" class="game-log-overlay"></div> <!-- ── Dice Roller ─────────────────────────────── --> <div id="dice-fab-wrap" style="position:fixed;bottom:1.6rem;right:1.4rem;z-index:260;display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;"> <div id="dice-picker" class="dice-picker" style="display:none;"> <div class="dice-picker-title">Jet de d6 — choisir un axe</div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','high')">Bourrin </button> <div class="die-axis-dot" style="background:#c87840;"></div> <button class="die-pole-btn right-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','low')"> Filou</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','high')">Star </button> <div class="die-axis-dot" style="background:#4878c0;"></div> <button class="die-pole-btn right-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','low')"> Fouine</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','high')">PlanMaker </button> <div class="die-axis-dot" style="background:#8858b8;"></div> <button class="die-pole-btn right-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','low')"> Impro</button> </div> </div> <button class="dice-fab" id="dice-fab" onclick="toggleDicePicker()" title="Lancer un dé"></button> </div> <div id="dice-result-overlay" class="dice-result-overlay" style="display:none;"> <div class="dice-result-box" id="dice-result-box"> <div class="dice-result-die-label" id="dice-result-label"></div> <div class="dice-result-number" id="dice-result-number"></div> <div class="dice-result-qualifier" id="dice-result-qualifier"></div> <div class="dice-result-success" id="dice-result-success" style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;margin-top:0.3rem;"></div> <div class="dice-result-roller" id="dice-result-roller"></div> </div> </div> <!-- Top bar --> <div class="game-topbar"> <button class="game-back-btn" onclick="goBack('screen-characters')"> Quitter</button> <span id="hdr-char-name" class="game-char-name"></span> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="hdr-code-sheet" class="room-badge"></span> <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;"> Scène</button> <button class="icon-btn game-sheet-btn" onclick="toggleSheet()"> Fiche</button> <button id="btn-combat-toggle" class="icon-btn" onclick="toggleCombatHUD()" style="display:none;"> Combat</button> </div> </div> <!-- Character sheet drawer --> <div id="sheet-drawer" class="sheet-drawer sheet-hidden"> <div class="sheet-drawer-inner"> <div class="sheet-drawer-header"> <span>Fiche de personnage</span> <button onclick="toggleSheet()" class="sheet-close-btn">X</button> </div> <!-- Axes (remplace stats classiques) --> <div id="axes-container"></div> <!-- Conditions --> <div id="conditions-container"></div> <!-- Reste de la fiche --> <div class="sheet-grid"> <div class="gold-block"> <div class="section-label"> Or</div> <div class="gold-row"> <button class="gold-btn" onclick="adjustGold(-10)">−10</button> <button class="gold-btn" onclick="adjustGold(-1)">−1</button> <input type="number" class="gold-num" id="gold-num" value="0" onchange="setGold(this.value)" min="0"> <button class="gold-btn" onclick="adjustGold(1)">+1</button> <button class="gold-btn" onclick="adjustGold(10)">+10</button> </div> </div> <div class="guilder-block"> <div class="section-label"> Loom · Guildeur</div> <div class="guilder-colors" id="guilder-colors"></div> <div class="guilder-charges-row"> <span class="guilder-charge-label">Charges de Loom</span> <div class="guilder-charge-ctrl"> <button class="charge-btn" onclick="adjustCharges(-1)">−</button> <span class="charge-num" id="guilder-charge-num">0</span> <button class="charge-btn" onclick="adjustCharges(1)">+</button> </div> </div> <div class="guilder-actions"> <button class="loom-btn primary" onclick="openSpellsModal('castable')"> Sorts disponibles</button> <button class="loom-btn" onclick="openSpellsModal('all')"> Tous mes sorts</button> </div> </div> <div class="inv-block" style="grid-column:1/-1;"> <div class="inv-top"> <div class="section-label" style="margin:0;border:none;padding:0;"> Inventaire</div> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="slot-badge" class="slot-badge">0 / 10</span> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()"> Donner</button> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="resetConsumableUses()" title="Réinitialise les utilisations"> Session</button> </div> </div> <div id="slot-grid" class="slot-grid"></div> </div> </div> </div> </div> <!-- Player Guild Block --> <div id="player-guild-block" style="padding: 0 1rem 0.75rem; display:none;"> <div class="player-guild-block"> <div class="section-label" style="margin:0 0 0.6rem;border:none;padding:0;"> Ma Guilde</div> <div id="player-guild-content"> <div class="player-guild-none">Vous n'êtes assigné à aucune guilde.</div> </div> </div> </div> <!-- Player Combat HUD --> <div id="player-combat-hud" class="player-combat-hud hud-hidden"> <div class="hud-conditions-row" id="hud-conditions-row"></div> <div class="hud-actions"> <div id="hud-consumables" class="hud-consumables"></div> <div class="hud-loom"> <span class="hud-loom-label">Loom</span> <span id="hud-charges" class="hud-charges">0</span> <button class="loom-btn" style="padding:0.22rem 0.55rem;font-size:0.7rem;" onclick="openSpellsModal('castable')"> Sort</button> </div> </div> </div>
+<div id="screen-sheet" class="screen"> <!-- Background scene --> <div id="scene-bg" class="scene-bg-full"> <div id="scene-placeholder" class="scene-bg-placeholder"> <br><br>Le Maître de Jeu<br>n'a pas encore défini la scène </div> </div> <!-- Game log overlay --> <div id="game-log" class="game-log-overlay"></div> <!-- ── Dice Roller ─────────────────────────────── --> <div id="dice-fab-wrap" style="position:fixed;bottom:1.6rem;right:1.4rem;z-index:260;display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;"> <div id="dice-picker" class="dice-picker" style="display:none;"> <div class="dice-picker-title">Jet de d6 — choisir un axe</div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','high')">Bourrin </button> <div class="die-axis-dot" style="background:#c87840;"></div> <button class="die-pole-btn right-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','low')"> Filou</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','high')">Star </button> <div class="die-axis-dot" style="background:#4878c0;"></div> <button class="die-pole-btn right-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','low')"> Fouine</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','high')">PlanMaker </button> <div class="die-axis-dot" style="background:#8858b8;"></div> <button class="die-pole-btn right-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','low')"> Impro</button> </div> </div> <button class="dice-fab" id="dice-fab" onclick="toggleDicePicker()" title="Lancer un dé"></button> </div> <div id="dice-result-overlay" class="dice-result-overlay" style="display:none;"> <div class="dice-result-box" id="dice-result-box"> <div class="dice-result-die-label" id="dice-result-label"></div> <div class="dice-result-number" id="dice-result-number"></div> <div class="dice-result-qualifier" id="dice-result-qualifier"></div> <div class="dice-result-success" id="dice-result-success" style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;margin-top:0.3rem;"></div> <div class="dice-result-roller" id="dice-result-roller"></div> </div> </div> <!-- Top bar --> <div class="game-topbar"> <button class="game-back-btn" onclick="goBack('screen-characters')"> Quitter</button> <span id="hdr-char-name" class="game-char-name"></span> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="hdr-code-sheet" class="room-badge"></span> <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;"> Scène</button> <button class="icon-btn game-sheet-btn" onclick="toggleSheet()"> Fiche</button> <button id="btn-combat-toggle" class="icon-btn" onclick="toggleCombatHUD()" style="display:none;"> Combat</button> </div> </div> <!-- Character sheet drawer --> <div id="sheet-drawer" class="sheet-drawer sheet-hidden"> <div class="sheet-drawer-inner"> <div class="sheet-drawer-header"> <span>Fiche de personnage</span> <button onclick="toggleSheet()" class="sheet-close-btn">X</button> </div> <!-- Axes (remplace stats classiques) --> <div id="axes-container"></div> <!-- Conditions --> <div id="conditions-container"></div> <!-- Reste de la fiche --> <div class="sheet-grid"> <div class="gold-block"> <div class="section-label"> Or</div> <div class="gold-row"> <button class="gold-btn" onclick="adjustGold(-10)">−10</button> <button class="gold-btn" onclick="adjustGold(-1)">−1</button> <input type="number" class="gold-num" id="gold-num" value="0" onchange="setGold(this.value)" min="0"> <button class="gold-btn" onclick="adjustGold(1)">+1</button> <button class="gold-btn" onclick="adjustGold(10)">+10</button> </div> </div> <div class="guilder-block"> <div class="section-label"> Loom · Guildeur</div> <div class="guilder-colors" id="guilder-colors"></div> <div id="guilder-humeur-label" class="guilder-humeur-label"></div> <div class="guilder-charges-row"> <span class="guilder-charge-label">Charges de Loom</span> <div class="guilder-charge-ctrl"> <button class="charge-btn" onclick="adjustCharges(-1)">−</button> <button class="charge-btn" onclick="adjustCharges(1)">+</button> </div> </div> </div> <div class="inv-block" style="grid-column:1/-1;"> <div class="inv-top"> <div class="section-label" style="margin:0;border:none;padding:0;"> Inventaire</div> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="slot-badge" class="slot-badge">0 / 10</span> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()"> Donner</button> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="resetConsumableUses()" title="Réinitialise les utilisations"> Session</button> </div> </div> <div id="slot-grid" class="slot-grid"></div> </div> </div> </div> </div> <!-- Player Guild Block --> <div id="player-guild-block" style="padding: 0 1rem 0.75rem; display:none;"> <div class="player-guild-block"> <div class="section-label" style="margin:0 0 0.6rem;border:none;padding:0;"> Ma Guilde</div> <div id="player-guild-content"> <div class="player-guild-none">Vous n'êtes assigné à aucune guilde.</div> </div> </div> </div> <!-- Player Combat HUD --> <div id="player-combat-hud" class="player-combat-hud hud-hidden"> <div class="hud-conditions-row" id="hud-conditions-row"></div> <div class="hud-actions"> <div id="hud-consumables" class="hud-consumables"></div> <div class="hud-loom"> <span class="hud-loom-label">Loom</span> <span id="hud-charges" class="hud-charges">0</span> <button class="loom-btn" style="padding:0.22rem 0.55rem;font-size:0.7rem;" onclick="openSpellsModal('castable')"> Sort</button> </div> </div> </div>
 </div> <!-- ══════════════════════════════════════════════════════
      COMBAT OVERLAY
 ═════════════════════════════════════════════════════════ -->
@@ -1903,7 +1926,7 @@
 </div> <!-- ══════════════════════════════════════════════════════
      MODAL — Créer un sort (MJ)
 ═════════════════════════════════════════════════════════ -->
-<div id="modal-spell-create" class="overlay hidden"> <div class="modal"> <h3 id="spell-create-title">Nouveau sort</h3> <input type="hidden" id="m-spell-id"> <div class="field-label">Nom du sort</div> <input type="text" id="m-spell-name" placeholder="Vision Onirique"> <div class="field-label">École (couleur du Loom)</div> <select id="m-spell-school"> <option value="vert"> Vert — Ulmèques (Onirique)</option> <option value="noir"> Noir — Ashragors (Nécromance)</option> <option value="rouge"> Rouge — Ghemdals (Art guerrier)</option> <option value="jaune"> Jaune — Venn'dys (Sorcellerie)</option> <option value="violet"> Violet — Kheyzas (Sémantique)</option> </select> <div class="field-label">Coût en charges</div> <input type="number" id="m-spell-cost" min="1" max="99" value="2"> <div class="field-label">Phrase d'ambiance <span style="color:var(--text-muted);font-weight:400;">(anomalie, concept étrange)</span></div> <input type="text" id="m-spell-ambiance" placeholder="Les choses fragiles voient l'avenir avant de casser."> <div class="field-label">Description / Effet</div> <textarea id="m-spell-desc" rows="2" placeholder="Brisez un objet fragile pour voir une seconde dans le futur."
+<div id="modal-spell-create" class="overlay hidden"> <div class="modal"> <h3 id="spell-create-title">Nouveau sort</h3> <input type="hidden" id="m-spell-id"> <div class="field-label">Nom du sort</div> <input type="text" id="m-spell-name" placeholder="Vision Onirique"> <div class="field-label">École (couleur du Loom)</div> <select id="m-spell-school"> <option value="sang"> Sang — Force &amp; présence</option> <option value="bile"> Bile — Acuité &amp; calcul</option> <option value="flegme"> Flegme — Lien &amp; fluidité</option> <option value="melancolie"> Mélancolie — Mémoire &amp; absence</option> <option value="ether"> Éther — Perception &amp; limite</option> </select> <div class="field-label">Coût en charges</div> <input type="number" id="m-spell-cost" min="1" max="99" value="2"> <div class="field-label">Phrase d'ambiance <span style="color:var(--text-muted);font-weight:400;">(anomalie, concept étrange)</span></div> <input type="text" id="m-spell-ambiance" placeholder="Les choses fragiles voient l'avenir avant de casser."> <div class="field-label">Description / Effet</div> <textarea id="m-spell-desc" rows="2" placeholder="Brisez un objet fragile pour voir une seconde dans le futur."
       style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea> <div class="modal-actions"> <button class="btn btn-secondary" onclick="hideModal('modal-spell-create')">Annuler</button> <button class="btn btn-primary" onclick="saveSpell()">Enregistrer </button> </div> </div>
 </div> <!-- ══════════════════════════════════════════════════════
      MODAL — Assigner un sort à un personnage (MJ)
@@ -1941,7 +1964,7 @@
 </div> <!-- ══════════════════════════════════════════════════════
      MODAL — Anomalie Loom (MJ)
 ══════════════════════════════════════════════════════ -->
-<div id="modal-loom-source" class="overlay hidden"> <div class="modal" style="max-width:440px;"> <h3 id="loom-source-modal-title">Nouvelle Anomalie</h3> <input type="hidden" id="m-ls-id"> <div class="field-label">Nom</div> <input type="text" id="m-ls-name" placeholder="Biche de verre bleu, Horloge inversée…"> <div class="field-label">Couleur de Loom</div> <select id="m-ls-color"> <option value="vert"> Vert — Ulmèques (Onirique)</option> <option value="noir"> Noir — Ashragors (Nécromance)</option> <option value="rouge"> Rouge — Ghemdals (Art guerrier)</option> <option value="jaune"> Jaune — Venn'dys (Sorcellerie)</option> <option value="violet"> Violet — Kheyzas (Sémantique)</option> </select> <div class="field-label">Description étrange</div> <textarea id="m-ls-desc" rows="3" placeholder="Une biche de verre figée dans l'instant de sa mort. Son flanc pulse d'une lumière bleue."
+<div id="modal-loom-source" class="overlay hidden"> <div class="modal" style="max-width:440px;"> <h3 id="loom-source-modal-title">Nouvelle Anomalie</h3> <input type="hidden" id="m-ls-id"> <div class="field-label">Nom</div> <input type="text" id="m-ls-name" placeholder="Biche de verre bleu, Horloge inversée…"> <div class="field-label">Couleur de Loom</div> <select id="m-ls-color"> <option value="sang"> Sang — Force &amp; présence</option> <option value="bile"> Bile — Acuité &amp; calcul</option> <option value="flegme"> Flegme — Lien &amp; fluidité</option> <option value="melancolie"> Mélancolie — Mémoire &amp; absence</option> <option value="ether"> Éther — Perception &amp; limite</option> </select> <div class="field-label">Description étrange</div> <textarea id="m-ls-desc" rows="3" placeholder="Une biche de verre figée dans l'instant de sa mort. Son flanc pulse d'une lumière bleue."
       style="width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);padding:0.7rem 1rem;font-size:0.9rem;resize:vertical;font-family:inherit;outline:none;"></textarea> <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"> <div> <div class="field-label">Charges (si Récolte)</div> <input type="number" id="m-ls-charges" min="1" max="10" value="2"> </div> <div> <div class="field-label">Sort lié (si Lecture)</div> <select id="m-ls-spell" style="font-size:0.8rem;"></select> </div> </div> <div class="modal-actions"> <button class="btn btn-secondary" onclick="hideModal('modal-loom-source')">Annuler</button> <button class="btn btn-primary" onclick="saveLoomSource()">Enregistrer </button> </div> </div>
 </div> <!-- ══════════════════════════════════════════════════════
      MODAL — Présentation anomalie (joueur)
@@ -2829,11 +2852,11 @@ function listenItems() {
    SCHOOLS / LOOM CONSTANTS
 ──────────────────────────────────────────────────────── */
 const SCHOOLS = {
-  vert:   { label: 'Ulmèques',  art: 'Onirique',    color: '#2ecc71', emoji: '' },
-  noir:   { label: 'Ashragors', art: 'Nécromance',  color: '#778899', emoji: '' },
-  rouge:  { label: 'Ghemdals',  art: 'Art Guerrier',color: '#e74c3c', emoji: '' },
-  jaune:  { label: "Venn'dys",  art: 'Sorcellerie', color: '#f1c40f', emoji: '' },
-  violet: { label: 'Kheyzas',   art: 'Sémantique',  color: '#9b59b6', emoji: '' }
+  sang:       { label: 'Sang',       art: 'Force & présence',    color: '#c87840', emoji: '●' },
+  bile:       { label: 'Bile',       art: 'Acuité & calcul',     color: '#c9a84c', emoji: '◆' },
+  flegme:     { label: 'Flegme',     art: 'Lien & fluidité',     color: '#4878c0', emoji: '◉' },
+  melancolie: { label: 'Mélancolie', art: 'Mémoire & absence',   color: '#8899aa', emoji: '◔' },
+  ether:      { label: 'Éther',      art: 'Perception & limite', color: '#8858b8', emoji: '✶' },
 };
 
 /* ────────────────────────────────────────────────────────
@@ -2841,21 +2864,53 @@ const SCHOOLS = {
 ──────────────────────────────────────────────────────── */
 function renderGuilder(guilder) {
   const g = guilder || { color: null, charges: 0 };
-  // Color orbs
   const container = document.getElementById('guilder-colors');
   if (!container) return;
-  container.innerHTML = '';
-  Object.entries(SCHOOLS).forEach(([key, school]) => {
-    const orb = document.createElement('div');
-    orb.className = 'guilder-orb' + (g.color === key ? ' selected' : '');
-    orb.style.cssText = `background:${school.color};color:${school.color};`;
-    orb.title = `${school.label} — ${school.art}`;
-    orb.innerHTML = '';
-    orb.onclick = () => setGuilderColor(key);
-    container.appendChild(orb);
+
+  const W = 190, H = 190, CX = 95, CY = 95, R = 68;
+  const schools = Object.entries(SCHOOLS);
+  const pts = schools.map((_, i) => {
+    const angle = (2 * Math.PI * i / schools.length) - Math.PI / 2;
+    return { x: CX + R * Math.cos(angle), y: CY + R * Math.sin(angle) };
   });
-  // Charges
-  document.getElementById('guilder-charge-num').textContent = g.charges ?? 0;
+  const poly = pts.map(q => q.x.toFixed(1) + ',' + q.y.toFixed(1)).join(' ');
+  const selSchool = g.color ? SCHOOLS[g.color] : null;
+  const btnBorder = selSchool ? 'border-color:' + selSchool.color + ';' : '';
+
+  let inner = '<svg class="guilder-pentacle-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">'
+    + '<polygon points="' + poly + '" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="1.5" stroke-linejoin="round"/>'
+    + '</svg>';
+
+  schools.forEach(([key, school], i) => {
+    const sel = g.color === key;
+    const shadow = sel ? 'box-shadow:0 0 14px ' + school.color + ';' : '';
+    inner += '<div class="guilder-orb' + (sel ? ' selected' : '') + '"'
+      + ' style="left:' + pts[i].x.toFixed(1) + 'px;top:' + pts[i].y.toFixed(1) + 'px;background:' + school.color + ';' + shadow + '"'
+      + ' title="' + school.label + ' — ' + school.art + '"'
+      + ' onclick="selectHumeur(\'' + key + '\')"></div>';
+  });
+
+  inner += '<button class="guilder-center-btn" style="' + btnBorder + '" onclick="openSpellsModal(\'all\')">'
+    + '<span class="center-charges" id="guilder-charge-num">' + (g.charges ?? 0) + '</span>'
+    + '<span class="center-label">Sorts</span>'
+    + '</button>';
+
+  container.innerHTML = inner;
+
+  const labelDiv = document.getElementById('guilder-humeur-label');
+  if (labelDiv) {
+    if (selSchool) {
+      labelDiv.innerHTML = '<span style="color:' + selSchool.color + '">● ' + selSchool.label + '</span>'
+        + '<span style="color:var(--text-muted);font-size:0.71rem;"> — ' + selSchool.art + '</span>';
+    } else {
+      labelDiv.innerHTML = '<span style="color:var(--text-muted);font-size:0.74rem;">Sélectionne une Humeur</span>';
+    }
+  }
+}
+
+function selectHumeur(key) {
+  setGuilderColor(key);
+  openSpellsModal('filter', key);
 }
 
 async function setGuilderColor(color) {
@@ -2874,16 +2929,19 @@ async function adjustCharges(delta) {
    SPELLS — PLAYER VIEW
 ──────────────────────────────────────────────────────── */
 let spellsModalTab = 'castable';
+let spellsColorFilter = null;
 let campaignSpells = {};
 
-function openSpellsModal(tab) {
+function openSpellsModal(tab, colorKey) {
   spellsModalTab = tab;
+  spellsColorFilter = (tab === 'filter') ? (colorKey || null) : null;
   renderSpellsModal();
   showModal('modal-spells');
 }
 
 function switchSpellTab(tab) {
   spellsModalTab = tab;
+  spellsColorFilter = null;
   document.getElementById('tab-castable').classList.toggle('active', tab === 'castable');
   document.getElementById('tab-all').classList.toggle('active', tab === 'all');
   renderSpellsModal();
@@ -2898,22 +2956,44 @@ function renderSpellsModal() {
   const known     = currentCharData?.knownSpells || [];
 
   const title = document.getElementById('modal-spells-title');
-  if (charColor && SCHOOLS[charColor]) {
-    title.textContent = `Sorts — ${SCHOOLS[charColor].label}`;
-    title.style.color = SCHOOLS[charColor].color;
-  }
 
   let spells = Object.entries(campaignSpells)
     .filter(([id]) => known.includes(id))
     .map(([id, s]) => ({ id, ...s }));
 
-  if (spellsModalTab === 'castable') {
+  if (spellsModalTab === 'filter' && spellsColorFilter && SCHOOLS[spellsColorFilter]) {
+    const fs = SCHOOLS[spellsColorFilter];
+    title.textContent = 'Sorts — ' + fs.label;
+    title.style.color = fs.color;
+    spells = spells.filter(s => s.school === spellsColorFilter);
+    document.getElementById('tab-castable').classList.remove('active');
+    document.getElementById('tab-all').classList.remove('active');
+  } else if (spellsModalTab === 'castable') {
+    if (charColor && SCHOOLS[charColor]) {
+      title.textContent = 'Sorts — ' + SCHOOLS[charColor].label;
+      title.style.color = SCHOOLS[charColor].color;
+    } else {
+      title.textContent = 'Sorts disponibles';
+      title.style.color = '';
+    }
     if (charColor) spells = spells.filter(s => s.school === charColor);
+    document.getElementById('tab-castable').classList.add('active');
+    document.getElementById('tab-all').classList.remove('active');
+  } else {
+    title.textContent = 'Tous mes sorts';
+    title.style.color = '';
+    document.getElementById('tab-castable').classList.remove('active');
+    document.getElementById('tab-all').classList.add('active');
   }
 
   list.innerHTML = '';
   if (!spells.length) {
-    list.innerHTML = `<div class="empty-state" style="padding:1rem 0;"> ${spellsModalTab === 'castable' ? 'Aucun sort disponible avec les charges actuelles.' : 'Aucun sort connu pour ce personnage.'} </div>`;
+    const msg = spellsModalTab === 'filter'
+      ? 'Aucun sort connu pour cette Humeur.'
+      : spellsModalTab === 'castable'
+        ? 'Aucun sort disponible avec cette Humeur.'
+        : 'Aucun sort connu pour ce personnage.';
+    list.innerHTML = '<div class="empty-state" style="padding:1rem 0;"> ' + msg + ' </div>';
     return;
   }
 
@@ -4331,7 +4411,7 @@ function renderLoomSourceList() {
 
 function openLoomSourceCreate() {
   ['m-ls-id','m-ls-name','m-ls-desc'].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('m-ls-color').value   = 'vert';
+  document.getElementById('m-ls-color').value   = 'sang';
   document.getElementById('m-ls-charges').value = '2';
   populateLoomSourceSpells('');
   document.getElementById('loom-source-modal-title').textContent = 'Nouvelle Anomalie Loom';
@@ -4343,7 +4423,7 @@ function editLoomSource(id) {
   if (!src) return;
   document.getElementById('m-ls-id').value      = id;
   document.getElementById('m-ls-name').value    = src.name;
-  document.getElementById('m-ls-color').value   = src.color || 'vert';
+  document.getElementById('m-ls-color').value   = src.color || 'sang';
   document.getElementById('m-ls-desc').value    = src.description || '';
   document.getElementById('m-ls-charges').value = src.charges || 2;
   populateLoomSourceSpells(src.linkedSpellId || '');
