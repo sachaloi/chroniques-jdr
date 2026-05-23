@@ -1825,7 +1825,137 @@
     .marker-popup { position: absolute; z-index: 20; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; min-width: 160px; max-width: 240px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
     .marker-popup-title { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; }
     .marker-popup-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.5rem; }
-    .marker-popup-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; } </style>
+    .marker-popup-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    /* ── Scenario tab ────────────────────────────────── */
+    .scenario-layout {
+      display: flex; gap: 0; height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+    .scenario-nav-sidebar {
+      width: 175px; flex-shrink: 0;
+      background: var(--bg-deep);
+      border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 0.6rem 0.4rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .scenario-nav-sidebar-header {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); padding: 0.2rem 0.5rem 0.4rem;
+    }
+    .scenario-nav-btn {
+      width: 100%; text-align: left;
+      padding: 0.45rem 0.6rem; border-radius: 7px;
+      background: none; border: 1px solid transparent;
+      color: var(--text-secondary); font-size: 0.78rem;
+      cursor: pointer; font-family: inherit;
+      transition: all 0.15s; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .scenario-nav-btn:hover { background: var(--bg-card); border-color: var(--border); color: var(--text-primary); }
+    .scenario-nav-btn.active { background: var(--bg-card); border-color: var(--accent-dim); color: var(--accent-gold); font-weight: 600; }
+    .scenario-main {
+      flex: 1; overflow-y: auto;
+      padding: 0.9rem 1.1rem;
+      display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .scenario-main-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 0.5rem; flex-wrap: wrap;
+      padding-bottom: 0.65rem; border-bottom: 1px solid var(--border);
+    }
+    .scenario-main-title {
+      font-size: 0.92rem; font-weight: 700; color: var(--accent-gold);
+    }
+    .scene-section-label {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); padding: 0.15rem 0;
+      border-bottom: 1px solid var(--border); margin-bottom: 0.3rem;
+    }
+    .scene-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0.8rem; border-radius: 9px;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      transition: border-color 0.18s;
+    }
+    .scene-card:hover { border-color: var(--accent-dim); }
+    .scene-card.scene-active { border-color: var(--accent-gold); background: rgba(201,168,76,0.06); }
+    .scene-thumb {
+      width: 72px; height: 48px; border-radius: 6px; flex-shrink: 0;
+      background-size: cover; background-position: center;
+      background-color: var(--bg-deep); border: 1px solid var(--border);
+    }
+    .scene-thumb-empty { opacity: 0.5; }
+    .scene-card-body { flex: 1; min-width: 0; }
+    .scene-card-title { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+    .scene-card-notes { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; line-height: 1.4; }
+    .scene-active-badge { font-size: 0.62rem; color: var(--accent-gold); font-weight: 700; letter-spacing: 0.06em; }
+    .scene-card-actions { display: flex; gap: 0.35rem; flex-shrink: 0; align-items: center; }
+    .scene-activate-btn {
+      padding: 0.32rem 0.75rem; font-size: 0.72rem; font-weight: 700;
+      border-radius: 7px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text-secondary);
+      cursor: pointer; font-family: inherit; transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .scene-activate-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+    .scene-activate-btn.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(201,168,76,0.12); }
+    .scene-edit-btn, .scene-del-btn {
+      background: none; border: 1px solid transparent; border-radius: 6px;
+      color: var(--text-muted); cursor: pointer; font-size: 0.9rem;
+      padding: 0.22rem 0.42rem; transition: all 0.15s; font-family: inherit;
+    }
+    .scene-edit-btn:hover { color: var(--text-primary); border-color: var(--border); }
+    .scene-del-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+    /* ── Player chat sidebar ─────────────────────────── */
+    .player-chat-sidebar {
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: 270px; z-index: 25;
+      background: rgba(13,13,26,0.94);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      display: flex; flex-direction: column;
+      transform: translateX(0);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    .player-chat-sidebar.sidebar-hidden { transform: translateX(100%); pointer-events: none; }
+    .chat-sidebar-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent-gold); flex-shrink: 0;
+    }
+    .chat-close-btn {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 0.85rem; font-family: inherit;
+      transition: color 0.15s; padding: 0.1rem 0.3rem;
+    }
+    .chat-close-btn:hover { color: var(--text-primary); }
+    .chat-sidebar-log {
+      flex: 1; overflow-y: auto; padding: 0.5rem 0.75rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
+      scrollbar-width: thin;
+    }
+    /* Quand sidebar ouverte : décaler topbar, drawer, hud */
+    #screen-sheet.sidebar-open .game-topbar { right: 270px; }
+    #screen-sheet.sidebar-open .sheet-drawer { right: 270px; }
+    #screen-sheet.sidebar-open .player-combat-hud { right: 270px; }
+    #screen-sheet.sidebar-open #dice-fab-wrap { right: calc(270px + 1.4rem); }
+    /* Scene mode : pas de chat visible, pas de drawer */
+    #screen-sheet.scene-mode .sheet-drawer { display: none; }
+    #screen-sheet.scene-mode .player-chat-sidebar { transform: translateX(100%); pointer-events: none; }
+    #screen-sheet.scene-mode .player-combat-hud { right: 0; }
+    .scene-exit-btn {
+      position: absolute; bottom: 1.2rem; right: 1.2rem; z-index: 50;
+      padding: 0.5rem 1.1rem; font-size: 0.78rem; font-weight: 700;
+      background: rgba(13,13,26,0.88); border: 1px solid var(--accent-dim);
+      color: var(--accent-gold); border-radius: 9px; cursor: pointer;
+      font-family: inherit; backdrop-filter: blur(6px);
+      transition: all 0.18s;
+    }
+    .scene-exit-btn:hover { background: var(--accent-gold); color: #130f00; } </style>
 </head>
 <body> <!-- ══════════════════════════════════════════════════════
      WELCOME
@@ -1843,7 +1973,7 @@
 <!-- ══════════════════════════════════════════════════════
      GAME VIEW (joueur)
 ════════════════════════════════════════════════════════ -->
-<div id="screen-sheet" class="screen"> <!-- Background scene --> <div id="scene-bg" class="scene-bg-full"> <div id="scene-placeholder" class="scene-bg-placeholder"> <br><br>Le Maître de Jeu<br>n'a pas encore défini la scène </div> </div> <!-- Game log overlay --> <div id="game-log" class="game-log-overlay"></div> <!-- ── Dice Roller ─────────────────────────────── --> <div id="dice-fab-wrap" style="position:fixed;bottom:1.6rem;right:1.4rem;z-index:260;display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;"> <div id="dice-picker" class="dice-picker" style="display:none;"> <div class="dice-picker-title">Jet de d6 — choisir un axe</div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','high')">Bourrin </button> <div class="die-axis-dot" style="background:#c87840;"></div> <button class="die-pole-btn right-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','low')"> Filou</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','high')">Star </button> <div class="die-axis-dot" style="background:#4878c0;"></div> <button class="die-pole-btn right-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','low')"> Fouine</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','high')">PlanMaker </button> <div class="die-axis-dot" style="background:#8858b8;"></div> <button class="die-pole-btn right-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','low')"> Impro</button> </div> </div> <button class="dice-fab" id="dice-fab" onclick="toggleDicePicker()" title="Lancer un dé"></button> </div> <div id="dice-result-overlay" class="dice-result-overlay" style="display:none;"> <div class="dice-result-box" id="dice-result-box"> <div class="dice-result-die-label" id="dice-result-label"></div> <div class="dice-result-number" id="dice-result-number"></div> <div class="dice-result-qualifier" id="dice-result-qualifier"></div> <div class="dice-result-success" id="dice-result-success" style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;margin-top:0.3rem;"></div> <div class="dice-result-roller" id="dice-result-roller"></div> </div> </div> <!-- Top bar --> <div class="game-topbar"> <button class="game-back-btn" onclick="goBack('screen-characters')"> Quitter</button> <span id="hdr-char-name" class="game-char-name"></span> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="hdr-code-sheet" class="room-badge"></span> <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;"> Scène</button> <button class="icon-btn game-sheet-btn" onclick="toggleSheet()"> Fiche</button> <button id="btn-combat-toggle" class="icon-btn" onclick="toggleCombatHUD()" style="display:none;"> Combat</button> </div> </div> <!-- Character sheet drawer --> <div id="sheet-drawer" class="sheet-drawer sheet-hidden"> <div class="sheet-drawer-inner"> <div class="sheet-drawer-header"> <span>Fiche de personnage</span> <button onclick="toggleSheet()" class="sheet-close-btn">X</button> </div> <!-- Axes (remplace stats classiques) --> <div id="axes-container"></div> <!-- Conditions --> <div id="conditions-container"></div> <!-- Reste de la fiche --> <div class="sheet-grid"> <div class="gold-block"> <div class="section-label"> Or</div> <div class="gold-row"> <button class="gold-btn" onclick="adjustGold(-10)">−10</button> <button class="gold-btn" onclick="adjustGold(-1)">−1</button> <input type="number" class="gold-num" id="gold-num" value="0" onchange="setGold(this.value)" min="0"> <button class="gold-btn" onclick="adjustGold(1)">+1</button> <button class="gold-btn" onclick="adjustGold(10)">+10</button> </div> </div> <div class="guilder-block"> <div class="section-label"> Loom · Guildeur</div> <div class="guilder-colors" id="guilder-colors"></div> <div id="guilder-humeur-label" class="guilder-humeur-label"></div> <div class="guilder-charges-row"> <span class="guilder-charge-label">Charges de Loom</span> <div class="guilder-charge-ctrl"> <button class="charge-btn" onclick="adjustCharges(-1)">−</button> <button class="charge-btn" onclick="adjustCharges(1)">+</button> </div> </div> </div> <div class="inv-block" style="grid-column:1/-1;"> <div class="inv-top"> <div class="section-label" style="margin:0;border:none;padding:0;"> Inventaire</div> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="slot-badge" class="slot-badge">0 / 10</span> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()"> Donner</button> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="resetConsumableUses()" title="Réinitialise les utilisations"> Session</button> </div> </div> <div id="slot-grid" class="slot-grid"></div> </div> </div> </div> </div> <!-- Player Guild Block --> <div id="player-guild-block" style="padding: 0 1rem 0.75rem; display:none;"> <div class="player-guild-block"> <div class="section-label" style="margin:0 0 0.6rem;border:none;padding:0;"> Ma Guilde</div> <div id="player-guild-content"> <div class="player-guild-none">Vous n'êtes assigné à aucune guilde.</div> </div> </div> </div> <!-- Player Combat HUD --> <div id="player-combat-hud" class="player-combat-hud hud-hidden"> <div class="hud-conditions-row" id="hud-conditions-row"></div> <div class="hud-actions"> <div id="hud-consumables" class="hud-consumables"></div> <div class="hud-loom"> <span class="hud-loom-label">Loom</span> <span id="hud-charges" class="hud-charges">0</span> <button class="loom-btn" style="padding:0.22rem 0.55rem;font-size:0.7rem;" onclick="openSpellsModal('castable')"> Sort</button> </div> </div> </div>
+<div id="screen-sheet" class="screen"> <!-- Background scene --> <div id="scene-bg" class="scene-bg-full"> <div id="scene-placeholder" class="scene-bg-placeholder"> <br><br>Le Maître de Jeu<br>n'a pas encore défini la scène </div> </div> <!-- Chat sidebar (Twitch-style) --> <div class="player-chat-sidebar" id="player-chat-sidebar"> <div class="chat-sidebar-header"> <span>Chat</span> <button class="chat-close-btn" onclick="togglePlayerChat()">✕</button> </div> <div class="chat-sidebar-log" id="game-log"></div> </div> <!-- ── Dice Roller ─────────────────────────────── --> <div id="dice-fab-wrap" style="position:fixed;bottom:1.6rem;right:1.4rem;z-index:260;display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;"> <div id="dice-picker" class="dice-picker" style="display:none;"> <div class="dice-picker-title">Jet de d6 — choisir un axe</div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','high')">Bourrin </button> <div class="die-axis-dot" style="background:#c87840;"></div> <button class="die-pole-btn right-pole" style="border-color:#c87840;color:#c87840;" onclick="rollForAxis('physique','low')"> Filou</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','high')">Star </button> <div class="die-axis-dot" style="background:#4878c0;"></div> <button class="die-pole-btn right-pole" style="border-color:#4878c0;color:#4878c0;" onclick="rollForAxis('social','low')"> Fouine</button> </div> <div class="dice-axis-row"> <button class="die-pole-btn left-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','high')">PlanMaker </button> <div class="die-axis-dot" style="background:#8858b8;"></div> <button class="die-pole-btn right-pole" style="border-color:#8858b8;color:#8858b8;" onclick="rollForAxis('mental','low')"> Impro</button> </div> </div> <button class="dice-fab" id="dice-fab" onclick="toggleDicePicker()" title="Lancer un dé"></button> </div> <div id="dice-result-overlay" class="dice-result-overlay" style="display:none;"> <div class="dice-result-box" id="dice-result-box"> <div class="dice-result-die-label" id="dice-result-label"></div> <div class="dice-result-number" id="dice-result-number"></div> <div class="dice-result-qualifier" id="dice-result-qualifier"></div> <div class="dice-result-success" id="dice-result-success" style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;margin-top:0.3rem;"></div> <div class="dice-result-roller" id="dice-result-roller"></div> </div> </div> <!-- Top bar --> <div class="game-topbar"> <button class="game-back-btn" onclick="goBack('screen-characters')"> Quitter</button> <span id="hdr-char-name" class="game-char-name"></span> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="hdr-code-sheet" class="room-badge"></span> <button id="btn-scene" class="icon-btn" onclick="showModal('modal-bg')" style="display:none;"> Scène</button> <button id="btn-enter-scene" class="icon-btn" onclick="enterSceneMode()" title="Plein écran scène"> ⛶</button> <button class="icon-btn game-sheet-btn" onclick="toggleSheet()"> Fiche</button> <button id="btn-chat-toggle" class="icon-btn" onclick="togglePlayerChat()">✕ Chat</button> <button id="btn-combat-toggle" class="icon-btn" onclick="toggleCombatHUD()" style="display:none;"> Combat</button> </div> </div> <!-- Character sheet drawer --> <div id="sheet-drawer" class="sheet-drawer sheet-hidden"> <div class="sheet-drawer-inner"> <div class="sheet-drawer-header"> <span>Fiche de personnage</span> <button onclick="toggleSheet()" class="sheet-close-btn">X</button> </div> <!-- Axes (remplace stats classiques) --> <div id="axes-container"></div> <!-- Conditions --> <div id="conditions-container"></div> <!-- Reste de la fiche --> <div class="sheet-grid"> <div class="gold-block"> <div class="section-label"> Or</div> <div class="gold-row"> <button class="gold-btn" onclick="adjustGold(-10)">−10</button> <button class="gold-btn" onclick="adjustGold(-1)">−1</button> <input type="number" class="gold-num" id="gold-num" value="0" onchange="setGold(this.value)" min="0"> <button class="gold-btn" onclick="adjustGold(1)">+1</button> <button class="gold-btn" onclick="adjustGold(10)">+10</button> </div> </div> <div class="guilder-block"> <div class="section-label"> Loom · Guildeur</div> <div class="guilder-colors" id="guilder-colors"></div> <div id="guilder-humeur-label" class="guilder-humeur-label"></div> <div class="guilder-charges-row"> <span class="guilder-charge-label">Charges de Loom</span> <div class="guilder-charge-ctrl"> <button class="charge-btn" onclick="adjustCharges(-1)">−</button> <button class="charge-btn" onclick="adjustCharges(1)">+</button> </div> </div> </div> <div class="inv-block" style="grid-column:1/-1;"> <div class="inv-top"> <div class="section-label" style="margin:0;border:none;padding:0;"> Inventaire</div> <div style="display:flex;gap:0.45rem;align-items:center;"> <span id="slot-badge" class="slot-badge">0 / 10</span> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="openTrade()"> Donner</button> <button class="loom-btn" style="padding:0.35rem 0.75rem;" onclick="resetConsumableUses()" title="Réinitialise les utilisations"> Session</button> </div> </div> <div id="slot-grid" class="slot-grid"></div> </div> </div> </div> </div> <!-- Player Guild Block --> <div id="player-guild-block" style="padding: 0 1rem 0.75rem; display:none;"> <div class="player-guild-block"> <div class="section-label" style="margin:0 0 0.6rem;border:none;padding:0;"> Ma Guilde</div> <div id="player-guild-content"> <div class="player-guild-none">Vous n'êtes assigné à aucune guilde.</div> </div> </div> </div> <button id="btn-exit-scene" class="scene-exit-btn" style="display:none;" onclick="exitSceneMode()">← Retour</button> <!-- Player Combat HUD --> <div id="player-combat-hud" class="player-combat-hud hud-hidden"> <div class="hud-conditions-row" id="hud-conditions-row"></div> <div class="hud-actions"> <div id="hud-consumables" class="hud-consumables"></div> <div class="hud-loom"> <span class="hud-loom-label">Loom</span> <span id="hud-charges" class="hud-charges">0</span> <button class="loom-btn" style="padding:0.22rem 0.55rem;font-size:0.7rem;" onclick="openSpellsModal('castable')"> Sort</button> </div> </div> </div>
 </div> <!-- ══════════════════════════════════════════════════════
      COMBAT OVERLAY
 ═════════════════════════════════════════════════════════ -->
@@ -1854,7 +1984,7 @@
 <!-- ══════════════════════════════════════════════════════
      GM HUB
 ════════════════════════════════════════════════════════ -->
-<div id="screen-gm" class="screen"> <div class="app-header"> <button class="back-btn" onclick="goBack('screen-characters')"> Salon</button> <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">Vue Maître de Jeu</span> <div style="display:flex;gap:0.4rem;align-items:center;"> <span id="hdr-code-gm" class="room-badge">——</span> <button class="icon-btn" onclick="exportSession()" title="Exporter"></button> <button class="icon-btn" onclick="triggerImport()" title="Importer"></button> </div> <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="importSession(this.files[0]); this.value=''"> </div> <div class="container"> <div class="gm-lib-nav"> <button class="gm-lib-btn" onclick="showGMLibrary('items')"> Objets</button> <button class="gm-lib-btn" onclick="showGMLibrary('spells')"> Sorts</button> <button class="gm-lib-btn" onclick="showGMLibrary('monsters')"> Monstres</button> <button class="gm-lib-btn" onclick="showGMLibrary('npcs')"> PNJ</button> <button class="gm-lib-btn" onclick="showGMLibrary('sources')"> Anomalies</button> <button class="gm-lib-btn" onclick="showGMLibrary('guilds')"> Guildes</button> <button class="gm-lib-btn" onclick="showGMLibrary('map')"> Cartes</button> </div> <div class="gm-section"> <div class="gm-section-hdr"> <div class="section-label" style="margin:0;border:none;padding:0;"> Gestionnaire de combat</div> <div style="display:flex;gap:0.45rem;"> <button id="btn-start-combat" class="loom-btn primary" style="padding:0.38rem 0.9rem;" onclick="startCombat()">> Lancer</button> <button id="btn-end-combat" class="loom-btn" style="padding:0.38rem 0.9rem;border-color:var(--danger);color:var(--danger);display:none;" onclick="endCombat()">X Terminer</button> </div> </div> <div id="combat-setup-panel"> <div style="display:flex;gap:0.45rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:center;"> <input type="text" id="monster-name" placeholder="Nom du monstre" style="flex:1;min-width:110px;padding:0.45rem 0.7rem;font-size:0.82rem;"> <input type="color" id="monster-color" value="#e74c3c" style="width:36px;height:34px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;flex-shrink:0;"> <input type="number" id="monster-hp" placeholder="PV" min="1" style="width:64px;padding:0.45rem 0.55rem;font-size:0.82rem;"> <button class="loom-btn primary" style="padding:0.4rem 0.8rem;flex-shrink:0;" onclick="addMonsterToSetup()">+ Monstre</button> </div> <div id="combat-setup-list" class="combat-setup-list"></div> </div> <div id="active-combat-panel" style="display:none;"> <div id="gm-turn-track" class="turn-track" style="margin-bottom:1rem;"></div> <div id="gm-combat-cards" class="gm-combat-cards"></div> </div> </div> </div>
+<div id="screen-gm" class="screen"> <div class="app-header"> <button class="back-btn" onclick="goBack('screen-characters')"> Salon</button> <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;">Vue Maître de Jeu</span> <div style="display:flex;gap:0.4rem;align-items:center;"> <span id="hdr-code-gm" class="room-badge">——</span> <button class="icon-btn" onclick="exportSession()" title="Exporter"></button> <button class="icon-btn" onclick="triggerImport()" title="Importer"></button> </div> <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="importSession(this.files[0]); this.value=''"> </div> <div class="container"> <div class="gm-lib-nav"> <button class="gm-lib-btn" onclick="showGMLibrary('items')"> Objets</button> <button class="gm-lib-btn" onclick="showGMLibrary('spells')"> Sorts</button> <button class="gm-lib-btn" onclick="showGMLibrary('monsters')"> Monstres</button> <button class="gm-lib-btn" onclick="showGMLibrary('npcs')"> PNJ</button> <button class="gm-lib-btn" onclick="showGMLibrary('sources')"> Anomalies</button> <button class="gm-lib-btn" onclick="showGMLibrary('guilds')"> Guildes</button> <button class="gm-lib-btn" onclick="showGMLibrary('map')"> Cartes</button> <button class="gm-lib-btn" onclick="showGMLibrary('scenario')"> Scénario</button> </div> <div class="gm-section"> <div class="gm-section-hdr"> <div class="section-label" style="margin:0;border:none;padding:0;"> Gestionnaire de combat</div> <div style="display:flex;gap:0.45rem;"> <button id="btn-start-combat" class="loom-btn primary" style="padding:0.38rem 0.9rem;" onclick="startCombat()">> Lancer</button> <button id="btn-end-combat" class="loom-btn" style="padding:0.38rem 0.9rem;border-color:var(--danger);color:var(--danger);display:none;" onclick="endCombat()">X Terminer</button> </div> </div> <div id="combat-setup-panel"> <div style="display:flex;gap:0.45rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:center;"> <input type="text" id="monster-name" placeholder="Nom du monstre" style="flex:1;min-width:110px;padding:0.45rem 0.7rem;font-size:0.82rem;"> <input type="color" id="monster-color" value="#e74c3c" style="width:36px;height:34px;padding:0.2rem;border-radius:6px;border:1px solid var(--border);background:var(--bg-deep);cursor:pointer;flex-shrink:0;"> <input type="number" id="monster-hp" placeholder="PV" min="1" style="width:64px;padding:0.45rem 0.55rem;font-size:0.82rem;"> <button class="loom-btn primary" style="padding:0.4rem 0.8rem;flex-shrink:0;" onclick="addMonsterToSetup()">+ Monstre</button> </div> <div id="combat-setup-list" class="combat-setup-list"></div> </div> <div id="active-combat-panel" style="display:none;"> <div id="gm-turn-track" class="turn-track" style="margin-bottom:1rem;"></div> <div id="gm-combat-cards" class="gm-combat-cards"></div> </div> </div> </div>
 </div> <!-- ══════════════════════════════════════════════════════
      GM — OBJETS
 ════════════════════════════════════════════════════════ -->
@@ -1885,7 +2015,9 @@
 <div id="screen-gm-map" class="screen"> <div class="app-header"> <button class="back-btn" onclick="showScreen('screen-gm')"> Vue MJ</button> <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;"> Cartes</span> <span id="hdr-code-gm-map" class="room-badge">——</span> </div> <div class="container"> <div class="map-selector" id="map-tab-row"> <button class="loom-btn primary" style="padding:0.3rem 0.75rem;font-size:0.72rem;" onclick="openMapCreate()">+ Nouvelle carte</button> </div> <div id="gm-map-area"> <div class="map-placeholder">Créez ou sélectionnez une carte</div> </div> </div>
 </div> <!-- GM — Fiche PJ (modal overlay) -->
 <div id="gm-char-modal" class="gm-char-modal hidden"> <div class="gm-char-modal-inner"> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);"> <span style="color:var(--accent-gold);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;">Fiche personnage</span> <button onclick="closeGMCharSheet()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1rem;">X</button> </div> <div id="gm-char-modal-content"></div> </div> <div style="flex:1;cursor:pointer;" onclick="closeGMCharSheet()"></div>
-</div> <!-- ══════════════════════════════════════════════════════
+</div> <div id="screen-gm-scenario" class="screen"> <div class="app-header"> <button class="back-btn" onclick="showScreen('screen-gm')"> Vue MJ</button> <span style="color:var(--accent-gold);font-size:0.82rem;font-weight:600;"> Scénario</span> <div style="display:flex;gap:0.4rem;align-items:center;"> <span id="hdr-code-gm-scenario" class="room-badge">——</span> <button class="loom-btn primary" style="padding:0.3rem 0.8rem;font-size:0.75rem;" onclick="openScenarioCreate()">+ Scénario</button> </div> </div> <div class="scenario-layout"> <div class="scenario-nav-sidebar"> <div class="scenario-nav-sidebar-header">Scénarios</div> <div id="scenario-sidebar"></div> </div> <div class="scenario-main"> <div class="scenario-main-hdr" id="scenario-scenes-hdr"></div> <div id="scenario-scenes-area"><div class="empty-state" style="padding:2rem 1rem;">Créez votre premier scénario.</div></div> </div> </div> </div>
+
+<!-- ══════════════════════════════════════════════════════
      MODAL — Nouveau personnage
 ═════════════════════════════════════════════════════════ -->
 <div id="modal-char" class="overlay hidden"> <div class="modal"> <h3>Nouveau personnage</h3> <div class="field-label">Nom du personnage</div> <input type="text" id="m-char-name" placeholder="Élodie Vance"> <div class="field-label">Joueur</div> <input type="text" id="m-char-player" placeholder="Alice"> <div class="field-label">Icône (emoji)</div> <input type="text" id="m-char-icon" placeholder="" maxlength="2"
@@ -1988,6 +2120,10 @@
 <div id="toast" class="toast"></div> <!-- ══════════════════════════════════════════════════════
      SCRIPT
 ═════════════════════════════════════════════════════════ -->
+<div id="modal-scenario" class="overlay hidden"> <div class="modal" style="max-width:400px;"> <h3>Scénario</h3> <input type="hidden" id="m-scenario-id"> <div class="field-label">Nom du scénario</div> <input type="text" id="m-scenario-name" placeholder="Acte I — Les Ruines"> <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.75rem;"> <input type="checkbox" id="m-scenario-fav" style="width:16px;height:16px;accent-color:var(--accent-gold);cursor:pointer;"> <label for="m-scenario-fav" style="font-size:0.8rem;color:var(--text-secondary);cursor:pointer;">★ Marquer comme scénario Favori (ses scènes apparaissent dans tous les autres)</label> </div> <div class="modal-actions"> <button class="btn btn-primary" onclick="saveScenario()">Enregistrer</button> <button class="btn btn-secondary" onclick="hideModal('modal-scenario')">Annuler</button> </div> </div> </div>
+
+<div id="modal-scene" class="overlay hidden"> <div class="modal" style="max-width:440px;"> <h3 id="scene-modal-title">Nouvelle scène</h3> <input type="hidden" id="m-scene-scenario"> <input type="hidden" id="m-scene-id"> <div class="field-label">Titre de la scène</div> <input type="text" id="m-scene-title" placeholder="L'arrivée au port"> <div class="field-label">Image de fond <span style="color:var(--text-muted);font-weight:400;">(URL)</span></div> <input type="text" id="m-scene-bg" placeholder="https://…/image.jpg"> <div class="field-label">Notes MJ <span style="color:var(--text-muted);font-weight:400;">(privées)</span></div> <textarea id="m-scene-notes" rows="3" placeholder="Les PJs arrivent par le fleuve, brume dense…"></textarea> <div class="modal-actions"> <button class="btn btn-primary" onclick="saveScene()">Enregistrer</button> <button class="btn btn-secondary" onclick="hideModal('modal-scene')">Annuler</button> </div> </div> </div>
+
 <script>
 /* ────────────────────────────────────────────────────────
    FIREBASE CONFIGURATION
@@ -3415,6 +3551,7 @@ function openSheet(charId) {
   listenBackground();
   listenCombat();
   listenPresentedSource();
+  initPlayerChat();
 }
 
 /* ── Stats ── */
@@ -3604,7 +3741,8 @@ function showGMLibrary(type) {
     npcs:     'screen-gm-npcs',
     sources:  'screen-gm-sources',
     guilds:   'screen-gm-guilds',
-    map:      'screen-gm-map'
+    map:      'screen-gm-map',
+    scenario: 'screen-gm-scenario'
   };
   const target = map[type];
   if (!target) return;
@@ -3614,7 +3752,8 @@ function showGMLibrary(type) {
     monsters: 'hdr-code-gm-monsters', npcs: 'hdr-code-gm-npcs',
     sources: 'hdr-code-gm-sources',
     guilds: 'hdr-code-gm-guilds',
-    map: 'hdr-code-gm-map'
+    map: 'hdr-code-gm-map',
+    scenario: 'hdr-code-gm-scenario'
   };
   Object.values(roomBadges).forEach(id => {
     const el = document.getElementById(id);
@@ -3636,6 +3775,8 @@ function showGMLibrary(type) {
     listenNPCs();
   } else if (type === 'sources') {
     listenLoomSources();
+  } else if (type === 'scenario') {
+    listenScenarios();
   }
 }
 
@@ -5525,6 +5666,286 @@ async function deleteMap(mapId) {
   }
 })();
 
+
+/* ────────────────────────────────────────────────────────
+   SCENARIOS — GM
+──────────────────────────────────────────────────────── */
+let allScenariosData = {};
+let currentScenarioId = null;
+let activeSceneId = null;
+
+function listenScenarios() {
+  const detach = dbListen('rooms/' + currentRoom + '/scenarios', data => {
+    allScenariosData = data || {};
+    if (currentScenarioId && !allScenariosData[currentScenarioId]) currentScenarioId = null;
+    if (!currentScenarioId) {
+      const ids = Object.keys(allScenariosData);
+      // Prefer favorite, else first
+      const favId = ids.find(id => allScenariosData[id].isFavorite);
+      currentScenarioId = favId || ids[0] || null;
+    }
+    renderScenarioSidebar();
+    renderSceneList();
+  });
+  liveListeners.push(detach);
+  const detach2 = dbListen('rooms/' + currentRoom + '/gameView/activeSceneId', id => {
+    activeSceneId = id || null;
+    renderSceneList();
+  });
+  liveListeners.push(detach2);
+}
+
+function renderScenarioSidebar() {
+  const sidebar = document.getElementById('scenario-sidebar');
+  if (!sidebar) return;
+  const entries = Object.entries(allScenariosData);
+  if (!entries.length) {
+    sidebar.innerHTML = '<div style="color:var(--text-muted);font-size:0.75rem;padding:0.5rem 0.6rem;">Aucun scénario</div>';
+    return;
+  }
+  entries.sort((a, b) => {
+    if (a[1].isFavorite && !b[1].isFavorite) return -1;
+    if (!a[1].isFavorite && b[1].isFavorite) return 1;
+    return (a[1].name || '').localeCompare(b[1].name || '');
+  });
+  sidebar.innerHTML = entries.map(([id, sc]) =>
+    '<button class="scenario-nav-btn' + (id === currentScenarioId ? ' active' : '') + '" onclick="selectScenario(\'' + id + '\')">'
+    + (sc.isFavorite ? '<span style="color:var(--accent-gold);">★ </span>' : '')
+    + (sc.name || 'Sans titre')
+    + '</button>'
+  ).join('');
+}
+
+function selectScenario(id) {
+  currentScenarioId = id;
+  renderScenarioSidebar();
+  renderSceneList();
+}
+
+function renderSceneList() {
+  const area = document.getElementById('scenario-scenes-area');
+  const hdr  = document.getElementById('scenario-scenes-hdr');
+  if (!area) return;
+
+  if (!currentScenarioId || !allScenariosData[currentScenarioId]) {
+    if (hdr) hdr.innerHTML = '';
+    area.innerHTML = '<div class="empty-state" style="padding:2rem 1rem;">Sélectionnez ou créez un scénario.</div>';
+    return;
+  }
+
+  const sc = allScenariosData[currentScenarioId];
+  if (hdr) {
+    hdr.innerHTML =
+      '<span class="scenario-main-title">' + (sc.isFavorite ? '★ ' : '') + (sc.name || 'Sans titre') + '</span>'
+      + '<div style="display:flex;gap:0.4rem;flex-wrap:wrap;">'
+      + '<button class="loom-btn primary" style="padding:0.28rem 0.65rem;font-size:0.72rem;" onclick="openSceneCreate(\'' + currentScenarioId + '\')">+ Scène</button>'
+      + '<button class="loom-btn" style="padding:0.28rem 0.65rem;font-size:0.72rem;" onclick="toggleFavoriteScenario(\'' + currentScenarioId + '\')">' + (sc.isFavorite ? '★ Favori' : '☆ Favori') + '</button>'
+      + '<button class="loom-btn" style="padding:0.28rem 0.65rem;font-size:0.72rem;" onclick="openScenarioEdit(\'' + currentScenarioId + '\')">✎</button>'
+      + '<button class="loom-btn" style="padding:0.28rem 0.65rem;font-size:0.72rem;border-color:var(--danger);color:var(--danger);" onclick="deleteScenario(\'' + currentScenarioId + '\')">✕</button>'
+      + '</div>';
+  }
+
+  let html = '';
+
+  // Pinned: favorite scenario scenes (if current ≠ favorite)
+  const favEntry = Object.entries(allScenariosData).find(([id, s]) => s.isFavorite && id !== currentScenarioId);
+  if (favEntry) {
+    const favScenes = Object.entries(favEntry[1].scenes || {});
+    favScenes.sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+    if (favScenes.length) {
+      html += '<div class="scene-section-label">★ Scènes favorites</div>';
+      html += favScenes.map(([sid, s]) => _renderSceneCard(favEntry[0], sid, s)).join('');
+    }
+  }
+
+  const scenes = Object.entries(sc.scenes || {});
+  scenes.sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+  if (scenes.length) {
+    html += '<div class="scene-section-label">Scènes</div>';
+    html += scenes.map(([sid, s]) => _renderSceneCard(currentScenarioId, sid, s)).join('');
+  } else {
+    html += '<div class="empty-state" style="padding:1rem 0;">Aucune scène — cliquez sur "+ Scène".</div>';
+  }
+
+  area.innerHTML = html;
+}
+
+function _renderSceneCard(scenarioId, sceneId, scene) {
+  const isActive = activeSceneId === sceneId;
+  return '<div class="scene-card' + (isActive ? ' scene-active' : '') + '">'
+    + '<div class="scene-thumb' + (scene.bgUrl ? '' : ' scene-thumb-empty') + '"'
+    + (scene.bgUrl ? ' style="background-image:url(' + JSON.stringify(scene.bgUrl) + ');"' : '') + '></div>'
+    + '<div class="scene-card-body">'
+    + '<div class="scene-card-title">' + (scene.title || 'Sans titre') + (isActive ? ' <span class="scene-active-badge">● EN COURS</span>' : '') + '</div>'
+    + (scene.notes ? '<div class="scene-card-notes">' + scene.notes.substring(0, 90) + (scene.notes.length > 90 ? '…' : '') + '</div>' : '')
+    + '</div>'
+    + '<div class="scene-card-actions">'
+    + '<button class="scene-activate-btn' + (isActive ? ' active' : '') + '" onclick="activateScene(\'' + scenarioId + '\',\'' + sceneId + '\')">' + (isActive ? '● Active' : '▶ Activer') + '</button>'
+    + '<button class="scene-edit-btn" onclick="openSceneEdit(\'' + scenarioId + '\',\'' + sceneId + '\')">✎</button>'
+    + '<button class="scene-del-btn" onclick="deleteScene(\'' + scenarioId + '\',\'' + sceneId + '\')">✕</button>'
+    + '</div></div>';
+}
+
+async function activateScene(scenarioId, sceneId) {
+  const sc = allScenariosData[scenarioId];
+  if (!sc) return;
+  const scene = (sc.scenes || {})[sceneId];
+  if (!scene) return;
+  const url = scene.bgUrl || null;
+  await dbUpdate('rooms/' + currentRoom + '/gameView', { backgroundUrl: url || null, activeSceneId: sceneId });
+  showToast('Scène "' + (scene.title || 'Sans titre') + '" activée.');
+  logEvent('', 'MJ', 'change la scène : ' + (scene.title || 'Sans titre'));
+}
+
+/* ── Scenario CRUD ──────────────────────────────────── */
+function openScenarioCreate() {
+  document.getElementById('m-scenario-id').value = '';
+  document.getElementById('m-scenario-name').value = '';
+  document.getElementById('m-scenario-fav').checked = false;
+  showModal('modal-scenario');
+}
+
+function openScenarioEdit(id) {
+  const sc = allScenariosData[id];
+  if (!sc) return;
+  document.getElementById('m-scenario-id').value = id;
+  document.getElementById('m-scenario-name').value = sc.name || '';
+  document.getElementById('m-scenario-fav').checked = !!sc.isFavorite;
+  showModal('modal-scenario');
+}
+
+async function toggleFavoriteScenario(id) {
+  const sc = allScenariosData[id];
+  if (!sc) return;
+  const becomeFav = !sc.isFavorite;
+  if (becomeFav) {
+    for (const sid of Object.keys(allScenariosData)) {
+      if (sid !== id && allScenariosData[sid].isFavorite) {
+        await dbUpdate('rooms/' + currentRoom + '/scenarios/' + sid, { isFavorite: false });
+      }
+    }
+  }
+  await dbUpdate('rooms/' + currentRoom + '/scenarios/' + id, { isFavorite: becomeFav });
+  showToast(becomeFav ? '★ Scénario favori défini.' : 'Favori retiré.');
+}
+
+async function saveScenario() {
+  const id   = document.getElementById('m-scenario-id').value;
+  const name = document.getElementById('m-scenario-name').value.trim();
+  const isFavorite = document.getElementById('m-scenario-fav').checked;
+  if (!name) { showToast('Nom requis.'); return; }
+  if (isFavorite) {
+    for (const sid of Object.keys(allScenariosData)) {
+      if (sid !== id && allScenariosData[sid].isFavorite) {
+        await dbUpdate('rooms/' + currentRoom + '/scenarios/' + sid, { isFavorite: false });
+      }
+    }
+  }
+  const data = { name, isFavorite };
+  if (id) {
+    await dbUpdate('rooms/' + currentRoom + '/scenarios/' + id, data);
+  } else {
+    const newId = 'sc_' + Date.now();
+    await dbSet('rooms/' + currentRoom + '/scenarios/' + newId, data);
+    currentScenarioId = newId;
+  }
+  hideModal('modal-scenario');
+}
+
+async function deleteScenario(id) {
+  if (!confirm('Supprimer ce scénario et toutes ses scènes ?')) return;
+  await dbSet('rooms/' + currentRoom + '/scenarios/' + id, null);
+  if (currentScenarioId === id) currentScenarioId = null;
+}
+
+/* ── Scene CRUD ─────────────────────────────────────── */
+function openSceneCreate(scenarioId) {
+  document.getElementById('m-scene-scenario').value = scenarioId;
+  document.getElementById('m-scene-id').value = '';
+  document.getElementById('m-scene-title').value = '';
+  document.getElementById('m-scene-bg').value = '';
+  document.getElementById('m-scene-notes').value = '';
+  showModal('modal-scene');
+}
+
+function openSceneEdit(scenarioId, sceneId) {
+  const sc = allScenariosData[scenarioId];
+  if (!sc) return;
+  const scene = (sc.scenes || {})[sceneId];
+  if (!scene) return;
+  document.getElementById('m-scene-scenario').value = scenarioId;
+  document.getElementById('m-scene-id').value = sceneId;
+  document.getElementById('m-scene-title').value = scene.title || '';
+  document.getElementById('m-scene-bg').value = scene.bgUrl || '';
+  document.getElementById('m-scene-notes').value = scene.notes || '';
+  showModal('modal-scene');
+}
+
+async function saveScene() {
+  const scenarioId = document.getElementById('m-scene-scenario').value;
+  const sceneId    = document.getElementById('m-scene-id').value;
+  const title  = document.getElementById('m-scene-title').value.trim();
+  const bgUrl  = document.getElementById('m-scene-bg').value.trim();
+  const notes  = document.getElementById('m-scene-notes').value.trim();
+  if (!title) { showToast('Titre requis.'); return; }
+  const data = { title, bgUrl, notes, order: Date.now() };
+  const id = sceneId || ('scene_' + Date.now());
+  await dbSet('rooms/' + currentRoom + '/scenarios/' + scenarioId + '/scenes/' + id, data);
+  hideModal('modal-scene');
+}
+
+async function deleteScene(scenarioId, sceneId) {
+  if (!confirm('Supprimer cette scène ?')) return;
+  await dbSet('rooms/' + currentRoom + '/scenarios/' + scenarioId + '/scenes/' + sceneId, null);
+  if (activeSceneId === sceneId) {
+    await dbUpdate('rooms/' + currentRoom + '/gameView', { activeSceneId: null });
+  }
+}
+
+/* ────────────────────────────────────────────────────────
+   PLAYER CHAT SIDEBAR
+──────────────────────────────────────────────────────── */
+let playerChatOpen = true;
+
+function initPlayerChat() {
+  const screen = document.getElementById('screen-sheet');
+  if (!screen) return;
+  screen.classList.toggle('sidebar-open', playerChatOpen);
+  const btn = document.getElementById('btn-chat-toggle');
+  if (btn) btn.textContent = playerChatOpen ? '✕ Chat' : '💬 Chat';
+}
+
+function togglePlayerChat() {
+  playerChatOpen = !playerChatOpen;
+  const screen = document.getElementById('screen-sheet');
+  if (screen) screen.classList.toggle('sidebar-open', playerChatOpen);
+  const btn = document.getElementById('btn-chat-toggle');
+  if (btn) btn.textContent = playerChatOpen ? '✕ Chat' : '💬 Chat';
+}
+
+function enterSceneMode() {
+  const screen = document.getElementById('screen-sheet');
+  const drawer = document.getElementById('sheet-drawer');
+  if (!screen) return;
+  if (drawer) drawer.classList.add('sheet-hidden');
+  screen.classList.remove('sidebar-open');
+  screen.classList.add('scene-mode');
+  const btn = document.getElementById('btn-exit-scene');
+  if (btn) btn.style.display = '';
+  const btnEnter = document.getElementById('btn-enter-scene');
+  if (btnEnter) btnEnter.style.display = 'none';
+}
+
+function exitSceneMode() {
+  const screen = document.getElementById('screen-sheet');
+  if (!screen) return;
+  screen.classList.remove('scene-mode');
+  if (playerChatOpen) screen.classList.add('sidebar-open');
+  const btn = document.getElementById('btn-exit-scene');
+  if (btn) btn.style.display = 'none';
+  const btnEnter = document.getElementById('btn-enter-scene');
+  if (btnEnter) btnEnter.style.display = '';
+}
 
 // Afficher les sessions récentes au chargement
 renderRecentSessions();
